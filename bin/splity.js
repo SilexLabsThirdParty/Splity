@@ -1,57 +1,4 @@
 var $hxClasses = $hxClasses || {},$estr = function() { return js.Boot.__string_rec(this,''); };
-var EReg = $hxClasses["EReg"] = function(r,opt) {
-	opt = opt.split("u").join("");
-	this.r = new RegExp(r,opt);
-};
-EReg.__name__ = ["EReg"];
-EReg.prototype = {
-	customReplace: function(s,f) {
-		var buf = new StringBuf();
-		while(true) {
-			if(!this.match(s)) break;
-			buf.b += Std.string(this.matchedLeft());
-			buf.b += Std.string(f(this));
-			s = this.matchedRight();
-		}
-		buf.b += Std.string(s);
-		return buf.b;
-	}
-	,replace: function(s,by) {
-		return s.replace(this.r,by);
-	}
-	,split: function(s) {
-		var d = "#__delim__#";
-		return s.replace(this.r,d).split(d);
-	}
-	,matchedPos: function() {
-		if(this.r.m == null) throw "No string matched";
-		return { pos : this.r.m.index, len : this.r.m[0].length};
-	}
-	,matchedRight: function() {
-		if(this.r.m == null) throw "No string matched";
-		var sz = this.r.m.index + this.r.m[0].length;
-		return this.r.s.substr(sz,this.r.s.length - sz);
-	}
-	,matchedLeft: function() {
-		if(this.r.m == null) throw "No string matched";
-		return this.r.s.substr(0,this.r.m.index);
-	}
-	,matched: function(n) {
-		return this.r.m != null && n >= 0 && n < this.r.m.length?this.r.m[n]:(function($this) {
-			var $r;
-			throw "EReg::matched";
-			return $r;
-		}(this));
-	}
-	,match: function(s) {
-		if(this.r.global) this.r.lastIndex = 0;
-		this.r.m = this.r.exec(s);
-		this.r.s = s;
-		return this.r.m != null;
-	}
-	,r: null
-	,__class__: EReg
-}
 var Hash = $hxClasses["Hash"] = function() {
 	this.h = { };
 };
@@ -1088,391 +1035,6 @@ haxe.Serializer.prototype = {
 	,buf: null
 	,__class__: haxe.Serializer
 }
-if(!haxe._Template) haxe._Template = {}
-haxe._Template.TemplateExpr = $hxClasses["haxe._Template.TemplateExpr"] = { __ename__ : ["haxe","_Template","TemplateExpr"], __constructs__ : ["OpVar","OpExpr","OpIf","OpStr","OpBlock","OpForeach","OpMacro"] }
-haxe._Template.TemplateExpr.OpVar = function(v) { var $x = ["OpVar",0,v]; $x.__enum__ = haxe._Template.TemplateExpr; $x.toString = $estr; return $x; }
-haxe._Template.TemplateExpr.OpExpr = function(expr) { var $x = ["OpExpr",1,expr]; $x.__enum__ = haxe._Template.TemplateExpr; $x.toString = $estr; return $x; }
-haxe._Template.TemplateExpr.OpIf = function(expr,eif,eelse) { var $x = ["OpIf",2,expr,eif,eelse]; $x.__enum__ = haxe._Template.TemplateExpr; $x.toString = $estr; return $x; }
-haxe._Template.TemplateExpr.OpStr = function(str) { var $x = ["OpStr",3,str]; $x.__enum__ = haxe._Template.TemplateExpr; $x.toString = $estr; return $x; }
-haxe._Template.TemplateExpr.OpBlock = function(l) { var $x = ["OpBlock",4,l]; $x.__enum__ = haxe._Template.TemplateExpr; $x.toString = $estr; return $x; }
-haxe._Template.TemplateExpr.OpForeach = function(expr,loop) { var $x = ["OpForeach",5,expr,loop]; $x.__enum__ = haxe._Template.TemplateExpr; $x.toString = $estr; return $x; }
-haxe._Template.TemplateExpr.OpMacro = function(name,params) { var $x = ["OpMacro",6,name,params]; $x.__enum__ = haxe._Template.TemplateExpr; $x.toString = $estr; return $x; }
-haxe.Template = $hxClasses["haxe.Template"] = function(str) {
-	var tokens = this.parseTokens(str);
-	this.expr = this.parseBlock(tokens);
-	if(!tokens.isEmpty()) throw "Unexpected '" + Std.string(tokens.first().s) + "'";
-};
-haxe.Template.__name__ = ["haxe","Template"];
-haxe.Template.prototype = {
-	run: function(e) {
-		var $e = (e);
-		switch( $e[1] ) {
-		case 0:
-			var v = $e[2];
-			this.buf.b += Std.string(Std.string(this.resolve(v)));
-			break;
-		case 1:
-			var e1 = $e[2];
-			this.buf.b += Std.string(Std.string(e1()));
-			break;
-		case 2:
-			var eelse = $e[4], eif = $e[3], e1 = $e[2];
-			var v = e1();
-			if(v == null || v == false) {
-				if(eelse != null) this.run(eelse);
-			} else this.run(eif);
-			break;
-		case 3:
-			var str = $e[2];
-			this.buf.b += Std.string(str);
-			break;
-		case 4:
-			var l = $e[2];
-			var $it0 = l.iterator();
-			while( $it0.hasNext() ) {
-				var e1 = $it0.next();
-				this.run(e1);
-			}
-			break;
-		case 5:
-			var loop = $e[3], e1 = $e[2];
-			var v = e1();
-			try {
-				var x = $iterator(v)();
-				if(x.hasNext == null) throw null;
-				v = x;
-			} catch( e2 ) {
-				try {
-					if(v.hasNext == null) throw null;
-				} catch( e3 ) {
-					throw "Cannot iter on " + Std.string(v);
-				}
-			}
-			this.stack.push(this.context);
-			var v1 = v;
-			while( v1.hasNext() ) {
-				var ctx = v1.next();
-				this.context = ctx;
-				this.run(loop);
-			}
-			this.context = this.stack.pop();
-			break;
-		case 6:
-			var params = $e[3], m = $e[2];
-			var v = Reflect.field(this.macros,m);
-			var pl = new Array();
-			var old = this.buf;
-			pl.push($bind(this,this.resolve));
-			var $it1 = params.iterator();
-			while( $it1.hasNext() ) {
-				var p = $it1.next();
-				var $e = (p);
-				switch( $e[1] ) {
-				case 0:
-					var v1 = $e[2];
-					pl.push(this.resolve(v1));
-					break;
-				default:
-					this.buf = new StringBuf();
-					this.run(p);
-					pl.push(this.buf.b);
-				}
-			}
-			this.buf = old;
-			try {
-				this.buf.b += Std.string(Std.string(v.apply(this.macros,pl)));
-			} catch( e1 ) {
-				var plstr = (function($this) {
-					var $r;
-					try {
-						$r = pl.join(",");
-					} catch( e2 ) {
-						$r = "???";
-					}
-					return $r;
-				}(this));
-				var msg = "Macro call " + m + "(" + plstr + ") failed (" + Std.string(e1) + ")";
-				throw msg;
-			}
-			break;
-		}
-	}
-	,makeExpr2: function(l) {
-		var p = l.pop();
-		if(p == null) throw "<eof>";
-		if(p.s) return this.makeConst(p.p);
-		switch(p.p) {
-		case "(":
-			var e1 = this.makeExpr(l);
-			var p1 = l.pop();
-			if(p1 == null || p1.s) throw p1.p;
-			if(p1.p == ")") return e1;
-			var e2 = this.makeExpr(l);
-			var p2 = l.pop();
-			if(p2 == null || p2.p != ")") throw p2.p;
-			return (function($this) {
-				var $r;
-				switch(p1.p) {
-				case "+":
-					$r = function() {
-						return e1() + e2();
-					};
-					break;
-				case "-":
-					$r = function() {
-						return e1() - e2();
-					};
-					break;
-				case "*":
-					$r = function() {
-						return e1() * e2();
-					};
-					break;
-				case "/":
-					$r = function() {
-						return e1() / e2();
-					};
-					break;
-				case ">":
-					$r = function() {
-						return e1() > e2();
-					};
-					break;
-				case "<":
-					$r = function() {
-						return e1() < e2();
-					};
-					break;
-				case ">=":
-					$r = function() {
-						return e1() >= e2();
-					};
-					break;
-				case "<=":
-					$r = function() {
-						return e1() <= e2();
-					};
-					break;
-				case "==":
-					$r = function() {
-						return e1() == e2();
-					};
-					break;
-				case "!=":
-					$r = function() {
-						return e1() != e2();
-					};
-					break;
-				case "&&":
-					$r = function() {
-						return e1() && e2();
-					};
-					break;
-				case "||":
-					$r = function() {
-						return e1() || e2();
-					};
-					break;
-				default:
-					$r = (function($this) {
-						var $r;
-						throw "Unknown operation " + p1.p;
-						return $r;
-					}($this));
-				}
-				return $r;
-			}(this));
-		case "!":
-			var e = this.makeExpr(l);
-			return function() {
-				var v = e();
-				return v == null || v == false;
-			};
-		case "-":
-			var e = this.makeExpr(l);
-			return function() {
-				return -e();
-			};
-		}
-		throw p.p;
-	}
-	,makeExpr: function(l) {
-		return this.makePath(this.makeExpr2(l),l);
-	}
-	,makePath: function(e,l) {
-		var p = l.first();
-		if(p == null || p.p != ".") return e;
-		l.pop();
-		var field = l.pop();
-		if(field == null || !field.s) throw field.p;
-		var f = field.p;
-		haxe.Template.expr_trim.match(f);
-		f = haxe.Template.expr_trim.matched(1);
-		return this.makePath(function() {
-			return Reflect.field(e(),f);
-		},l);
-	}
-	,makeConst: function(v) {
-		haxe.Template.expr_trim.match(v);
-		v = haxe.Template.expr_trim.matched(1);
-		if(HxOverrides.cca(v,0) == 34) {
-			var str = HxOverrides.substr(v,1,v.length - 2);
-			return function() {
-				return str;
-			};
-		}
-		if(haxe.Template.expr_int.match(v)) {
-			var i = Std.parseInt(v);
-			return function() {
-				return i;
-			};
-		}
-		if(haxe.Template.expr_float.match(v)) {
-			var f = Std.parseFloat(v);
-			return function() {
-				return f;
-			};
-		}
-		var me = this;
-		return function() {
-			return me.resolve(v);
-		};
-	}
-	,parseExpr: function(data) {
-		var l = new List();
-		var expr = data;
-		while(haxe.Template.expr_splitter.match(data)) {
-			var p = haxe.Template.expr_splitter.matchedPos();
-			var k = p.pos + p.len;
-			if(p.pos != 0) l.add({ p : HxOverrides.substr(data,0,p.pos), s : true});
-			var p1 = haxe.Template.expr_splitter.matched(0);
-			l.add({ p : p1, s : p1.indexOf("\"") >= 0});
-			data = haxe.Template.expr_splitter.matchedRight();
-		}
-		if(data.length != 0) l.add({ p : data, s : true});
-		var e;
-		try {
-			e = this.makeExpr(l);
-			if(!l.isEmpty()) throw l.first().p;
-		} catch( s ) {
-			if( js.Boot.__instanceof(s,String) ) {
-				throw "Unexpected '" + s + "' in " + expr;
-			} else throw(s);
-		}
-		return function() {
-			try {
-				return e();
-			} catch( exc ) {
-				throw "Error : " + Std.string(exc) + " in " + expr;
-			}
-		};
-	}
-	,parse: function(tokens) {
-		var t = tokens.pop();
-		var p = t.p;
-		if(t.s) return haxe._Template.TemplateExpr.OpStr(p);
-		if(t.l != null) {
-			var pe = new List();
-			var _g = 0, _g1 = t.l;
-			while(_g < _g1.length) {
-				var p1 = _g1[_g];
-				++_g;
-				pe.add(this.parseBlock(this.parseTokens(p1)));
-			}
-			return haxe._Template.TemplateExpr.OpMacro(p,pe);
-		}
-		if(HxOverrides.substr(p,0,3) == "if ") {
-			p = HxOverrides.substr(p,3,p.length - 3);
-			var e = this.parseExpr(p);
-			var eif = this.parseBlock(tokens);
-			var t1 = tokens.first();
-			var eelse;
-			if(t1 == null) throw "Unclosed 'if'";
-			if(t1.p == "end") {
-				tokens.pop();
-				eelse = null;
-			} else if(t1.p == "else") {
-				tokens.pop();
-				eelse = this.parseBlock(tokens);
-				t1 = tokens.pop();
-				if(t1 == null || t1.p != "end") throw "Unclosed 'else'";
-			} else {
-				t1.p = HxOverrides.substr(t1.p,4,t1.p.length - 4);
-				eelse = this.parse(tokens);
-			}
-			return haxe._Template.TemplateExpr.OpIf(e,eif,eelse);
-		}
-		if(HxOverrides.substr(p,0,8) == "foreach ") {
-			p = HxOverrides.substr(p,8,p.length - 8);
-			var e = this.parseExpr(p);
-			var efor = this.parseBlock(tokens);
-			var t1 = tokens.pop();
-			if(t1 == null || t1.p != "end") throw "Unclosed 'foreach'";
-			return haxe._Template.TemplateExpr.OpForeach(e,efor);
-		}
-		if(haxe.Template.expr_splitter.match(p)) return haxe._Template.TemplateExpr.OpExpr(this.parseExpr(p));
-		return haxe._Template.TemplateExpr.OpVar(p);
-	}
-	,parseBlock: function(tokens) {
-		var l = new List();
-		while(true) {
-			var t = tokens.first();
-			if(t == null) break;
-			if(!t.s && (t.p == "end" || t.p == "else" || HxOverrides.substr(t.p,0,7) == "elseif ")) break;
-			l.add(this.parse(tokens));
-		}
-		if(l.length == 1) return l.first();
-		return haxe._Template.TemplateExpr.OpBlock(l);
-	}
-	,parseTokens: function(data) {
-		var tokens = new List();
-		while(haxe.Template.splitter.match(data)) {
-			var p = haxe.Template.splitter.matchedPos();
-			if(p.pos > 0) tokens.add({ p : HxOverrides.substr(data,0,p.pos), s : true, l : null});
-			if(HxOverrides.cca(data,p.pos) == 58) {
-				tokens.add({ p : HxOverrides.substr(data,p.pos + 2,p.len - 4), s : false, l : null});
-				data = haxe.Template.splitter.matchedRight();
-				continue;
-			}
-			var parp = p.pos + p.len;
-			var npar = 1;
-			while(npar > 0) {
-				var c = HxOverrides.cca(data,parp);
-				if(c == 40) npar++; else if(c == 41) npar--; else if(c == null) throw "Unclosed macro parenthesis";
-				parp++;
-			}
-			var params = HxOverrides.substr(data,p.pos + p.len,parp - (p.pos + p.len) - 1).split(",");
-			tokens.add({ p : haxe.Template.splitter.matched(2), s : false, l : params});
-			data = HxOverrides.substr(data,parp,data.length - parp);
-		}
-		if(data.length > 0) tokens.add({ p : data, s : true, l : null});
-		return tokens;
-	}
-	,resolve: function(v) {
-		if(Reflect.hasField(this.context,v)) return Reflect.field(this.context,v);
-		var $it0 = this.stack.iterator();
-		while( $it0.hasNext() ) {
-			var ctx = $it0.next();
-			if(Reflect.hasField(ctx,v)) return Reflect.field(ctx,v);
-		}
-		if(v == "__current__") return this.context;
-		return Reflect.field(haxe.Template.globals,v);
-	}
-	,execute: function(context,macros) {
-		this.macros = macros == null?{ }:macros;
-		this.context = context;
-		this.stack = new List();
-		this.buf = new StringBuf();
-		this.run(this.expr);
-		return this.buf.b;
-	}
-	,buf: null
-	,stack: null
-	,macros: null
-	,context: null
-	,expr: null
-	,__class__: haxe.Template
-}
 haxe.Timer = $hxClasses["haxe.Timer"] = function(time_ms) {
 	var me = this;
 	this.id = window.setInterval(function() {
@@ -2257,7 +1819,7 @@ if(!splity.client) splity.client = {}
 splity.client.Main = $hxClasses["splity.client.Main"] = function() {
 	var _g = this;
 	js.Lib.window.addEventListener("load",function(e) {
-		haxe.Log.trace("onload",{ fileName : "Main.hx", lineNumber : 50, className : "splity.client.Main", methodName : "new"});
+		haxe.Log.trace("onload",{ fileName : "Main.hx", lineNumber : 52, className : "splity.client.Main", methodName : "new"});
 		haxe.Timer.delay($bind(_g,_g.init),500);
 	},true);
 };
@@ -2267,56 +1829,66 @@ splity.client.Main.main = function() {
 }
 splity.client.Main.prototype = {
 	onStatus: function(messageData) {
-		haxe.Log.trace("onStatus " + Std.string(messageData),{ fileName : "Main.hx", lineNumber : 147, className : "splity.client.Main", methodName : "onStatus"});
-		if(messageData.type == "TYPE_NEW_CLIENT") this.showMessage("New user"); else if(messageData.type == "TYPE_CLIENT_DELETED") this.showMessage("User left "); else if(messageData.type == "TYPE_CLIENT_DISPATCH") this.showMessage("User message: " + Std.string(messageData.metaData));
+		haxe.Log.trace("onStatus " + Std.string(messageData),{ fileName : "Main.hx", lineNumber : 166, className : "splity.client.Main", methodName : "onStatus"});
+		if(messageData.type == "TYPE_NEW_CLIENT") this.showMessage("New user"); else if(messageData.type == "TYPE_CLIENT_DELETED") this.showMessage("User left "); else if(messageData.type == "TYPE_CLIENT_DISPATCH") {
+			if(messageData.metaData.type == "sendCoord") {
+				if(messageData.metaData.myId != this.myId) this.showMessage("SEND COORD: " + Std.string(messageData.metaData.x) + ", " + Std.string(messageData.metaData.y));
+			} else this.showMessage("User message: " + Std.string(messageData.metaData));
+		}
 	}
 	,showMessage: function(str) {
-		haxe.Log.trace("showMessage " + str,{ fileName : "Main.hx", lineNumber : 137, className : "splity.client.Main", methodName : "showMessage"});
-		this.pollClients();
+		haxe.Log.trace("showMessage " + str,{ fileName : "Main.hx", lineNumber : 157, className : "splity.client.Main", methodName : "showMessage"});
 		this.messageDiv.innerHTML = "" + str;
 	}
-	,onGetClients: function(list) {
-		haxe.Log.trace("onGetClients " + list.length,{ fileName : "Main.hx", lineNumber : 113, className : "splity.client.Main", methodName : "onGetClients"});
-		var t = new haxe.Template(this.template);
-		var output = t.execute({ count : list.length, clients : list, myId : this.myId});
-		js.Lib.document.getElementById("template").innerHTML = output;
+	,onGetFunctionalities: function(functionalities) {
+		haxe.Log.trace("onGetFunctionalities " + Std.string(functionalities),{ fileName : "Main.hx", lineNumber : 133, className : "splity.client.Main", methodName : "onGetFunctionalities"});
 	}
 	,pollClients: function() {
 		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this.connection._serverUrl);
 		cnx.setErrorHandler($bind(this,this.onError));
-		cnx.resolve("Server").resolve("getAllClients").call([],$bind(this,this.onGetClients));
+		cnx.resolve("Server").resolve("getFunctionalities").call([],$bind(this,this.onGetFunctionalities));
+	}
+	,onDispatched: function(res) {
+		haxe.Log.trace("onDispatched " + Std.string(res),{ fileName : "Main.hx", lineNumber : 122, className : "splity.client.Main", methodName : "onDispatched"});
+		this.pollClients();
 	}
 	,dispatch: function(e) {
-		this.connection.dispatch("I'm here! Number " + this.myId,null,function() {
-			haxe.Log.trace("dispatch result",{ fileName : "Main.hx", lineNumber : 103, className : "splity.client.Main", methodName : "dispatch"});
-		});
+		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this.connection._serverUrl);
+		cnx.setErrorHandler($bind(this,this.onError));
+		cnx.resolve("Server").resolve("requestFunctionality").call(["thumblist"],$bind(this,this.onDispatched));
 	}
 	,refresh: function() {
-		this.pollClients();
+	}
+	,onSuccessSendCoord: function() {
+		haxe.Log.trace("onSuccessSendCoord",{ fileName : "Main.hx", lineNumber : 106, className : "splity.client.Main", methodName : "onSuccessSendCoord"});
+	}
+	,sendCoordCallback: function(e) {
+		this.connection.dispatch({ type : "sendCoord", x : 25, y : 300, myId : this.myId},null,$bind(this,this.onSuccessSendCoord));
 	}
 	,refreshCallback: function(e) {
 		this.refresh();
 	}
 	,onConnect: function() {
 		var _g = this;
-		haxe.Log.trace("onConnect ",{ fileName : "Main.hx", lineNumber : 88, className : "splity.client.Main", methodName : "onConnect"});
+		haxe.Log.trace("onConnect ",{ fileName : "Main.hx", lineNumber : 93, className : "splity.client.Main", methodName : "onConnect"});
 		this.connection.setClientMetaData("myId",this.myId,function(d) {
-			haxe.Log.trace("setClientMetaData " + _g.myId + " - " + Std.string(d),{ fileName : "Main.hx", lineNumber : 90, className : "splity.client.Main", methodName : "onConnect"});
+			haxe.Log.trace("setClientMetaData " + _g.myId + " - " + Std.string(d),{ fileName : "Main.hx", lineNumber : 95, className : "splity.client.Main", methodName : "onConnect"});
 			_g.refresh();
 		},$bind(this,this.onError));
 	}
 	,onError: function(str) {
-		haxe.Log.trace("error: " + Std.string(str),{ fileName : "Main.hx", lineNumber : 78, className : "splity.client.Main", methodName : "onError"});
+		haxe.Log.trace("error: " + Std.string(str),{ fileName : "Main.hx", lineNumber : 83, className : "splity.client.Main", methodName : "onError"});
 	}
 	,init: function() {
 		var lang = navigator.language;
 		this.myId = "" + Math.round(Math.random() * 1000);
 		this.connection = new org.phpMessaging.client.Connection();
-		this.connection.connect("splity.php/","admin","admin",{ login : "admin", pubKey : "fdsf1435s1fs2q1d"});
+		this.connection.connect("splity.php/","gallery","ip",{ });
 		this.connection.subscribe($bind(this,this.onConnect),$bind(this,this.onError),$bind(this,this.onStatus));
 		this.messageDiv = js.Lib.document.getElementById("message");
 		js.Lib.document.getElementById("dispatch").onclick = $bind(this,this.dispatch);
 		js.Lib.document.getElementById("refresh").onclick = $bind(this,this.refreshCallback);
+		js.Lib.document.getElementById("sendCoord").onclick = $bind(this,this.sendCoordCallback);
 		this.template = js.Lib.document.getElementById("template").innerHTML;
 		js.Lib.document.getElementById("template").innerHTML = "";
 	}
@@ -2326,7 +1898,6 @@ splity.client.Main.prototype = {
 	,connection: null
 	,__class__: splity.client.Main
 }
-function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; };
 var $_;
 function $bind(o,m) { var f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; return f; };
 if(Array.prototype.indexOf) HxOverrides.remove = function(a,o) {
@@ -2388,12 +1959,6 @@ js.XMLHttpRequest = window.XMLHttpRequest?XMLHttpRequest:window.ActiveXObject?fu
 haxe.Serializer.USE_CACHE = false;
 haxe.Serializer.USE_ENUM_INDEX = false;
 haxe.Serializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";
-haxe.Template.splitter = new EReg("(::[A-Za-z0-9_ ()&|!+=/><*.\"-]+::|\\$\\$([A-Za-z0-9_-]+)\\()","");
-haxe.Template.expr_splitter = new EReg("(\\(|\\)|[ \r\n\t]*\"[^\"]*\"[ \r\n\t]*|[!+=/><*.&|-]+)","");
-haxe.Template.expr_trim = new EReg("^[ ]*([^ ]+)[ ]*$","");
-haxe.Template.expr_int = new EReg("^[0-9]+$","");
-haxe.Template.expr_float = new EReg("^([+-]?)(?=\\d|,\\d)\\d*(,\\d*)?([Ee]([+-]?\\d+))?$","");
-haxe.Template.globals = { };
 haxe.Unserializer.DEFAULT_RESOLVER = Type;
 haxe.Unserializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";
 haxe.Unserializer.CODES = null;

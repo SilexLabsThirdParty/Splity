@@ -7,6 +7,8 @@ import php.io.File;
 import php.io.Path;
 import php.Sys;
 
+import splity.server.Splity;
+
 /**
  * this class is an example of use of the php-messaging library
  * it implement the server side of a very simple chat application
@@ -24,9 +26,15 @@ class Main
 	 */ 
 	static function main() 
 	{
+		// include the php script
+		untyped __call__("include", CONFIG_FILE_PATH);
+		// retrieve the xml from the $config global variable defined in the script
+		var configString : String = untyped __php__('$config');
+		var xml:Xml = Xml.parse(configString);
+
 		// create a remoting context and expose the php-messaging service
 		var ctx = new haxe.remoting.Context();
-		var server = new Splity(getServerConfig());
+		var server = new Splity(getServerConfig(xml), getFunctionalities(xml));
 		ctx.addObject("Server", server);
 		
 		//trace(server.getClients());
@@ -42,20 +50,8 @@ class Main
 	 * load a XML string defined in a .php file as $config, 
 	 * not stored in an XML file for seurity reasons
 	 */
-	static public function getServerConfig():ServerConfig
-	{
-		// build the absolute path
-//		var rootFolderPath:String = Path.directory(Sys.executablePath());
-//		var configFilePath:String = rootFolderPath + CONFIG_FILE_PATH;
-		var configFilePath:String = CONFIG_FILE_PATH;
-
-		// include the php script
-		untyped __call__("include", configFilePath);
-				
-		// retrieve the xml from the $config global variable defined in the script
-		var configString : String = untyped __php__('$config');
-		var xml:Xml = Xml.parse(configString);
-		
+	static public function getServerConfig(xml:Xml):ServerConfig
+	{		
 		// parse the XML and store the database settings in a ServerConfig object
 		var propXml:Xml;
 		var confObj:Dynamic = { };
@@ -91,7 +87,6 @@ class Main
 				Reflect.setField(confObj, propXml.nodeName, propXml.firstChild().nodeValue);
 			}
 		}
-
 		// build the typed config object 
 		var config:ServerConfig = 
 		{
@@ -109,5 +104,32 @@ class Main
 		
 		//Log.trace("Server config loaded " + config);
 		return config;
+	}
+	static public function getFunctionalities(xml:Xml):Array<FunctionalityData>
+	{
+		var functionalities:Array<FunctionalityData> = [];
+		// splity functionality
+		for (propXml in xml.firstElement().elementsNamed("splity").next().elements())
+		{
+			//Log.trace("functionality "+propXml);
+			for (functionalityXml in propXml.elements())
+			{
+				var functionnality = {name:"", maxUsage:null, usage:0};
+				for (propertyXml in functionalityXml.elements())
+				{
+					//Log.trace("prop "+propertyXml.nodeName+" = "+propertyXml.firstChild().nodeValue);
+					if (propertyXml.nodeName == "name")
+					{
+						functionnality.name = propertyXml.firstChild().nodeValue;
+					}
+					else if (propertyXml.nodeName == "maxUsage")
+					{
+						functionnality.maxUsage = Std.parseInt(propertyXml.firstChild().nodeValue);
+					}
+				}
+				functionalities.push(functionnality);
+			}
+		}
+		return functionalities;
 	}
 }

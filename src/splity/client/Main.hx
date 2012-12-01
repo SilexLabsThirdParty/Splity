@@ -17,6 +17,8 @@ import org.phpMessaging.model.ApplicationData;
 import js.Lib;
 import js.Dom;
 
+import splity.server.FunctionalityData;
+
 /**
  * this class is an example of use of the php-messaging library
  * it implement the client side of a very simple chat application
@@ -59,7 +61,9 @@ class Main
 		myId = ""+Math.round(Math.random()*1000);
 		// opens the connection with the messaging server
 		connection = new Connection();
+		//connection.connect("http://demos.silexlabs.org/splity/splity.php/", "gallery", "ip", { } );
 		connection.connect("splity.php/", "gallery", "ip", { } );
+		//connection.connect("http://10.0.194.162/splity.php/", "gallery", "ip", { } );
 		// start listening for the server notifications, 
 		// with _onStatus as a callback to handle these notifications
 		connection.subscribe(onConnect, onError, onStatus);
@@ -68,6 +72,7 @@ class Main
 		// init ui
 		Lib.document.getElementById("dispatch").onclick = dispatch;
 		Lib.document.getElementById("refresh").onclick = refreshCallback;
+		Lib.document.getElementById("sendCoord").onclick = sendCoordCallback;
 		template = Lib.document.getElementById("template").innerHTML;
 		Lib.document.getElementById("template").innerHTML = "";
 		//templateApps = Lib.document.getElementById("template-apps").innerHTML;
@@ -94,28 +99,43 @@ class Main
 	private function refreshCallback(e:Event){
 		refresh();
 	}
+	private function sendCoordCallback(e:Event){
+		connection.dispatch({type:"sendCoord", x:25, y:300, myId:myId}, onSuccessSendCoord);
+	}
+	private function onSuccessSendCoord(){
+		trace("onSuccessSendCoord");
+	}
 	private function refresh(){
-		pollClients();
+		//pollClients();
 	}
 	private function dispatch(e:Event) 
 	{
 		//trace("dispatch ");
-		connection.dispatch("I'm here! Number "+myId, null, function() { trace("dispatch result"); } );
+//		connection.dispatch("I'm here! Number "+myId, null, function() { trace("dispatch result"); } );
+
+	    var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(connection._serverUrl);
+	    cnx.setErrorHandler( onError );
+	    cnx.Server.requestFunctionality.call(["thumblist"], onDispatched);
+	}
+	private function onDispatched(res:Bool) 
+	{
+		trace("onDispatched "+res);
+	    pollClients();
 	}
 	private function pollClients() 
 	{
 	    var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(connection._serverUrl);
 	    cnx.setErrorHandler( onError );
-	    cnx.Server.getAllClients.call([], onGetClients);
+	    cnx.Server.getFunctionalities.call([], onGetFunctionalities);
 	}
-	function onGetClients(list:List<ClientDataModel>) 
-	{
-		trace("onGetClients "+list.length);
+	function onGetFunctionalities(functionalities:Array<FunctionalityData>) 
+	{ 
+		trace("onGetFunctionalities "+functionalities);
 
-        var t = new haxe.Template(template);
+/*        var t = new haxe.Template(template);
         var output = t.execute({ count : list.length, clients : list , myId : myId});
 		Lib.document.getElementById("template").innerHTML = output;
-
+*/
 		//pollApplications();
 	}
 /*	private function pollApplications() 
@@ -136,7 +156,6 @@ class Main
 */	function showMessage(str) 
 	{trace("showMessage "+str);
 		// to update info (activity)
-		pollClients();
 		messageDiv.innerHTML = ""+str;
 	}
 	/**
@@ -158,7 +177,13 @@ class Main
 		// or is this a message sent by another clients connected to the same application instance 
 		else if(messageData.type == MessageData.TYPE_CLIENT_DISPATCH)
 		{
-			showMessage("User message: "+messageData.metaData);
+			if (messageData.metaData.type == "sendCoord"){
+				if (messageData.metaData.myId != myId){
+					showMessage("SEND COORD: "+messageData.metaData.x+", "+messageData.metaData.y);
+				}
+			}
+			else
+				showMessage("User message: "+messageData.metaData);
 		}
 	}
 }

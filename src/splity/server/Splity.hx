@@ -1,4 +1,3 @@
-
 package splity.server;
 
 import org.phpMessaging.server.Server;
@@ -15,9 +14,17 @@ import php.Lib;
 import php.Web;
 import php.Session;
 
+//import splity.server.functionality.FunctionalityData;
+//import splity.server.functionality.FunctionalityDataManager;
 
 class Splity extends Server 
 {
+	public static var functionalities:Array<FunctionalityData> = [];
+	public function new(serverConfig:ServerConfig, functionalities:Array<FunctionalityData>)
+	{
+		super(serverConfig);
+		Splity.functionalities = functionalities;		
+	}
 	/**
 	 * initialize the client and application objects, the database connection, the php session, etc
 	 * parameters are optionnal, you can ommit them if they are allready stored in the session, 
@@ -30,6 +37,10 @@ class Splity extends Server
 		// fixeme : for tests
 		instanceName = "splity.test1";
 		name = "splity";
+        var params = php.Web.getParams();
+        if(params.exists('app'))
+        	name = params.get('app');
+
 		// add info to meta
 		if (metaData == null)
 			metaData = {};
@@ -37,28 +48,65 @@ class Splity extends Server
 		metaData.appName=name;
 		
 		super._init(name, instanceName, metaData);
+		Log.trace("NEW SERVER "+client);
 	}
-	/**
-	 * retrieve the clients data
-	 * all clients exposed here, only for debug and monitor purpose
-	 */
-	public function getAllClients(clientIDs:Array<Int> = null, applicationId:Int = null):List<ClientDataModel>
+	public function requestFunctionality(functionalityName:String):Bool
 	{
 		// start the process
 		_init();
-		
-		// get the data
-		var listClients:List<ClientData> = ClientData.manager.getClients(clientIDs, applicationId);
+		Log.trace("requestFunctionality "+functionalityName);
+//		var functionalities = getFunctionalities();
+		for (functionality in functionalities)
+		{
+			if (functionality.name == functionalityName 
+				&& functionality.maxUsage != null
+				&& functionality.maxUsage <= functionality.usage)
+			{	
+				Log.trace("requestFunctionality REFUSED "+functionalityName+" - "+functionality);
+				_cleanup();
+				return false;
+			}
+		}
 
-		// keep only meta data
-		var listDataModel:List<ClientDataModel> = listClients.map(function(clientData:ClientData){return clientData.toDataModel();});
-		
+		var meta = client.getMetaData("functionalities");
+		if (meta == null)
+		{
+			meta = [];	
+		}
+		meta.push(functionalityName);
+		client.setMetaData("functionalities", meta);
+		Log.trace("requestFunctionality "+client.clientData.metaData);
+
+			// dispatch a "new client" message
+			var message : Message = new Message(null, application.applicationData.id, null, "splity");
+			message.messageData.type = MessageData.TYPE_CLIENT_CREATED;
+			message.send();
+
 		// ends the process
 		_cleanup();
-		
-		if (listDataModel.length == 0){
-			throw("Error can not return empy list??");
+		return true;
+	}	
+	public function getFunctionalities():Array<FunctionalityData>
+	{
+		Log.trace("getFunctionalities ");
+		var clients = getClients();
+		for (client in clients)
+		{
+			Log.trace("getFunctionalities client "+client.metaData.functionalities);
+			if (client.metaData.functionalities != null){
+				Log.trace("getFunctionalities true");
+				for (functionality in functionalities)
+				{				
+					Log.trace("getFunctionalities functionality "+functionality);
+					if (Lambda.has(client.metaData.functionalities, functionality.name))
+					{
+						functionality.usage++;
+					}
+				}
+			}
 		}
-		return listDataModel;
+		Log.trace("getFunctionalities end ");
+		
+		return functionalities;
 	}	
 }

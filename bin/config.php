@@ -37,6 +37,21 @@ $config = '<xml>
 	 	<!-- total time after which a message is considered as useless in MS (milli seconds) -->
 	 	<messageTimeOut>4000</messageTimeOut>
 	</timeout>
+	<splity>
+	 	<functionalities>
+		 	<functionality>
+		 		<name>thumblist</name>
+		 		<maxUsage>1</maxUsage>
+		 	</functionality>
+		 	<functionality>
+		 		<name>remote</name>
+		 		<maxUsage>1</maxUsage>
+		 	</functionality>
+		 	<functionality>
+		 		<name>display</name>
+		 	</functionality>
+	 	</functionalities>
+	</splity>
 </xml>'
 
 ?>
