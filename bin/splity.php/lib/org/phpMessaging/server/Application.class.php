@@ -3,8 +3,8 @@
 class org_phpMessaging_server_Application {
 	public function __construct($name, $instanceName, $serverConfig) {
 		if(!php_Boot::$skip_constructor) {
-		$this->_serverConfig = $serverConfig;
-		org_phpMessaging_model_ApplicationData::$manager->cleanUpIdle($this->_serverConfig->applicaitonTimeOut);
+		$this->serverConfig = $serverConfig;
+		org_phpMessaging_model_ApplicationData::$manager->cleanUpIdle($serverConfig->applicaitonTimeOut);
 		$this->applicationData = org_phpMessaging_model_ApplicationData::$manager->search(_hx_anonymous(array("name" => $name, "instanceName" => $instanceName)), null)->first();
 		if($this->applicationData === null) {
 			$this->applicationData = new org_phpMessaging_model_ApplicationData();
@@ -14,7 +14,7 @@ class org_phpMessaging_server_Application {
 			$this->applicationData->lastActivity = Date::now();
 			$this->applicationData->insert();
 		}
-		org_phpMessaging_server_Client::cleanUpIdle($this->applicationData->id, $this->_serverConfig->clientTimeOut);
+		org_phpMessaging_server_Client::cleanUpIdle($this->applicationData->id, $serverConfig->clientTimeOut);
 	}}
 	public function getMetaData($name) {
 		if(_hx_field($this->applicationData, "metaData") === null) {
@@ -55,13 +55,13 @@ class org_phpMessaging_server_Application {
 	}
 	public function poll($client) {
 		$this->wakeUp();
-		org_phpMessaging_model_MessageData::$manager->cleanUpIdle($this->_serverConfig->messageTimeOut);
+		org_phpMessaging_model_MessageData::$manager->cleanUpIdle($this->serverConfig->messageTimeOut);
 		$message = null;
 		$startTime = Date::now();
 		$elapsedTimeMS = null;
 		do {
 			$client->wakeUp();
-			org_phpMessaging_server_Client::cleanUpIdle($this->applicationData->id, $this->_serverConfig->clientTimeOut);
+			org_phpMessaging_server_Client::cleanUpIdle($this->applicationData->id, $this->serverConfig->clientTimeOut);
 			$messageData = null;
 			$messageData = $client->getNextMessage();
 			if($messageData !== null) {
@@ -73,19 +73,19 @@ class org_phpMessaging_server_Application {
 				php_Session::close();
 			}
 			if($message === null) {
-				Sys::sleep($this->_serverConfig->longPollingSleepDuration / 1000);
+				Sys::sleep($this->serverConfig->longPollingSleepDuration / 1000);
 			}
 			if(!php_Session::$started) {
 				php_Session::start();
 			}
 			unset($messageData);
-		} while($message === null && $elapsedTimeMS < $this->_serverConfig->longPollingDuration);
+		} while($message === null && $elapsedTimeMS < $this->serverConfig->longPollingDuration);
 		return $message;
 	}
 	public function accept($clientIp, $params = null) {
 		return new org_phpMessaging_server_Client($this->applicationData->id, $params);
 	}
-	public $_serverConfig;
+	public $serverConfig;
 	public $applicationData;
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))

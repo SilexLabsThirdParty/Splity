@@ -55,6 +55,13 @@ class org_phpMessaging_server_Server {
 			return null;
 		}
 	}
+	public function unsubscribe() {
+		$this->_init(null, null, null);
+		$this->client->clientData->lastActivity = new Date(0, 0, 0, 0, 0, 0);
+		$this->client->clientData->update();
+		org_phpMessaging_server_Client::cleanUpIdle($this->application->applicationData->id, $this->application->serverConfig->clientTimeOut);
+		$this->_cleanup();
+	}
 	public function _cleanup() {
 		org_phpMessaging_server_database_DatabaseConnection::close();
 		if(php_Session::$started) {

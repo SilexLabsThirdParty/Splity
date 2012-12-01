@@ -33,7 +33,7 @@ class splity_server_Splity extends org_phpMessaging_server_Server {
 		splity_server_Log::trace("getFunctionalities end ");
 		return splity_server_Splity::$functionalities;
 	}
-	public function requestFunctionality($functionalityName) {
+	public function requestFunctionality($functionalityName, $metaData = null) {
 		$this->_init(null, null, null);
 		splity_server_Log::trace("requestFunctionality " . $functionalityName);
 		{
@@ -56,6 +56,8 @@ class splity_server_Splity extends org_phpMessaging_server_Server {
 		$meta->push($functionalityName);
 		$this->client->setMetaData("functionalities", $meta);
 		splity_server_Log::trace("requestFunctionality " . Std::string($this->client->clientData->metaData));
+		$message = new org_phpMessaging_server_Message(null, $this->application->applicationData->id, $metaData, "splity");
+		$message->send();
 		$this->_cleanup();
 		return true;
 	}
