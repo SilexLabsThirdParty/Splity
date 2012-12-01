@@ -62,3 +62,9 @@ SPLITY
 }
 
 
+lex to do
+- server local
+- functionalities server side
+- deconnect clients
+- web socket
+

@@ -17,6 +17,8 @@ import org.phpMessaging.model.ApplicationData;
 import js.Lib;
 import js.Dom;
 
+import splity.server.FunctionalityData;
+
 /**
  * this class is an example of use of the php-messaging library
  * it implement the client side of a very simple chat application
@@ -100,22 +102,26 @@ class Main
 	private function dispatch(e:Event) 
 	{
 		//trace("dispatch ");
-		connection.dispatch("I'm here! Number "+myId, null, function() { trace("dispatch result"); } );
+//		connection.dispatch("I'm here! Number "+myId, null, function() { trace("dispatch result"); } );
+
+	    var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(connection._serverUrl);
+	    cnx.setErrorHandler( onError );
+	    cnx.Server.requestFunctionality.call(["thumbs"], null);
 	}
 	private function pollClients() 
 	{
 	    var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(connection._serverUrl);
 	    cnx.setErrorHandler( onError );
-	    cnx.Server.getAllClients.call([], onGetClients);
+	    cnx.Server.getFunctionalities.call([], onGetFunctionalities);
 	}
-	function onGetClients(list:List<ClientDataModel>) 
-	{
-		trace("onGetClients "+list.length);
+	function onGetFunctionalities(functionalities:Array<FunctionalityData>) 
+	{ 
+		trace("onGetFunctionalities "+functionalities);
 
-        var t = new haxe.Template(template);
+/*        var t = new haxe.Template(template);
         var output = t.execute({ count : list.length, clients : list , myId : myId});
 		Lib.document.getElementById("template").innerHTML = output;
-
+*/
 		//pollApplications();
 	}
 /*	private function pollApplications() 
