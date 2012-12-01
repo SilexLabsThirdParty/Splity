@@ -31,6 +31,8 @@ class Splity extends Server
 		instanceName = "splity.test1";
 		name = "splity";
 		// add info to meta
+		if (metaData == null)
+			metaData = {};
 		metaData.instanceName=instanceName;
 		metaData.appName=name;
 		
