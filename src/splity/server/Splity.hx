@@ -50,7 +50,19 @@ class Splity extends Server
 	{
 		// start the process
 		_init();
-		Log.trace("requestFunctionality "+functionalityName+"- "+client);
+		Log.trace("requestFunctionality "+functionalityName);
+//		var functionalities = getFunctionalities();
+		for (functionality in functionalities)
+		{
+			if (functionality.name == functionalityName 
+				&& functionality.maxUsage != null
+				&& functionality.maxUsage <= functionality.usage)
+			{	
+				Log.trace("requestFunctionality REFUSED "+functionalityName+" - "+functionality);
+				_cleanup();
+				return false;
+			}
+		}
 
 		var meta = client.getMetaData("functionalities");
 		if (meta == null)

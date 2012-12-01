@@ -35,7 +35,20 @@ class splity_server_Splity extends org_phpMessaging_server_Server {
 	}
 	public function requestFunctionality($functionalityName) {
 		$this->_init(null, null, null);
-		splity_server_Log::trace("requestFunctionality " . $functionalityName . "- " . Std::string($this->client));
+		splity_server_Log::trace("requestFunctionality " . $functionalityName);
+		{
+			$_g = 0; $_g1 = splity_server_Splity::$functionalities;
+			while($_g < $_g1->length) {
+				$functionality = $_g1[$_g];
+				++$_g;
+				if($functionality->name === $functionalityName && $functionality->maxUsage !== null && $functionality->maxUsage <= $functionality->usage) {
+					splity_server_Log::trace("requestFunctionality REFUSED " . $functionalityName . " - " . Std::string($functionality));
+					$this->_cleanup();
+					return false;
+				}
+				unset($functionality);
+			}
+		}
 		$meta = $this->client->getMetaData("functionalities");
 		if($meta === null) {
 			$meta = new _hx_array(array());
