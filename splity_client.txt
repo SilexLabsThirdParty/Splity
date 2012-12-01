@@ -29,4 +29,26 @@ Gallery Splity
 - dans deconnect callback : 
 	- si desktop, check si doit récuperer fonctionnalité
 	
-	
+
+
+
+getFunctionalities()
+[
+	{
+		name
+		usage
+		maxUsage
+		clients
+		{
+			...
+		}
+	}
+]
+
+requestFunctionality(name)
+bool
+
+onStatus
+SPLITY
+{
+}
