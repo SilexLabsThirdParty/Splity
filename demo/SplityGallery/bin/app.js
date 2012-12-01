@@ -1043,6 +1043,121 @@ brix.component.group.Groupable.startGroupable = function(groupable,rootElement) 
 	}
 }
 brix.component.navigation = {}
+brix.component.navigation.ContextManager = function(rootElement,brixId) {
+	this.isDirty = false;
+	brix.component.ui.DisplayObject.call(this,rootElement,brixId);
+	if(rootElement.getAttribute("data-context-list") != null) this.allContexts = this.string2ContextList(rootElement.getAttribute("data-context-list")); else throw "Error: Context global component needs param " + "data-context-list";
+	if(rootElement.getAttribute("data-initial-context") != null) this.setCurrentContexts(this.string2ContextList(rootElement.getAttribute("data-initial-context"))); else this.setCurrentContexts(new Array());
+	rootElement.addEventListener("onLayerShowStart",$bind(this,this.onLayerShow),true);
+};
+$hxClasses["brix.component.navigation.ContextManager"] = brix.component.navigation.ContextManager;
+brix.component.navigation.ContextManager.__name__ = ["brix","component","navigation","ContextManager"];
+brix.component.navigation.ContextManager.styleSheet = null;
+brix.component.navigation.ContextManager.__super__ = brix.component.ui.DisplayObject;
+brix.component.navigation.ContextManager.prototype = $extend(brix.component.ui.DisplayObject.prototype,{
+	contextList2String: function(contextList) {
+		return contextList.concat(", ");
+	}
+	,cleanupContextValue: function(contextName) {
+		return StringTools.trim(contextName).toLowerCase();
+	}
+	,string2ContextList: function(string) {
+		var contextList = string.split(",");
+		var _g1 = 0, _g = contextList.length;
+		while(_g1 < _g) {
+			var idx = _g1++;
+			contextList[idx] = this.cleanupContextValue(contextList[idx]);
+		}
+		return contextList;
+	}
+	,refresh: function() {
+		haxe.Log.trace("refresh " + Std.string(this.currentContexts),{ fileName : "ContextManager.hx", lineNumber : 228, className : "brix.component.navigation.ContextManager", methodName : "refresh"});
+		if(brix.component.navigation.ContextManager.styleSheet != null) js.Lib.document.getElementsByTagName("head")[0].removeChild(brix.component.navigation.ContextManager.styleSheet);
+		var cssText = "";
+		var _g = 0, _g1 = this.allContexts;
+		while(_g < _g1.length) {
+			var context = _g1[_g];
+			++_g;
+			cssText += "." + context + " { display : none; visibility : hidden; } ";
+		}
+		var _g = 0, _g1 = this.currentContexts;
+		while(_g < _g1.length) {
+			var context = _g1[_g];
+			++_g;
+			cssText += "." + context + " { display : inline; visibility : visible; } ";
+		}
+		brix.component.navigation.ContextManager.styleSheet = brix.util.DomTools.addCssRules(cssText);
+		this.isDirty = false;
+	}
+	,isOutContext: function(element) {
+		if(element.className != null) {
+			var elementClasses = element.className.split(" ");
+			var _g = 0;
+			while(_g < elementClasses.length) {
+				var className = elementClasses[_g];
+				++_g;
+				className = this.cleanupContextValue(className);
+				if(this.isContext(className) && !this.hasContext(className)) return true;
+			}
+		}
+		return false;
+	}
+	,isInContext: function(element) {
+		if(element.className != null) {
+			var elementClasses = element.className.split(" ");
+			var _g = 0;
+			while(_g < elementClasses.length) {
+				var className = elementClasses[_g];
+				++_g;
+				className = this.cleanupContextValue(className);
+				if(this.isContext(className) && this.hasContext(className)) return true;
+			}
+		}
+		return false;
+	}
+	,isContext: function(context) {
+		return Lambda.has(this.allContexts,context);
+	}
+	,hasContext: function(context) {
+		return Lambda.has(this.currentContexts,context);
+	}
+	,removeContext: function(context) {
+		haxe.Log.trace("removeContext " + context,{ fileName : "ContextManager.hx", lineNumber : 147, className : "brix.component.navigation.ContextManager", methodName : "removeContext"});
+		if(!this.isContext(context)) throw "Error: unknown context \"" + context + "\". It should be defined in the \"" + "data-context-list" + "\" parameter of the Context component.";
+		if(this.hasContext(context)) {
+			HxOverrides.remove(this.currentContexts,context);
+			this.invalidate();
+		} else haxe.Log.trace("Warning: Could not remove the context \"" + context + "\" from the current context, because it is not in the currentContexts array.",{ fileName : "ContextManager.hx", lineNumber : 158, className : "brix.component.navigation.ContextManager", methodName : "removeContext"});
+	}
+	,addContext: function(context) {
+		haxe.Log.trace("addContext",{ fileName : "ContextManager.hx", lineNumber : 128, className : "brix.component.navigation.ContextManager", methodName : "addContext"});
+		if(!this.isContext(context)) throw "Error: unknown context \"" + context + "\". It should be defined in the \"" + "data-context-list" + "\" parameter of the Context component.";
+		if(!this.hasContext(context)) {
+			this.currentContexts.push(context);
+			this.invalidate();
+		} else haxe.Log.trace("Warning: Could not add the context \"" + context + "\" to the current context, because it is allready in the currentContexts array.",{ fileName : "ContextManager.hx", lineNumber : 139, className : "brix.component.navigation.ContextManager", methodName : "addContext"});
+	}
+	,setCurrentContexts: function(contextList) {
+		haxe.Log.trace("setCurrentContexts " + Std.string(contextList),{ fileName : "ContextManager.hx", lineNumber : 118, className : "brix.component.navigation.ContextManager", methodName : "setCurrentContexts"});
+		this.currentContexts = contextList;
+		this.invalidate();
+		return contextList;
+	}
+	,invalidate: function() {
+		haxe.Log.trace("invalidate " + Std.string(this.isDirty),{ fileName : "ContextManager.hx", lineNumber : 104, className : "brix.component.navigation.ContextManager", methodName : "invalidate"});
+		this.refresh();
+		this.isDirty = true;
+	}
+	,onLayerShow: function(e) {
+		haxe.Log.trace("onLayerShow ",{ fileName : "ContextManager.hx", lineNumber : 96, className : "brix.component.navigation.ContextManager", methodName : "onLayerShow"});
+		this.invalidate();
+	}
+	,isDirty: null
+	,currentContexts: null
+	,allContexts: null
+	,__class__: brix.component.navigation.ContextManager
+	,__properties__: {set_currentContexts:"setCurrentContexts"}
+});
 brix.component.navigation.LayerStatus = $hxClasses["brix.component.navigation.LayerStatus"] = { __ename__ : ["brix","component","navigation","LayerStatus"], __constructs__ : ["showTransition","hideTransition","visible","hidden","notInit"] }
 brix.component.navigation.LayerStatus.showTransition = ["showTransition",0];
 brix.component.navigation.LayerStatus.showTransition.toString = $estr;
@@ -1085,7 +1200,7 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 				element.pause();
 				element.currentTime = 0;
 			} catch( e ) {
-				haxe.Log.trace("Layer error: could not access audio or video element",{ fileName : "Layer.hx", lineNumber : 575, className : "brix.component.navigation.Layer", methodName : "cleanupVideoElements"});
+				haxe.Log.trace("Layer error: could not access audio or video element",{ fileName : "Layer.hx", lineNumber : 576, className : "brix.component.navigation.Layer", methodName : "cleanupVideoElements"});
 			}
 		}
 	}
@@ -1098,7 +1213,7 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 				element.pause();
 				element.currentTime = 0;
 			} catch( e ) {
-				haxe.Log.trace("Layer error: could not access audio or video element",{ fileName : "Layer.hx", lineNumber : 553, className : "brix.component.navigation.Layer", methodName : "cleanupAudioElements"});
+				haxe.Log.trace("Layer error: could not access audio or video element",{ fileName : "Layer.hx", lineNumber : 554, className : "brix.component.navigation.Layer", methodName : "cleanupAudioElements"});
 			}
 		}
 	}
@@ -1114,7 +1229,7 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 				}
 				element.muted = brix.component.sound.SoundOn.isMuted;
 			} catch( e ) {
-				haxe.Log.trace("Layer error: could not access audio or video element",{ fileName : "Layer.hx", lineNumber : 531, className : "brix.component.navigation.Layer", methodName : "setupVideoElements"});
+				haxe.Log.trace("Layer error: could not access audio or video element",{ fileName : "Layer.hx", lineNumber : 532, className : "brix.component.navigation.Layer", methodName : "setupVideoElements"});
 			}
 		}
 	}
@@ -1130,18 +1245,18 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 				}
 				element.muted = brix.component.sound.SoundOn.isMuted;
 			} catch( e ) {
-				haxe.Log.trace("Layer error: could not access audio or video element",{ fileName : "Layer.hx", lineNumber : 506, className : "brix.component.navigation.Layer", methodName : "setupAudioElements"});
+				haxe.Log.trace("Layer error: could not access audio or video element",{ fileName : "Layer.hx", lineNumber : 507, className : "brix.component.navigation.Layer", methodName : "setupAudioElements"});
 			}
 		}
 	}
 	,doHide: function(transitionData,transitionObserver,preventTransitions,e) {
-		haxe.Log.trace("doHide " + Std.string(preventTransitions),{ fileName : "Layer.hx", lineNumber : 432, className : "brix.component.navigation.Layer", methodName : "doHide"});
+		haxe.Log.trace("doHide " + Std.string(preventTransitions),{ fileName : "Layer.hx", lineNumber : 433, className : "brix.component.navigation.Layer", methodName : "doHide"});
 		if(e != null && e.target != this.rootElement) {
-			haxe.Log.trace("End transition event from another html element",{ fileName : "Layer.hx", lineNumber : 435, className : "brix.component.navigation.Layer", methodName : "doHide"});
+			haxe.Log.trace("End transition event from another html element",{ fileName : "Layer.hx", lineNumber : 436, className : "brix.component.navigation.Layer", methodName : "doHide"});
 			return;
 		}
 		if(preventTransitions == false && this.doHideCallback == null) {
-			haxe.Log.trace("Warning: end transition callback already called",{ fileName : "Layer.hx", lineNumber : 440, className : "brix.component.navigation.Layer", methodName : "doHide"});
+			haxe.Log.trace("Warning: end transition callback already called",{ fileName : "Layer.hx", lineNumber : 441, className : "brix.component.navigation.Layer", methodName : "doHide"});
 			return;
 		}
 		if(preventTransitions == false) {
@@ -1154,7 +1269,7 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 			event.initCustomEvent("onLayerHideStop",false,false,{ transitionData : transitionData, target : this.rootElement, layer : this});
 			this.rootElement.dispatchEvent(event);
 		} catch( e1 ) {
-			haxe.Log.trace("Error: could not dispatch event " + Std.string(e1),{ fileName : "Layer.hx", lineNumber : 465, className : "brix.component.navigation.Layer", methodName : "doHide"});
+			haxe.Log.trace("Error: could not dispatch event " + Std.string(e1),{ fileName : "Layer.hx", lineNumber : 466, className : "brix.component.navigation.Layer", methodName : "doHide"});
 		}
 		if(transitionObserver != null) transitionObserver.removeTransition(this);
 		while(this.rootElement.childNodes.length > 0) {
@@ -1167,11 +1282,11 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 	,hide: function(transitionData,transitionObserver,preventTransitions) {
 		if(preventTransitions == null) preventTransitions = false;
 		if(this.status == brix.component.navigation.LayerStatus.hideTransition) {
-			haxe.Log.trace("Warning: hide break previous transition hide",{ fileName : "Layer.hx", lineNumber : 370, className : "brix.component.navigation.Layer", methodName : "hide"});
+			haxe.Log.trace("Warning: hide break previous transition hide",{ fileName : "Layer.hx", lineNumber : 371, className : "brix.component.navigation.Layer", methodName : "hide"});
 			this.doHideCallback(null);
 			this.removeTransitionEvent(this.doHideCallback);
 		} else if(this.status == brix.component.navigation.LayerStatus.showTransition) {
-			haxe.Log.trace("Warning: hide break previous transition show",{ fileName : "Layer.hx", lineNumber : 377, className : "brix.component.navigation.Layer", methodName : "hide"});
+			haxe.Log.trace("Warning: hide break previous transition show",{ fileName : "Layer.hx", lineNumber : 378, className : "brix.component.navigation.Layer", methodName : "hide"});
 			this.doShowCallback(null);
 			this.removeTransitionEvent(this.doShowCallback);
 		}
@@ -1183,7 +1298,7 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 			event.initCustomEvent("onLayerHideStart",false,false,{ transitionData : transitionData, target : this.rootElement, layer : this});
 			this.rootElement.dispatchEvent(event);
 		} catch( e ) {
-			haxe.Log.trace("Error: could not dispatch event " + Std.string(e),{ fileName : "Layer.hx", lineNumber : 406, className : "brix.component.navigation.Layer", methodName : "hide"});
+			haxe.Log.trace("Error: could not dispatch event " + Std.string(e),{ fileName : "Layer.hx", lineNumber : 407, className : "brix.component.navigation.Layer", methodName : "hide"});
 		}
 		var audioNodes = this.rootElement.getElementsByTagName("audio");
 		this.cleanupAudioElements(audioNodes);
@@ -1197,18 +1312,18 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 			})($bind(this,this.doHide),transitionData,transitionObserver,preventTransitions);
 			this.startTransition(brix.component.navigation.transition.TransitionType.hide,transitionData,this.doHideCallback);
 		} else {
-			haxe.Log.trace("no transition",{ fileName : "Layer.hx", lineNumber : 423, className : "brix.component.navigation.Layer", methodName : "hide"});
+			haxe.Log.trace("no transition",{ fileName : "Layer.hx", lineNumber : 424, className : "brix.component.navigation.Layer", methodName : "hide"});
 			this.doHide(transitionData,transitionObserver,preventTransitions,null);
 		}
 	}
 	,doShow: function(transitionData,transitionObserver,preventTransitions,e) {
-		haxe.Log.trace("doShow",{ fileName : "Layer.hx", lineNumber : 316, className : "brix.component.navigation.Layer", methodName : "doShow"});
+		haxe.Log.trace("doShow",{ fileName : "Layer.hx", lineNumber : 317, className : "brix.component.navigation.Layer", methodName : "doShow"});
 		if(e != null && e.target != this.rootElement) {
-			haxe.Log.trace("End transition event from another html element",{ fileName : "Layer.hx", lineNumber : 318, className : "brix.component.navigation.Layer", methodName : "doShow"});
+			haxe.Log.trace("End transition event from another html element",{ fileName : "Layer.hx", lineNumber : 319, className : "brix.component.navigation.Layer", methodName : "doShow"});
 			return;
 		}
 		if(preventTransitions == false && this.doShowCallback == null) {
-			haxe.Log.trace("Warning: end transition callback already called",{ fileName : "Layer.hx", lineNumber : 322, className : "brix.component.navigation.Layer", methodName : "doShow"});
+			haxe.Log.trace("Warning: end transition callback already called",{ fileName : "Layer.hx", lineNumber : 323, className : "brix.component.navigation.Layer", methodName : "doShow"});
 			return;
 		}
 		if(preventTransitions == false) this.endTransition(brix.component.navigation.transition.TransitionType.show,transitionData,this.doShowCallback);
@@ -1223,7 +1338,7 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 			event.initCustomEvent("onLayerShowStop",false,false,{ transitionData : transitionData, target : this.rootElement, layer : this});
 			this.rootElement.dispatchEvent(event);
 		} catch( e1 ) {
-			haxe.Log.trace("Error: could not dispatch event " + Std.string(e1),{ fileName : "Layer.hx", lineNumber : 352, className : "brix.component.navigation.Layer", methodName : "doShow"});
+			haxe.Log.trace("Error: could not dispatch event " + Std.string(e1),{ fileName : "Layer.hx", lineNumber : 353, className : "brix.component.navigation.Layer", methodName : "doShow"});
 		}
 		if(transitionObserver != null) transitionObserver.removeTransition(this);
 	}
@@ -1263,7 +1378,8 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 			haxe.Log.trace("no trnasition",{ fileName : "Layer.hx", lineNumber : 305, className : "brix.component.navigation.Layer", methodName : "show"});
 			this.doShow(transitionData,transitionObserver,preventTransitions,null);
 		}
-		this.rootElement.style.display = null;
+		haxe.Log.trace("set display to null",{ fileName : "Layer.hx", lineNumber : 308, className : "brix.component.navigation.Layer", methodName : "show"});
+		this.rootElement.style.display = "block";
 	}
 	,removeTransitionEvent: function(onEndCallback) {
 		this.rootElement.removeEventListener("transitionend",onEndCallback,false);
@@ -1547,6 +1663,7 @@ brix.component.navigation.link.LinkBase.__interfaces__ = [brix.component.group.I
 brix.component.navigation.link.LinkBase.__super__ = brix.component.ui.DisplayObject;
 brix.component.navigation.link.LinkBase.prototype = $extend(brix.component.ui.DisplayObject.prototype,{
 	onClick: function(e) {
+		haxe.Log.trace("click on link",{ fileName : "LinkBase.hx", lineNumber : 119, className : "brix.component.navigation.link.LinkBase", methodName : "onClick"});
 		e.preventDefault();
 		this.transitionDataShow = brix.component.navigation.transition.TransitionTools.getTransitionData(this.rootElement,brix.component.navigation.transition.TransitionType.show);
 		this.transitionDataHide = brix.component.navigation.transition.TransitionTools.getTransitionData(this.rootElement,brix.component.navigation.transition.TransitionType.hide);
@@ -1580,6 +1697,7 @@ brix.component.navigation.link.LinkToPage.__super__ = brix.component.navigation.
 brix.component.navigation.link.LinkToPage.prototype = $extend(brix.component.navigation.link.LinkBase.prototype,{
 	onClick: function(e) {
 		brix.component.navigation.link.LinkBase.prototype.onClick.call(this,e);
+		haxe.Log.trace("link to page clicked",{ fileName : "LinkToPage.hx", lineNumber : 30, className : "brix.component.navigation.link.LinkToPage", methodName : "onClick"});
 		brix.component.navigation.Page.openPage(this.linkName,this.targetAttr == "_top",this.transitionDataShow,this.transitionDataHide,this.brixInstanceId,this.groupElement);
 	}
 	,__class__: brix.component.navigation.link.LinkToPage
@@ -2353,18 +2471,20 @@ $hxClasses["brix.core.ApplicationContext"] = brix.core.ApplicationContext;
 brix.core.ApplicationContext.__name__ = ["brix","core","ApplicationContext"];
 brix.core.ApplicationContext.prototype = {
 	registerComponentsforInit: function() {
-		brix.component.navigation.Page;
-		this.registeredUIComponents.push({ classname : "brix.component.navigation.Page", args : null});
-		brix.component.navigation.link.LinkClosePage;
-		this.registeredUIComponents.push({ classname : "brix.component.navigation.link.LinkClosePage", args : null});
-		brix.component.navigation.link.TouchLink;
-		this.registeredUIComponents.push({ classname : "brix.component.navigation.link.TouchLink", args : null});
 		brix.component.group.Group;
 		this.registeredUIComponents.push({ classname : "brix.component.group.Group", args : null});
-		brix.component.navigation.Layer;
-		this.registeredUIComponents.push({ classname : "brix.component.navigation.Layer", args : null});
+		brix.component.navigation.link.LinkClosePage;
+		this.registeredUIComponents.push({ classname : "brix.component.navigation.link.LinkClosePage", args : null});
 		brix.component.navigation.link.LinkToPage;
 		this.registeredUIComponents.push({ classname : "brix.component.navigation.link.LinkToPage", args : null});
+		brix.component.navigation.Layer;
+		this.registeredUIComponents.push({ classname : "brix.component.navigation.Layer", args : null});
+		brix.component.navigation.link.TouchLink;
+		this.registeredUIComponents.push({ classname : "brix.component.navigation.link.TouchLink", args : null});
+		brix.component.navigation.Page;
+		this.registeredUIComponents.push({ classname : "brix.component.navigation.Page", args : null});
+		components.GallerySplity;
+		this.registeredUIComponents.push({ classname : "components.GallerySplity", args : null});
 	}
 	,registeredGlobalComponents: null
 	,registeredUIComponents: null
@@ -2656,6 +2776,221 @@ brix.util.DomTools.isUndefined = function(value) {
 	var ret = "undefined" === typeof value;
 	return ret;
 }
+var components = {}
+components.GalleryMode = $hxClasses["components.GalleryMode"] = { __ename__ : ["components","GalleryMode"], __constructs__ : ["DESKTOP","TABLET","PHONE"] }
+components.GalleryMode.DESKTOP = ["DESKTOP",0];
+components.GalleryMode.DESKTOP.toString = $estr;
+components.GalleryMode.DESKTOP.__enum__ = components.GalleryMode;
+components.GalleryMode.TABLET = ["TABLET",1];
+components.GalleryMode.TABLET.toString = $estr;
+components.GalleryMode.TABLET.__enum__ = components.GalleryMode;
+components.GalleryMode.PHONE = ["PHONE",2];
+components.GalleryMode.PHONE.toString = $estr;
+components.GalleryMode.PHONE.__enum__ = components.GalleryMode;
+components.GallerySplity = function(rootElement,brixId) {
+	brix.component.ui.DisplayObject.call(this,rootElement,brixId);
+};
+$hxClasses["components.GallerySplity"] = components.GallerySplity;
+components.GallerySplity.__name__ = ["components","GallerySplity"];
+components.GallerySplity.__super__ = brix.component.ui.DisplayObject;
+components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.prototype,{
+	onStatus: function(messageData) {
+		switch(messageData.type) {
+		}
+	}
+	,onError: function(str) {
+		haxe.Log.trace(str,{ fileName : "GallerySplity.hx", lineNumber : 297, className : "components.GallerySplity", methodName : "onError"});
+	}
+	,onMetaDataSet: function(data) {
+		this.initApplication();
+	}
+	,onConnect: function() {
+		this._splityAPI.setClientMetaData(components.GallerySplity.ID_IDENT,this._id,$bind(this,this.onMetaDataSet),$bind(this,this.onError));
+	}
+	,listenToPageChange: function() {
+		js.Lib.document.body.addEventListener("pageOpenStart",$bind(this,this.onPageChange),false);
+	}
+	,changePage: function(name) {
+		this._remotePageChange = true;
+		brix.component.navigation.Page.openPage(name,false,null,null,null);
+	}
+	,getContextManger: function() {
+		var contextManagerNode = js.Lib.document.getElementById("contextManager");
+		var application = brix.core.Application.get(this.brixInstanceId);
+		return application.getAssociatedComponents(contextManagerNode,brix.component.navigation.ContextManager).first();
+	}
+	,removeFunctionnality: function(name) {
+		this.getContextManger().removeContext(name);
+	}
+	,addFunctionnality: function(name) {
+		this.getContextManger().addContext(name);
+	}
+	,onPhoneFunctionnality: function() {
+		this.removeFunctionnality(components.GallerySplity.THUMB_FUNCTIONNALITY);
+		this.addFunctionnality(components.GallerySplity.REMOTE_FUNCTIONNALITY);
+		this.addFunctionnality(components.GallerySplity.DISPLAY_FUNCTIONNALITY);
+	}
+	,setPhoneFunctionnalities: function(functionnalities) {
+		this._splityAPI.requestFunctionnality(components.GallerySplity.REMOTE_FUNCTIONNALITY,$bind(this,this.onPhoneFunctionnality),$bind(this,this.onError));
+	}
+	,onTabletFunctionnality: function() {
+		this.removeFunctionnality(components.GallerySplity.REMOTE_FUNCTIONNALITY);
+		this.addFunctionnality(components.GallerySplity.DISPLAY_FUNCTIONNALITY);
+		this.addFunctionnality(components.GallerySplity.THUMB_FUNCTIONNALITY);
+	}
+	,setTabletFunctionnalities: function(functionnalities) {
+		this._splityAPI.requestFunctionnality(components.GallerySplity.THUMB_FUNCTIONNALITY,$bind(this,this.onTabletFunctionnality),$bind(this,this.onError));
+	}
+	,setDesktopFunctionnalities: function(functionnalities) {
+		var $it0 = functionnalities.iterator();
+		while( $it0.hasNext() ) {
+			var functionnality = $it0.next();
+			if(functionnality.maxUsage == null) this.addFunctionnality(functionnality.name); else if(functionnality.usage < functionnality.maxUsage) this.addFunctionnality(functionnality.name); else this.removeFunctionnality(functionnality.name);
+		}
+	}
+	,onFunctionnalities: function(functionnalities) {
+		switch( (this._mode)[1] ) {
+		case 0:
+			this.setDesktopFunctionnalities(functionnalities);
+			break;
+		case 1:
+			this.setTabletFunctionnalities(functionnalities);
+			break;
+		case 2:
+			this.setPhoneFunctionnalities(functionnalities);
+			break;
+		}
+	}
+	,refreshFunctionnalities: function() {
+		this._splityAPI.getFunctionalities($bind(this,this.onFunctionnalities),$bind(this,this.onError));
+	}
+	,onPageChange: function(e) {
+		if(this._remotePageChange == false) this._splityAPI.dispatch(components.GallerySplity.CHANGE_PAGE,null,null);
+		this._remotePageChange = false;
+	}
+	,initApplication: function() {
+		this.refreshFunctionnalities();
+		this.listenToPageChange();
+	}
+	,initMode: function() {
+	}
+	,init: function() {
+		this._id = "" + Math.round(Math.random() * 1000);
+		this._remotePageChange = false;
+		this._splityAPI = new splity.client.SplityAPI();
+		this._splityAPI.connect(components.GallerySplity.SPLITY_URL,null,null,null);
+		this._splityAPI.subscribe($bind(this,this.onConnect),$bind(this,this.onError),$bind(this,this.onStatus));
+		this.initMode();
+	}
+	,_remotePageChange: null
+	,_splityAPI: null
+	,_mode: null
+	,_id: null
+	,__class__: components.GallerySplity
+});
+haxe.Http = function(url) {
+	this.url = url;
+	this.headers = new Hash();
+	this.params = new Hash();
+	this.async = true;
+};
+$hxClasses["haxe.Http"] = haxe.Http;
+haxe.Http.__name__ = ["haxe","Http"];
+haxe.Http.requestUrl = function(url) {
+	var h = new haxe.Http(url);
+	h.async = false;
+	var r = null;
+	h.onData = function(d) {
+		r = d;
+	};
+	h.onError = function(e) {
+		throw e;
+	};
+	h.request(false);
+	return r;
+}
+haxe.Http.prototype = {
+	onStatus: function(status) {
+	}
+	,onError: function(msg) {
+	}
+	,onData: function(data) {
+	}
+	,request: function(post) {
+		var me = this;
+		var r = new js.XMLHttpRequest();
+		var onreadystatechange = function() {
+			if(r.readyState != 4) return;
+			var s = (function($this) {
+				var $r;
+				try {
+					$r = r.status;
+				} catch( e ) {
+					$r = null;
+				}
+				return $r;
+			}(this));
+			if(s == undefined) s = null;
+			if(s != null) me.onStatus(s);
+			if(s != null && s >= 200 && s < 400) me.onData(r.responseText); else switch(s) {
+			case null: case undefined:
+				me.onError("Failed to connect or resolve host");
+				break;
+			case 12029:
+				me.onError("Failed to connect to host");
+				break;
+			case 12007:
+				me.onError("Unknown host");
+				break;
+			default:
+				me.onError("Http Error #" + r.status);
+			}
+		};
+		if(this.async) r.onreadystatechange = onreadystatechange;
+		var uri = this.postData;
+		if(uri != null) post = true; else {
+			var $it0 = this.params.keys();
+			while( $it0.hasNext() ) {
+				var p = $it0.next();
+				if(uri == null) uri = ""; else uri += "&";
+				uri += StringTools.urlEncode(p) + "=" + StringTools.urlEncode(this.params.get(p));
+			}
+		}
+		try {
+			if(post) r.open("POST",this.url,this.async); else if(uri != null) {
+				var question = this.url.split("?").length <= 1;
+				r.open("GET",this.url + (question?"?":"&") + uri,this.async);
+				uri = null;
+			} else r.open("GET",this.url,this.async);
+		} catch( e ) {
+			this.onError(e.toString());
+			return;
+		}
+		if(this.headers.get("Content-Type") == null && post && this.postData == null) r.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+		var $it1 = this.headers.keys();
+		while( $it1.hasNext() ) {
+			var h = $it1.next();
+			r.setRequestHeader(h,this.headers.get(h));
+		}
+		r.send(uri);
+		if(!this.async) onreadystatechange();
+	}
+	,setPostData: function(data) {
+		this.postData = data;
+	}
+	,setParameter: function(param,value) {
+		this.params.set(param,value);
+	}
+	,setHeader: function(header,value) {
+		this.headers.set(header,value);
+	}
+	,params: null
+	,headers: null
+	,postData: null
+	,async: null
+	,url: null
+	,__class__: haxe.Http
+}
 haxe.Log = function() { }
 $hxClasses["haxe.Log"] = haxe.Log;
 haxe.Log.__name__ = ["haxe","Log"];
@@ -2664,6 +2999,251 @@ haxe.Log.trace = function(v,infos) {
 }
 haxe.Log.clear = function() {
 	js.Boot.__clear_trace();
+}
+haxe.Serializer = function() {
+	this.buf = new StringBuf();
+	this.cache = new Array();
+	this.useCache = haxe.Serializer.USE_CACHE;
+	this.useEnumIndex = haxe.Serializer.USE_ENUM_INDEX;
+	this.shash = new Hash();
+	this.scount = 0;
+};
+$hxClasses["haxe.Serializer"] = haxe.Serializer;
+haxe.Serializer.__name__ = ["haxe","Serializer"];
+haxe.Serializer.run = function(v) {
+	var s = new haxe.Serializer();
+	s.serialize(v);
+	return s.toString();
+}
+haxe.Serializer.prototype = {
+	serializeException: function(e) {
+		this.buf.b += Std.string("x");
+		this.serialize(e);
+	}
+	,serialize: function(v) {
+		var $e = (Type["typeof"](v));
+		switch( $e[1] ) {
+		case 0:
+			this.buf.b += Std.string("n");
+			break;
+		case 1:
+			if(v == 0) {
+				this.buf.b += Std.string("z");
+				return;
+			}
+			this.buf.b += Std.string("i");
+			this.buf.b += Std.string(v);
+			break;
+		case 2:
+			if(Math.isNaN(v)) this.buf.b += Std.string("k"); else if(!Math.isFinite(v)) this.buf.b += Std.string(v < 0?"m":"p"); else {
+				this.buf.b += Std.string("d");
+				this.buf.b += Std.string(v);
+			}
+			break;
+		case 3:
+			this.buf.b += Std.string(v?"t":"f");
+			break;
+		case 6:
+			var c = $e[2];
+			if(c == String) {
+				this.serializeString(v);
+				return;
+			}
+			if(this.useCache && this.serializeRef(v)) return;
+			switch(c) {
+			case Array:
+				var ucount = 0;
+				this.buf.b += Std.string("a");
+				var l = v.length;
+				var _g = 0;
+				while(_g < l) {
+					var i = _g++;
+					if(v[i] == null) ucount++; else {
+						if(ucount > 0) {
+							if(ucount == 1) this.buf.b += Std.string("n"); else {
+								this.buf.b += Std.string("u");
+								this.buf.b += Std.string(ucount);
+							}
+							ucount = 0;
+						}
+						this.serialize(v[i]);
+					}
+				}
+				if(ucount > 0) {
+					if(ucount == 1) this.buf.b += Std.string("n"); else {
+						this.buf.b += Std.string("u");
+						this.buf.b += Std.string(ucount);
+					}
+				}
+				this.buf.b += Std.string("h");
+				break;
+			case List:
+				this.buf.b += Std.string("l");
+				var v1 = v;
+				var $it0 = v1.iterator();
+				while( $it0.hasNext() ) {
+					var i = $it0.next();
+					this.serialize(i);
+				}
+				this.buf.b += Std.string("h");
+				break;
+			case Date:
+				var d = v;
+				this.buf.b += Std.string("v");
+				this.buf.b += Std.string(HxOverrides.dateStr(d));
+				break;
+			case Hash:
+				this.buf.b += Std.string("b");
+				var v1 = v;
+				var $it1 = v1.keys();
+				while( $it1.hasNext() ) {
+					var k = $it1.next();
+					this.serializeString(k);
+					this.serialize(v1.get(k));
+				}
+				this.buf.b += Std.string("h");
+				break;
+			case IntHash:
+				this.buf.b += Std.string("q");
+				var v1 = v;
+				var $it2 = v1.keys();
+				while( $it2.hasNext() ) {
+					var k = $it2.next();
+					this.buf.b += Std.string(":");
+					this.buf.b += Std.string(k);
+					this.serialize(v1.get(k));
+				}
+				this.buf.b += Std.string("h");
+				break;
+			case haxe.io.Bytes:
+				var v1 = v;
+				var i = 0;
+				var max = v1.length - 2;
+				var charsBuf = new StringBuf();
+				var b64 = haxe.Serializer.BASE64;
+				while(i < max) {
+					var b1 = v1.b[i++];
+					var b2 = v1.b[i++];
+					var b3 = v1.b[i++];
+					charsBuf.b += Std.string(b64.charAt(b1 >> 2));
+					charsBuf.b += Std.string(b64.charAt((b1 << 4 | b2 >> 4) & 63));
+					charsBuf.b += Std.string(b64.charAt((b2 << 2 | b3 >> 6) & 63));
+					charsBuf.b += Std.string(b64.charAt(b3 & 63));
+				}
+				if(i == max) {
+					var b1 = v1.b[i++];
+					var b2 = v1.b[i++];
+					charsBuf.b += Std.string(b64.charAt(b1 >> 2));
+					charsBuf.b += Std.string(b64.charAt((b1 << 4 | b2 >> 4) & 63));
+					charsBuf.b += Std.string(b64.charAt(b2 << 2 & 63));
+				} else if(i == max + 1) {
+					var b1 = v1.b[i++];
+					charsBuf.b += Std.string(b64.charAt(b1 >> 2));
+					charsBuf.b += Std.string(b64.charAt(b1 << 4 & 63));
+				}
+				var chars = charsBuf.b;
+				this.buf.b += Std.string("s");
+				this.buf.b += Std.string(chars.length);
+				this.buf.b += Std.string(":");
+				this.buf.b += Std.string(chars);
+				break;
+			default:
+				this.cache.pop();
+				if(v.hxSerialize != null) {
+					this.buf.b += Std.string("C");
+					this.serializeString(Type.getClassName(c));
+					this.cache.push(v);
+					v.hxSerialize(this);
+					this.buf.b += Std.string("g");
+				} else {
+					this.buf.b += Std.string("c");
+					this.serializeString(Type.getClassName(c));
+					this.cache.push(v);
+					this.serializeFields(v);
+				}
+			}
+			break;
+		case 4:
+			if(this.useCache && this.serializeRef(v)) return;
+			this.buf.b += Std.string("o");
+			this.serializeFields(v);
+			break;
+		case 7:
+			var e = $e[2];
+			if(this.useCache && this.serializeRef(v)) return;
+			this.cache.pop();
+			this.buf.b += Std.string(this.useEnumIndex?"j":"w");
+			this.serializeString(Type.getEnumName(e));
+			if(this.useEnumIndex) {
+				this.buf.b += Std.string(":");
+				this.buf.b += Std.string(v[1]);
+			} else this.serializeString(v[0]);
+			this.buf.b += Std.string(":");
+			var l = v.length;
+			this.buf.b += Std.string(l - 2);
+			var _g = 2;
+			while(_g < l) {
+				var i = _g++;
+				this.serialize(v[i]);
+			}
+			this.cache.push(v);
+			break;
+		case 5:
+			throw "Cannot serialize function";
+			break;
+		default:
+			throw "Cannot serialize " + Std.string(v);
+		}
+	}
+	,serializeFields: function(v) {
+		var _g = 0, _g1 = Reflect.fields(v);
+		while(_g < _g1.length) {
+			var f = _g1[_g];
+			++_g;
+			this.serializeString(f);
+			this.serialize(Reflect.field(v,f));
+		}
+		this.buf.b += Std.string("g");
+	}
+	,serializeRef: function(v) {
+		var vt = typeof(v);
+		var _g1 = 0, _g = this.cache.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var ci = this.cache[i];
+			if(typeof(ci) == vt && ci == v) {
+				this.buf.b += Std.string("r");
+				this.buf.b += Std.string(i);
+				return true;
+			}
+		}
+		this.cache.push(v);
+		return false;
+	}
+	,serializeString: function(s) {
+		var x = this.shash.get(s);
+		if(x != null) {
+			this.buf.b += Std.string("R");
+			this.buf.b += Std.string(x);
+			return;
+		}
+		this.shash.set(s,this.scount++);
+		this.buf.b += Std.string("y");
+		s = StringTools.urlEncode(s);
+		this.buf.b += Std.string(s.length);
+		this.buf.b += Std.string(":");
+		this.buf.b += Std.string(s);
+	}
+	,toString: function() {
+		return this.buf.b;
+	}
+	,useEnumIndex: null
+	,useCache: null
+	,scount: null
+	,shash: null
+	,cache: null
+	,buf: null
+	,__class__: haxe.Serializer
 }
 haxe.StackItem = $hxClasses["haxe.StackItem"] = { __ename__ : ["haxe","StackItem"], __constructs__ : ["CFunction","Module","FilePos","Method","Lambda"] }
 haxe.StackItem.CFunction = ["CFunction",0];
@@ -3330,6 +3910,66 @@ haxe.io.Error.OutsideBounds = ["OutsideBounds",2];
 haxe.io.Error.OutsideBounds.toString = $estr;
 haxe.io.Error.OutsideBounds.__enum__ = haxe.io.Error;
 haxe.io.Error.Custom = function(e) { var $x = ["Custom",3,e]; $x.__enum__ = haxe.io.Error; $x.toString = $estr; return $x; }
+haxe.remoting = {}
+haxe.remoting.AsyncConnection = function() { }
+$hxClasses["haxe.remoting.AsyncConnection"] = haxe.remoting.AsyncConnection;
+haxe.remoting.AsyncConnection.__name__ = ["haxe","remoting","AsyncConnection"];
+haxe.remoting.AsyncConnection.prototype = {
+	setErrorHandler: null
+	,call: null
+	,resolve: null
+	,__class__: haxe.remoting.AsyncConnection
+}
+haxe.remoting.HttpAsyncConnection = function(data,path) {
+	this.__data = data;
+	this.__path = path;
+};
+$hxClasses["haxe.remoting.HttpAsyncConnection"] = haxe.remoting.HttpAsyncConnection;
+haxe.remoting.HttpAsyncConnection.__name__ = ["haxe","remoting","HttpAsyncConnection"];
+haxe.remoting.HttpAsyncConnection.__interfaces__ = [haxe.remoting.AsyncConnection];
+haxe.remoting.HttpAsyncConnection.urlConnect = function(url) {
+	return new haxe.remoting.HttpAsyncConnection({ url : url, error : function(e) {
+		throw e;
+	}},[]);
+}
+haxe.remoting.HttpAsyncConnection.prototype = {
+	call: function(params,onResult) {
+		var h = new haxe.Http(this.__data.url);
+		var s = new haxe.Serializer();
+		s.serialize(this.__path);
+		s.serialize(params);
+		h.setHeader("X-Haxe-Remoting","1");
+		h.setParameter("__x",s.toString());
+		var error = this.__data.error;
+		h.onData = function(response) {
+			var ok = true;
+			var ret;
+			try {
+				if(HxOverrides.substr(response,0,3) != "hxr") throw "Invalid response : '" + response + "'";
+				var s1 = new haxe.Unserializer(HxOverrides.substr(response,3,null));
+				ret = s1.unserialize();
+			} catch( err ) {
+				ret = null;
+				ok = false;
+				error(err);
+			}
+			if(ok && onResult != null) onResult(ret);
+		};
+		h.onError = error;
+		h.request(true);
+	}
+	,setErrorHandler: function(h) {
+		this.__data.error = h;
+	}
+	,resolve: function(name) {
+		var c = new haxe.remoting.HttpAsyncConnection(this.__data,this.__path.slice());
+		c.__path.push(name);
+		return c;
+	}
+	,__path: null
+	,__data: null
+	,__class__: haxe.remoting.HttpAsyncConnection
+}
 haxe.rtti = {}
 haxe.rtti.Meta = function() { }
 $hxClasses["haxe.rtti.Meta"] = haxe.rtti.Meta;
@@ -3500,6 +4140,142 @@ js.Lib["eval"] = function(code) {
 js.Lib.setErrorHandler = function(f) {
 	js.Lib.onerror = f;
 }
+var org = {}
+org.phpMessaging = {}
+org.phpMessaging.client = {}
+org.phpMessaging.client.Connection = function() {
+};
+$hxClasses["org.phpMessaging.client.Connection"] = org.phpMessaging.client.Connection;
+org.phpMessaging.client.Connection.__name__ = ["org","phpMessaging","client","Connection"];
+org.phpMessaging.client.Connection.prototype = {
+	getClients: function(successCallback,errorCallback,clientIDs) {
+		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this._serverUrl);
+		cnx.setErrorHandler(errorCallback);
+		cnx.resolve("Server").resolve("getClients").call([clientIDs],successCallback);
+	}
+	,getApplicationMetaData: function(name,successCallback,errorCallback) {
+		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this._serverUrl);
+		cnx.setErrorHandler(errorCallback);
+		cnx.resolve("Server").resolve("getApplicationMetaData").call([name],successCallback);
+	}
+	,setApplicationMetaData: function(name,value,successCallback,errorCallback) {
+		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this._serverUrl);
+		cnx.setErrorHandler(errorCallback);
+		cnx.resolve("Server").resolve("setApplicationMetaData").call([name,value],successCallback);
+	}
+	,getClientMetaData: function(name,successCallback,errorCallback) {
+		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this._serverUrl);
+		cnx.setErrorHandler(errorCallback);
+		cnx.resolve("Server").resolve("getClientMetaData").call([name],successCallback);
+	}
+	,setClientMetaData: function(name,value,successCallback,errorCallback) {
+		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this._serverUrl);
+		cnx.setErrorHandler(errorCallback);
+		cnx.resolve("Server").resolve("setClientMetaData").call([name,value],successCallback);
+	}
+	,dispatch: function(params,idClients,callbackResult) {
+		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this._serverUrl);
+		cnx.setErrorHandler($bind(this,this._pollError));
+		cnx.resolve("Server").resolve("dispatch").call([params,idClients,"TYPE_CLIENT_DISPATCH"],callbackResult);
+	}
+	,callMethod: function(methodName,params,callbackResult) {
+		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this._serverUrl);
+		cnx.setErrorHandler($bind(this,this._pollError));
+		Reflect.field(cnx.resolve("Server"),methodName).call(params,callbackResult);
+	}
+	,_pollCallback: function(messageData) {
+		if(this._pollSuccessCallback != null) {
+			this._pollSuccessCallback();
+			this._pollSuccessCallback = null;
+		}
+		if(messageData != null) {
+			if(this._pollStatusCallback != null) this._pollStatusCallback(messageData);
+		}
+		haxe.Timer.delay($bind(this,this._poll),1);
+	}
+	,_pollError: function(str) {
+		if(this._pollErrorCallback != null) this._pollErrorCallback(str); else haxe.Log.trace(str,{ fileName : "Connection.hx", lineNumber : 109, className : "org.phpMessaging.client.Connection", methodName : "_pollError"});
+	}
+	,_poll: function() {
+		haxe.Log.trace("_poll ",{ fileName : "Connection.hx", lineNumber : 99, className : "org.phpMessaging.client.Connection", methodName : "_poll"});
+		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this._serverUrl);
+		cnx.setErrorHandler($bind(this,this._pollError));
+		cnx.resolve("Server").resolve("poll").call([this._applicationName,this._instanceName,this._params],$bind(this,this._pollCallback));
+	}
+	,subscribe: function(successCallback,errorCallback,statusCallback) {
+		this._pollSuccessCallback = successCallback;
+		this._pollErrorCallback = errorCallback;
+		this._pollStatusCallback = statusCallback;
+		haxe.Timer.delay($bind(this,this._poll),1);
+	}
+	,connect: function(serverUrl,applicationName,instanceName,params) {
+		this._applicationName = applicationName;
+		this._instanceName = instanceName;
+		this._params = params;
+		this._serverUrl = serverUrl;
+	}
+	,_pollStatusCallback: null
+	,_pollErrorCallback: null
+	,_pollSuccessCallback: null
+	,_params: null
+	,_serverUrl: null
+	,_instanceName: null
+	,_applicationName: null
+	,clientData: null
+	,__class__: org.phpMessaging.client.Connection
+}
+org.phpMessaging.model = {}
+org.phpMessaging.model.ClientData = function() { }
+$hxClasses["org.phpMessaging.model.ClientData"] = org.phpMessaging.model.ClientData;
+org.phpMessaging.model.ClientData.__name__ = ["org","phpMessaging","model","ClientData"];
+org.phpMessaging.model.ClientData.prototype = {
+	metaData: null
+	,lastActivity: null
+	,time: null
+	,applicationId: null
+	,id: null
+	,fromDataModel: function(dataModel) {
+		this.id = dataModel.id;
+		this.applicationId = dataModel.applicationId;
+		this.time = dataModel.time;
+		this.lastActivity = dataModel.lastActivity;
+		this.metaData = dataModel.metaData;
+	}
+	,toDataModel: function() {
+		return { id : this.id, applicationId : this.applicationId, time : this.time, lastActivity : this.lastActivity, metaData : this.metaData};
+	}
+	,__class__: org.phpMessaging.model.ClientData
+}
+org.phpMessaging.model.MessageData = function() { }
+$hxClasses["org.phpMessaging.model.MessageData"] = org.phpMessaging.model.MessageData;
+org.phpMessaging.model.MessageData.__name__ = ["org","phpMessaging","model","MessageData"];
+org.phpMessaging.model.MessageData.prototype = {
+	metaData: null
+	,time: null
+	,applicationId: null
+	,clientId: null
+	,type: null
+	,id: null
+	,toDataModel: function() {
+		return { id : this.id, type : this.type, clientId : this.clientId, applicationId : this.applicationId, time : this.time, metaData : this.metaData};
+	}
+	,__class__: org.phpMessaging.model.MessageData
+}
+var splity = {}
+splity.client = {}
+splity.client.SplityAPI = function() {
+	org.phpMessaging.client.Connection.call(this);
+};
+$hxClasses["splity.client.SplityAPI"] = splity.client.SplityAPI;
+splity.client.SplityAPI.__name__ = ["splity","client","SplityAPI"];
+splity.client.SplityAPI.__super__ = org.phpMessaging.client.Connection;
+splity.client.SplityAPI.prototype = $extend(org.phpMessaging.client.Connection.prototype,{
+	requestFunctionnality: function(name,onSuccess,onError) {
+	}
+	,getFunctionalities: function(onSuccess,onError) {
+	}
+	,__class__: splity.client.SplityAPI
+});
 function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; };
 var $_;
 function $bind(o,m) { var f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; return f; };
@@ -3544,8 +4320,25 @@ if(typeof window != "undefined") {
 		return f(msg,[url + ":" + line]);
 	};
 }
+js.XMLHttpRequest = window.XMLHttpRequest?XMLHttpRequest:window.ActiveXObject?function() {
+	try {
+		return new ActiveXObject("Msxml2.XMLHTTP");
+	} catch( e ) {
+		try {
+			return new ActiveXObject("Microsoft.XMLHTTP");
+		} catch( e1 ) {
+			throw "Unable to create XMLHttpRequest object.";
+		}
+	}
+}:(function($this) {
+	var $r;
+	throw "Unable to create XMLHttpRequest object.";
+	return $r;
+}(this));
 brix.component.group.Group.GROUP_ID_ATTR = "data-group-id";
 brix.component.group.Group.GROUP_SEQ = 0;
+brix.component.navigation.ContextManager.PARAM_DATA_CONTEXT_LIST = "data-context-list";
+brix.component.navigation.ContextManager.PARAM_DATA_INITIAL_CONTEXT = "data-initial-context";
 brix.component.navigation.Layer.EVENT_TYPE_SHOW_START = "onLayerShowStart";
 brix.component.navigation.Layer.EVENT_TYPE_HIDE_START = "onLayerHideStart";
 brix.component.navigation.Layer.EVENT_TYPE_SHOW_STOP = "onLayerShowStop";
@@ -3589,7 +4382,7 @@ brix.core.Application.instances = new Hash();
 haxe.Unserializer.DEFAULT_RESOLVER = Type;
 haxe.Unserializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";
 haxe.Unserializer.CODES = null;
-brix.core.ApplicationContext.htmlDocumentElement = haxe.Unserializer.run("y4919:%3CHTML%3E%0D%0A%3CHEAD%3E%0D%0A%09%3CTITLE%3ESplity%20Gallery%3C%2FTITLE%3E%0D%0A%09%3CLINK%20href%3D%22app.css%22%20type%3D%22text%2Fcss%22%20rel%3D%22stylesheet%22%3E%3C%2FLINK%3E%0D%0A%09%3CMETA%20http-equiv%3D%22Content-Type%22%20content%3D%22text%2Fhtml%3B%20charset%3DUTF-8%22%3E%3C%2FMETA%3E%20%0D%0A%09%3CMETA%20name%3D%22viewport%22%20content%3D%22width%3Ddevice-width%2Cinitial-scale%3D1.0%2Cminimum-scale%3D1.0%2Cmaximum-scale%3D1.0%2Cuser-scalable%3Dno%22%3E%3C%2FMETA%3E%0D%0A%09%3CMETA%20name%3D%22initialPageName%22%20content%3D%22page01%22%3E%3C%2FMETA%3E%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%3C%2FHEAD%3E%0D%0A%0D%0A%3CBODY%3E%0D%0A%09%3CDIV%20class%3D%22pages-container%22%3E%0D%0A%09%09%0D%0A%09%0D%0A%09%09%3CA%20class%3D%22Page%22%20name%3D%22page01%22%3E%3C%2FA%3E%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group1%20Layer%20page01%22%3E%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22big-img%22%20style%3D%22background-image%3Aurl%28assets%2Fimage01.jpg%29%3B%22%3E%3C%2FDIV%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group2%20Layer%20page01%22%3E%0D%0A%09%09%09%0D%0A%09%09%09%3CA%20href%3D%22%23page02%22%20class%3D%22LinkToPage%20TouchLink%20right-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-left%22%20data-group-id%3D%22Group2%22%20data-show-start-style%3D%22page-right%22%20data-touch-type%3D%22right%22%3E%0D%0A%09%09%09%3C%2FA%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group3%20Layer%20page01%22%20data-show-end-style%3D%22popup-visible%22%20data-show-start-style%3D%22popup-invisible%22%3E%0D%0A%09%09%09%3CDIV%20class%3D%22right-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%0D%0A%09%0D%0A%0D%0A%09%09%0D%0A%09%09%3CA%20class%3D%22Page%22%20name%3D%22page02%22%3E%3C%2FA%3E%0D%0A%09%09%3CDIV%20class%3D%22Group4%20Layer%20page02%22%3E%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22big-img%22%20style%3D%22background-image%3Aurl%28assets%2Fimage02.jpg%29%3B%22%3E%3C%2FDIV%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group5%20Layer%20page02%22%3E%0D%0A%09%09%09%0D%0A%09%09%09%3CA%20href%3D%22%23page02nav%22%20class%3D%22LinkToPage%20nav-open%22%20target%3D%22_top%22%20data-group-id%3D%22Group5%22%3E%3C%2FA%3E%0D%0A%09%09%09%3CA%20href%3D%22%23page01%22%20class%3D%22LinkToPage%20TouchLink%20left-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-right%22%20data-group-id%3D%22Group5%22%20data-show-start-style%3D%22page-left%22%20data-touch-type%3D%22left%22%3E%0D%0A%09%09%09%3C%2FA%3E%0D%0A%09%09%09%3CA%20href%3D%22%23page03%22%20class%3D%22LinkToPage%20TouchLink%20right-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-left%22%20data-group-id%3D%22Group5%22%20data-show-start-style%3D%22page-right%22%20data-touch-type%3D%22right%22%3E%0D%0A%09%09%09%3C%2FA%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group6%20Layer%20page02%22%20data-show-end-style%3D%22popup-visible%22%20data-show-start-style%3D%22popup-invisible%22%3E%0D%0A%09%09%09%3CDIV%20class%3D%22left-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%09%0D%0A%09%09%09%3CDIV%20class%3D%22right-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%0D%0A%09%09%0D%0A%09%0D%0A%0D%0A%09%09%0D%0A%09%09%3CA%20class%3D%22Page%22%20name%3D%22page03%22%3E%3C%2FA%3E%0D%0A%09%09%3CDIV%20class%3D%22Group7%20Layer%20page03%22%3E%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22big-img%22%20style%3D%22background-image%3Aurl%28assets%2Fimage03.jpg%29%3B%22%3E%3C%2FDIV%3E%0D%0A%09%09%3C%2FDIV%3E%09%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group8%20Layer%20page03%22%3E%0D%0A%09%09%09%0D%0A%09%09%09%3CA%20href%3D%22%23page03nav%22%20class%3D%22LinkToPage%20nav-open%22%20target%3D%22_top%22%20data-group-id%3D%22Group8%22%3E%3C%2FA%3E%0D%0A%09%09%09%3CA%20href%3D%22%23page02%22%20class%3D%22LinkToPage%20TouchLink%20left-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-right%22%20data-group-id%3D%22Group8%22%20data-show-start-style%3D%22page-left%22%20data-touch-type%3D%22left%22%3E%0D%0A%09%09%09%3C%2FA%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group9%20Layer%20page03%22%20data-show-end-style%3D%22popup-visible%22%20data-show-start-style%3D%22popup-invisible%22%3E%0D%0A%09%09%09%3CDIV%20class%3D%22left-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%09%0D%0A%09%09%3C%2FDIV%3E%0D%0A%0D%0A%09%3C%2FDIV%3E%0D%0A%3C%2FBODY%3E%3C%2FHTML%3E");
+brix.core.ApplicationContext.htmlDocumentElement = haxe.Unserializer.run("y4988:%3CHTML%3E%0D%0A%3CHEAD%3E%0D%0A%09%3CTITLE%3ESplity%20Gallery%3C%2FTITLE%3E%0D%0A%09%3CLINK%20href%3D%22app.css%22%20type%3D%22text%2Fcss%22%20rel%3D%22stylesheet%22%3E%3C%2FLINK%3E%0D%0A%09%3CMETA%20http-equiv%3D%22Content-Type%22%20content%3D%22text%2Fhtml%3B%20charset%3DUTF-8%22%3E%3C%2FMETA%3E%20%0D%0A%09%3CMETA%20name%3D%22viewport%22%20content%3D%22width%3Ddevice-width%2Cinitial-scale%3D1.0%2Cminimum-scale%3D1.0%2Cmaximum-scale%3D1.0%2Cuser-scalable%3Dno%22%3E%3C%2FMETA%3E%0D%0A%09%3CMETA%20name%3D%22initialPageName%22%20content%3D%22page01%22%3E%3C%2FMETA%3E%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%3C%2FHEAD%3E%0D%0A%0D%0A%3CBODY%3E%0D%0A%09%3CDIV%20class%3D%22GallerySplity%22%3E%3C%2FDIV%3E%0D%0A%09%3CDIV%20class%3D%22pages-container%22%3E%0D%0A%09%09%0D%0A%09%0D%0A%09%09%3CA%20class%3D%22Page%22%20name%3D%22page01%22%3E%3C%2FA%3E%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group1%20Layer%20page01%22%3E%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22big-img%22%20style%3D%22background-image%3Aurl%28assets%2Fimage01.jpg%29%3B%22%3E%3C%2FDIV%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group2%20Layer%20page01%22%3E%0D%0A%09%09%09%0D%0A%09%09%09%3CA%20href%3D%22%23page02%22%20class%3D%22LinkToPage%20TouchLink%20right-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-left%22%20data-group-id%3D%22Group2%22%20data-show-start-style%3D%22page-right%22%20data-touch-type%3D%22right%22%3E%0D%0A%09%09%09%3C%2FA%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group3%20Layer%20page01%22%20data-show-end-style%3D%22popup-visible%22%20data-show-start-style%3D%22popup-invisible%22%3E%0D%0A%09%09%09%3CDIV%20class%3D%22right-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%0D%0A%09%0D%0A%0D%0A%09%09%0D%0A%09%09%3CA%20class%3D%22Page%22%20name%3D%22page02%22%3E%3C%2FA%3E%0D%0A%09%09%3CDIV%20class%3D%22Group4%20Layer%20page02%22%3E%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22big-img%22%20style%3D%22background-image%3Aurl%28assets%2Fimage02.jpg%29%3B%22%3E%3C%2FDIV%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group5%20Layer%20page02%22%3E%0D%0A%09%09%09%0D%0A%09%09%09%3CA%20href%3D%22%23page02nav%22%20class%3D%22LinkToPage%20nav-open%22%20target%3D%22_top%22%20data-group-id%3D%22Group5%22%3E%3C%2FA%3E%0D%0A%09%09%09%3CA%20href%3D%22%23page01%22%20class%3D%22LinkToPage%20TouchLink%20left-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-right%22%20data-group-id%3D%22Group5%22%20data-show-start-style%3D%22page-left%22%20data-touch-type%3D%22left%22%3E%0D%0A%09%09%09%3C%2FA%3E%0D%0A%09%09%09%3CA%20href%3D%22%23page03%22%20class%3D%22LinkToPage%20TouchLink%20right-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-left%22%20data-group-id%3D%22Group5%22%20data-show-start-style%3D%22page-right%22%20data-touch-type%3D%22right%22%3E%0D%0A%09%09%09%3C%2FA%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group6%20Layer%20page02%22%20data-show-end-style%3D%22popup-visible%22%20data-show-start-style%3D%22popup-invisible%22%3E%0D%0A%09%09%09%3CDIV%20class%3D%22left-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%09%0D%0A%09%09%09%3CDIV%20class%3D%22right-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%0D%0A%09%09%0D%0A%09%0D%0A%0D%0A%09%09%0D%0A%09%09%3CA%20class%3D%22Page%22%20name%3D%22page03%22%3E%3C%2FA%3E%0D%0A%09%09%3CDIV%20class%3D%22Group7%20Layer%20page03%22%3E%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22big-img%22%20style%3D%22background-image%3Aurl%28assets%2Fimage03.jpg%29%3B%22%3E%3C%2FDIV%3E%0D%0A%09%09%3C%2FDIV%3E%09%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group8%20Layer%20page03%22%3E%0D%0A%09%09%09%0D%0A%09%09%09%3CA%20href%3D%22%23page03nav%22%20class%3D%22LinkToPage%20nav-open%22%20target%3D%22_top%22%20data-group-id%3D%22Group8%22%3E%3C%2FA%3E%0D%0A%09%09%09%3CA%20href%3D%22%23page02%22%20class%3D%22LinkToPage%20TouchLink%20left-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-right%22%20data-group-id%3D%22Group8%22%20data-show-start-style%3D%22page-left%22%20data-touch-type%3D%22left%22%3E%0D%0A%09%09%09%3C%2FA%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group9%20Layer%20page03%22%20data-show-end-style%3D%22popup-visible%22%20data-show-start-style%3D%22popup-invisible%22%3E%0D%0A%09%09%09%3CDIV%20class%3D%22left-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%09%0D%0A%09%09%3C%2FDIV%3E%0D%0A%0D%0A%09%3C%2FDIV%3E%0D%0A%3C%2FBODY%3E%3C%2FHTML%3E");
 brix.util.NodeTypes.ELEMENT_NODE = 1;
 brix.util.NodeTypes.ATTRIBUTE_NODE = 2;
 brix.util.NodeTypes.TEXT_NODE = 3;
@@ -3602,6 +4395,15 @@ brix.util.NodeTypes.DOCUMENT_NODE = 9;
 brix.util.NodeTypes.DOCUMENT_TYPE_NODE = 10;
 brix.util.NodeTypes.DOCUMENT_FRAGMENT_NODE = 11;
 brix.util.NodeTypes.NOTATION_NODE = 12;
+components.GallerySplity.THUMB_FUNCTIONNALITY = "thumb";
+components.GallerySplity.REMOTE_FUNCTIONNALITY = "remote";
+components.GallerySplity.DISPLAY_FUNCTIONNALITY = "display";
+components.GallerySplity.SPLITY_URL = "Fake.php";
+components.GallerySplity.ID_IDENT = "id";
+components.GallerySplity.CHANGE_PAGE = "changePage";
+haxe.Serializer.USE_CACHE = false;
+haxe.Serializer.USE_ENUM_INDEX = false;
+haxe.Serializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";
 haxe.Template.splitter = new EReg("(::[A-Za-z0-9_ ()&|!+=/><*.\"-]+::|\\$\\$([A-Za-z0-9_-]+)\\()","");
 haxe.Template.expr_splitter = new EReg("(\\(|\\)|[ \r\n\t]*\"[^\"]*\"[ \r\n\t]*|[!+=/><*.&|-]+)","");
 haxe.Template.expr_trim = new EReg("^[ ]*([^ ]+)[ ]*$","");
@@ -3609,6 +4411,9 @@ haxe.Template.expr_int = new EReg("^[0-9]+$","");
 haxe.Template.expr_float = new EReg("^([+-]?)(?=\\d|,\\d)\\d*(,\\d*)?([Ee]([+-]?\\d+))?$","");
 haxe.Template.globals = { };
 js.Lib.onerror = null;
+org.phpMessaging.model.MessageData.TYPE_CLIENT_CREATED = "TYPE_NEW_CLIENT";
+org.phpMessaging.model.MessageData.TYPE_CLIENT_DELETED = "TYPE_CLIENT_DELETED";
+org.phpMessaging.model.MessageData.TYPE_CLIENT_DISPATCH = "TYPE_CLIENT_DISPATCH";
 brix.core.Application.main();
 function $hxExpose(src, path) {
 	var o = window;
