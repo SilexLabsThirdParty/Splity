@@ -40,7 +40,7 @@ class org_phpMessaging_server_database_ClientDataManager extends php_db_Manager 
 	}
 	public function cleanUpIdle($idleMaxMS) {
 		$date = Date::fromTime(Date::now()->getTime() - $idleMaxMS);
-		$list = $this->objects("SELECT * FROM  " . org_phpMessaging_model_ClientData::$TABLE_NAME . " WHERE  lastActivity <  '" . Std::string($date) . "'", false);
+		$list = $this->objects("SELECT * FROM  " . org_phpMessaging_model_ClientData::$TABLE_NAME . " WHERE  lastActivity <  '" . Std::string($date) . "'", true);
 		$clientDataModel = new HList();
 		if($list !== null) {
 			$clientData = null;

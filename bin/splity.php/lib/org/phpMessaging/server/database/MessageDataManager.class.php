@@ -19,7 +19,7 @@ class org_phpMessaging_server_database_MessageDataManager extends php_db_Manager
 	}}
 	public function cleanUpIdle($idleMaxMS) {
 		$date = Date::fromTime(Date::now()->getTime() - $idleMaxMS);
-		$list = $this->objects("SELECT id FROM  " . org_phpMessaging_model_MessageData::$TABLE_NAME . " WHERE  time <  '" . Std::string($date) . "'", false);
+		$list = $this->objects("SELECT id FROM  " . org_phpMessaging_model_MessageData::$TABLE_NAME . " WHERE  time <  '" . Std::string($date) . "'", true);
 		if($list !== null) {
 			$messageData = null;
 			if(null == $list) throw new HException('null iterable');

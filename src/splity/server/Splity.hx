@@ -50,7 +50,7 @@ class Splity extends Server
 		super._init(name, instanceName, metaData);
 		Log.trace("NEW SERVER "+client);
 	}
-	public function requestFunctionality(functionalityName:String):Bool
+	public function requestFunctionality(functionalityName:String, ?metaData:Dynamic=null):Bool
 	{
 		// start the process
 		_init();
@@ -78,8 +78,7 @@ class Splity extends Server
 		Log.trace("requestFunctionality "+client.clientData.metaData);
 
 			// dispatch a "new client" message
-			var message : Message = new Message(null, application.applicationData.id, null, "splity");
-			message.messageData.type = MessageData.TYPE_CLIENT_CREATED;
+			var message : Message = new Message(null, application.applicationData.id, metaData, "splity");
 			message.send();
 
 		// ends the process

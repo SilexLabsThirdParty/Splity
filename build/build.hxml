@@ -12,4 +12,4 @@
 -cp ../src
 -cp ../../SLDialog/src
 -main splity.server.Main
--php ../demo/SplityGallery/bin/splity.php
+-php ../bin/splity.php
