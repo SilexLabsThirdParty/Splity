@@ -1829,43 +1829,55 @@ splity.client.Main.main = function() {
 }
 splity.client.Main.prototype = {
 	onStatus: function(messageData) {
-		haxe.Log.trace("onStatus " + Std.string(messageData),{ fileName : "Main.hx", lineNumber : 153, className : "splity.client.Main", methodName : "onStatus"});
-		if(messageData.type == "TYPE_NEW_CLIENT") this.showMessage("New user"); else if(messageData.type == "TYPE_CLIENT_DELETED") this.showMessage("User left "); else if(messageData.type == "TYPE_CLIENT_DISPATCH") this.showMessage("User message: " + Std.string(messageData.metaData));
+		haxe.Log.trace("onStatus " + Std.string(messageData),{ fileName : "Main.hx", lineNumber : 166, className : "splity.client.Main", methodName : "onStatus"});
+		if(messageData.type == "TYPE_NEW_CLIENT") this.showMessage("New user"); else if(messageData.type == "TYPE_CLIENT_DELETED") this.showMessage("User left "); else if(messageData.type == "TYPE_CLIENT_DISPATCH") {
+			if(messageData.metaData.type == "sendCoord") {
+				if(messageData.metaData.myId != this.myId) this.showMessage("SEND COORD: " + Std.string(messageData.metaData.x) + ", " + Std.string(messageData.metaData.y));
+			} else this.showMessage("User message: " + Std.string(messageData.metaData));
+		}
 	}
 	,showMessage: function(str) {
-		haxe.Log.trace("showMessage " + str,{ fileName : "Main.hx", lineNumber : 143, className : "splity.client.Main", methodName : "showMessage"});
-		this.pollClients();
+		haxe.Log.trace("showMessage " + str,{ fileName : "Main.hx", lineNumber : 157, className : "splity.client.Main", methodName : "showMessage"});
 		this.messageDiv.innerHTML = "" + str;
 	}
 	,onGetFunctionalities: function(functionalities) {
-		haxe.Log.trace("onGetFunctionalities " + Std.string(functionalities),{ fileName : "Main.hx", lineNumber : 119, className : "splity.client.Main", methodName : "onGetFunctionalities"});
+		haxe.Log.trace("onGetFunctionalities " + Std.string(functionalities),{ fileName : "Main.hx", lineNumber : 133, className : "splity.client.Main", methodName : "onGetFunctionalities"});
 	}
 	,pollClients: function() {
 		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this.connection._serverUrl);
 		cnx.setErrorHandler($bind(this,this.onError));
 		cnx.resolve("Server").resolve("getFunctionalities").call([],$bind(this,this.onGetFunctionalities));
 	}
+	,onDispatched: function(res) {
+		haxe.Log.trace("onDispatched " + Std.string(res),{ fileName : "Main.hx", lineNumber : 122, className : "splity.client.Main", methodName : "onDispatched"});
+		this.pollClients();
+	}
 	,dispatch: function(e) {
 		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this.connection._serverUrl);
 		cnx.setErrorHandler($bind(this,this.onError));
-		cnx.resolve("Server").resolve("requestFunctionality").call(["thumbs"],null);
+		cnx.resolve("Server").resolve("requestFunctionality").call(["thumblist"],$bind(this,this.onDispatched));
 	}
 	,refresh: function() {
-		this.pollClients();
+	}
+	,onSuccessSendCoord: function() {
+		haxe.Log.trace("onSuccessSendCoord",{ fileName : "Main.hx", lineNumber : 106, className : "splity.client.Main", methodName : "onSuccessSendCoord"});
+	}
+	,sendCoordCallback: function(e) {
+		this.connection.dispatch({ type : "sendCoord", x : 25, y : 300, myId : this.myId},null,$bind(this,this.onSuccessSendCoord));
 	}
 	,refreshCallback: function(e) {
 		this.refresh();
 	}
 	,onConnect: function() {
 		var _g = this;
-		haxe.Log.trace("onConnect ",{ fileName : "Main.hx", lineNumber : 90, className : "splity.client.Main", methodName : "onConnect"});
+		haxe.Log.trace("onConnect ",{ fileName : "Main.hx", lineNumber : 93, className : "splity.client.Main", methodName : "onConnect"});
 		this.connection.setClientMetaData("myId",this.myId,function(d) {
-			haxe.Log.trace("setClientMetaData " + _g.myId + " - " + Std.string(d),{ fileName : "Main.hx", lineNumber : 92, className : "splity.client.Main", methodName : "onConnect"});
+			haxe.Log.trace("setClientMetaData " + _g.myId + " - " + Std.string(d),{ fileName : "Main.hx", lineNumber : 95, className : "splity.client.Main", methodName : "onConnect"});
 			_g.refresh();
 		},$bind(this,this.onError));
 	}
 	,onError: function(str) {
-		haxe.Log.trace("error: " + Std.string(str),{ fileName : "Main.hx", lineNumber : 80, className : "splity.client.Main", methodName : "onError"});
+		haxe.Log.trace("error: " + Std.string(str),{ fileName : "Main.hx", lineNumber : 83, className : "splity.client.Main", methodName : "onError"});
 	}
 	,init: function() {
 		var lang = navigator.language;
@@ -1876,6 +1888,7 @@ splity.client.Main.prototype = {
 		this.messageDiv = js.Lib.document.getElementById("message");
 		js.Lib.document.getElementById("dispatch").onclick = $bind(this,this.dispatch);
 		js.Lib.document.getElementById("refresh").onclick = $bind(this,this.refreshCallback);
+		js.Lib.document.getElementById("sendCoord").onclick = $bind(this,this.sendCoordCallback);
 		this.template = js.Lib.document.getElementById("template").innerHTML;
 		js.Lib.document.getElementById("template").innerHTML = "";
 	}

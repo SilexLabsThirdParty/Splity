@@ -37,6 +37,10 @@ class Splity extends Server
 		// fixeme : for tests
 		instanceName = "splity.test1";
 		name = "splity";
+        var params = php.Web.getParams();
+        if(params.exists('app'))
+        	name = params.get('app');
+
 		// add info to meta
 		if (metaData == null)
 			metaData = {};
@@ -50,7 +54,19 @@ class Splity extends Server
 	{
 		// start the process
 		_init();
-		Log.trace("requestFunctionality "+functionalityName+"- "+client);
+		Log.trace("requestFunctionality "+functionalityName);
+//		var functionalities = getFunctionalities();
+		for (functionality in functionalities)
+		{
+			if (functionality.name == functionalityName 
+				&& functionality.maxUsage != null
+				&& functionality.maxUsage <= functionality.usage)
+			{	
+				Log.trace("requestFunctionality REFUSED "+functionalityName+" - "+functionality);
+				_cleanup();
+				return false;
+			}
+		}
 
 		var meta = client.getMetaData("functionalities");
 		if (meta == null)
@@ -60,6 +76,12 @@ class Splity extends Server
 		meta.push(functionalityName);
 		client.setMetaData("functionalities", meta);
 		Log.trace("requestFunctionality "+client.clientData.metaData);
+
+			// dispatch a "new client" message
+			var message : Message = new Message(null, application.applicationData.id, null, "splity");
+			message.messageData.type = MessageData.TYPE_CLIENT_CREATED;
+			message.send();
+
 		// ends the process
 		_cleanup();
 		return true;
