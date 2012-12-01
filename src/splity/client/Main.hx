@@ -59,7 +59,7 @@ class Main
 		myId = ""+Math.round(Math.random()*1000);
 		// opens the connection with the messaging server
 		connection = new Connection();
-		connection.connect("splity.php/", "admin", "admin", { login: "admin", pubKey: "fdsf1435s1fs2q1d" } );
+		connection.connect("splity.php/", "gallery", "ip", { } );
 		// start listening for the server notifications, 
 		// with _onStatus as a callback to handle these notifications
 		connection.subscribe(onConnect, onError, onStatus);
