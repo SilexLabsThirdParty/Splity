@@ -6,7 +6,7 @@ class org_phpMessaging_server_database_ApplicationDataManager extends php_db_Man
 	}}
 	public function cleanUpIdle($idleMaxMS) {
 		$date = Date::fromTime(Date::now()->getTime() - $idleMaxMS);
-		$list = $this->objects("SELECT id FROM  " . org_phpMessaging_model_ApplicationData::$TABLE_NAME . " WHERE  lastActivity <  '" . Std::string($date) . "'", false);
+		$list = $this->objects("SELECT id FROM  " . org_phpMessaging_model_ApplicationData::$TABLE_NAME . " WHERE  lastActivity <  '" . Std::string($date) . "'", true);
 		if($list !== null) {
 			$applicationData = null;
 			if(null == $list) throw new HException('null iterable');
