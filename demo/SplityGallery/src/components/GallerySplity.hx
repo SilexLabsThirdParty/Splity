@@ -58,6 +58,13 @@ class GallerySplity extends DisplayObject
 	 */
 	private var _splityAPI:SplityAPI;
 	
+	/**
+	 * Wether the last page change was triggered
+	 * because of user action (false) or because
+	 * of a Splity dispatch (true)
+	 */
+	private var _remotePageChange:Bool;
+	
 	public function new(rootElement:HtmlDom, brixId:String) 
 	{
 		super(rootElement, brixId);
@@ -70,6 +77,7 @@ class GallerySplity extends DisplayObject
 	override function init()
 	{
 		_id = "" + Math.round(Math.random() * 1000);
+		_remotePageChange = false;
 		initMode();
 		
 		_splityAPI = new SplityAPI();
@@ -119,7 +127,15 @@ class GallerySplity extends DisplayObject
 	function onPageChange(e:Event)
 	{
 		var ce:CustomEvent = cast(e);
-		_splityAPI.dispatch({action:CHANGE_PAGE, pageName:ce.detail.name, id:_id}, null, null);
+		
+		//check that page change is result of user
+		//action. If result of another splity
+		//dispatch, should not dispatch else 
+		//infinite dispatch loop
+		if (_remotePageChange == false)
+		{
+			_splityAPI.dispatch({action:CHANGE_PAGE, pageName:ce.detail.name, id:_id}, null, null);
+		}
 	}
 	
 	/**
@@ -253,6 +269,7 @@ class GallerySplity extends DisplayObject
 	 */
 	function changePage(name)
 	{
+		_remotePageChange = true;
 		var page:Page = Page.getPageByName(name, brixInstanceId);
 		page.open(null, null, true, true, true);
 	}
@@ -264,6 +281,15 @@ class GallerySplity extends DisplayObject
 	function listenToPageChange()
 	{
 		Lib.document.body.addEventListener(Page.EVENT_TYPE_OPEN_START, onPageChange, false);
+		Lib.document.body.addEventListener(Page.EVENT_TYPE_OPEN_STOP, onTransitionEnd, false);
+	}
+	
+	/**
+	 * on transition end, set dirty flag to false
+	 */
+	function onTransitionEnd(e:Event)
+	{
+		_remotePageChange = false;
 	}
 	
 	//////////////////

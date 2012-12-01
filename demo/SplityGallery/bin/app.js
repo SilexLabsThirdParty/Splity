@@ -2809,7 +2809,7 @@ components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.pro
 		}
 	}
 	,onError: function(str) {
-		haxe.Log.trace(str,{ fileName : "GallerySplity.hx", lineNumber : 299, className : "components.GallerySplity", methodName : "onError"});
+		haxe.Log.trace(str,{ fileName : "GallerySplity.hx", lineNumber : 322, className : "components.GallerySplity", methodName : "onError"});
 	}
 	,onMetaDataSet: function(data) {
 		this.initApplication();
@@ -2817,10 +2817,15 @@ components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.pro
 	,onConnect: function() {
 		this._splityAPI.setClientMetaData(components.GallerySplity.ID_IDENT,this._id,$bind(this,this.onMetaDataSet),$bind(this,this.onError));
 	}
+	,onTransitionEnd: function(e) {
+		this._remotePageChange = false;
+	}
 	,listenToPageChange: function() {
 		js.Lib.document.body.addEventListener("pageOpenStart",$bind(this,this.onPageChange),false);
+		js.Lib.document.body.addEventListener("pageOpenStop",$bind(this,this.onTransitionEnd),false);
 	}
 	,changePage: function(name) {
+		this._remotePageChange = true;
 		var page = brix.component.navigation.Page.getPageByName(name,this.brixInstanceId);
 		page.open(null,null,true,true,true);
 	}
@@ -2877,7 +2882,7 @@ components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.pro
 	}
 	,onPageChange: function(e) {
 		var ce = e;
-		this._splityAPI.dispatch({ action : components.GallerySplity.CHANGE_PAGE, pageName : ce.detail.name, id : this._id},null,null);
+		if(this._remotePageChange == false) this._splityAPI.dispatch({ action : components.GallerySplity.CHANGE_PAGE, pageName : ce.detail.name, id : this._id},null,null);
 	}
 	,initApplication: function() {
 		this.refreshFunctionnalities();
@@ -2888,11 +2893,13 @@ components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.pro
 	}
 	,init: function() {
 		this._id = "" + Math.round(Math.random() * 1000);
+		this._remotePageChange = false;
 		this.initMode();
 		this._splityAPI = new splity.client.SplityAPI();
 		this._splityAPI.connect(components.GallerySplity.SPLITY_URL,null,null,null);
 		this._splityAPI.subscribe($bind(this,this.onConnect),$bind(this,this.onError),$bind(this,this.onStatus));
 	}
+	,_remotePageChange: null
 	,_splityAPI: null
 	,_mode: null
 	,_id: null
