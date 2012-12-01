@@ -1071,7 +1071,7 @@ brix.component.navigation.ContextManager.prototype = $extend(brix.component.ui.D
 		return contextList;
 	}
 	,refresh: function() {
-		haxe.Log.trace("refresh " + Std.string(this.currentContexts),{ fileName : "ContextManager.hx", lineNumber : 228, className : "brix.component.navigation.ContextManager", methodName : "refresh"});
+		haxe.Log.trace("refresh " + Std.string(this.currentContexts),{ fileName : "ContextManager.hx", lineNumber : 230, className : "brix.component.navigation.ContextManager", methodName : "refresh"});
 		if(brix.component.navigation.ContextManager.styleSheet != null) js.Lib.document.getElementsByTagName("head")[0].removeChild(brix.component.navigation.ContextManager.styleSheet);
 		var cssText = "";
 		var _g = 0, _g1 = this.allContexts;
@@ -1122,34 +1122,34 @@ brix.component.navigation.ContextManager.prototype = $extend(brix.component.ui.D
 		return Lambda.has(this.currentContexts,context);
 	}
 	,removeContext: function(context) {
-		haxe.Log.trace("removeContext " + context,{ fileName : "ContextManager.hx", lineNumber : 147, className : "brix.component.navigation.ContextManager", methodName : "removeContext"});
+		haxe.Log.trace("removeContext " + context,{ fileName : "ContextManager.hx", lineNumber : 149, className : "brix.component.navigation.ContextManager", methodName : "removeContext"});
 		if(!this.isContext(context)) throw "Error: unknown context \"" + context + "\". It should be defined in the \"" + "data-context-list" + "\" parameter of the Context component.";
 		if(this.hasContext(context)) {
 			HxOverrides.remove(this.currentContexts,context);
 			this.invalidate();
-		} else haxe.Log.trace("Warning: Could not remove the context \"" + context + "\" from the current context, because it is not in the currentContexts array.",{ fileName : "ContextManager.hx", lineNumber : 158, className : "brix.component.navigation.ContextManager", methodName : "removeContext"});
+		} else haxe.Log.trace("Warning: Could not remove the context \"" + context + "\" from the current context, because it is not in the currentContexts array.",{ fileName : "ContextManager.hx", lineNumber : 160, className : "brix.component.navigation.ContextManager", methodName : "removeContext"});
 	}
 	,addContext: function(context) {
-		haxe.Log.trace("addContext",{ fileName : "ContextManager.hx", lineNumber : 128, className : "brix.component.navigation.ContextManager", methodName : "addContext"});
+		haxe.Log.trace("addContext",{ fileName : "ContextManager.hx", lineNumber : 130, className : "brix.component.navigation.ContextManager", methodName : "addContext"});
 		if(!this.isContext(context)) throw "Error: unknown context \"" + context + "\". It should be defined in the \"" + "data-context-list" + "\" parameter of the Context component.";
 		if(!this.hasContext(context)) {
 			this.currentContexts.push(context);
 			this.invalidate();
-		} else haxe.Log.trace("Warning: Could not add the context \"" + context + "\" to the current context, because it is allready in the currentContexts array.",{ fileName : "ContextManager.hx", lineNumber : 139, className : "brix.component.navigation.ContextManager", methodName : "addContext"});
+		} else haxe.Log.trace("Warning: Could not add the context \"" + context + "\" to the current context, because it is allready in the currentContexts array.",{ fileName : "ContextManager.hx", lineNumber : 141, className : "brix.component.navigation.ContextManager", methodName : "addContext"});
 	}
 	,setCurrentContexts: function(contextList) {
-		haxe.Log.trace("setCurrentContexts " + Std.string(contextList),{ fileName : "ContextManager.hx", lineNumber : 118, className : "brix.component.navigation.ContextManager", methodName : "setCurrentContexts"});
+		haxe.Log.trace("setCurrentContexts " + Std.string(contextList),{ fileName : "ContextManager.hx", lineNumber : 120, className : "brix.component.navigation.ContextManager", methodName : "setCurrentContexts"});
 		this.currentContexts = contextList;
 		this.invalidate();
 		return contextList;
 	}
 	,invalidate: function() {
-		haxe.Log.trace("invalidate " + Std.string(this.isDirty),{ fileName : "ContextManager.hx", lineNumber : 104, className : "brix.component.navigation.ContextManager", methodName : "invalidate"});
+		haxe.Log.trace("invalidate " + Std.string(this.isDirty),{ fileName : "ContextManager.hx", lineNumber : 105, className : "brix.component.navigation.ContextManager", methodName : "invalidate"});
 		this.refresh();
 		this.isDirty = true;
 	}
 	,onLayerShow: function(e) {
-		haxe.Log.trace("onLayerShow ",{ fileName : "ContextManager.hx", lineNumber : 96, className : "brix.component.navigation.ContextManager", methodName : "onLayerShow"});
+		haxe.Log.trace("onLayerShow ",{ fileName : "ContextManager.hx", lineNumber : 97, className : "brix.component.navigation.ContextManager", methodName : "onLayerShow"});
 		this.invalidate();
 	}
 	,isDirty: null
@@ -1635,7 +1635,7 @@ brix.component.navigation.Page.prototype = $extend(brix.component.ui.DisplayObje
 	}
 	,onPopState: function(e) {
 		var event = e;
-		if(event.state.name == this.name) {
+		if(event.state != null && event.state.name == this.name) {
 			haxe.Log.trace("onPopState " + Std.string(event.state.name),{ fileName : "Page.hx", lineNumber : 214, className : "brix.component.navigation.Page", methodName : "onPopState"});
 			this.open(event.state.transitionDataShow,event.state.transitionDataHide,event.state.doCloseOthers,event.state.preventTransitions,false);
 		}
@@ -2802,12 +2802,16 @@ components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.pro
 			if(this._mode == components.GalleryMode.DESKTOP) this.refreshFunctionnalities();
 			break;
 		case "TYPE_CLIENT_DISPATCH":
-			if(messageData.metaData.action == components.GallerySplity.CHANGE_PAGE) this.changePage(messageData.metaData.pageName);
+			haxe.Log.trace("DDDDDDDDDDDDDDDDDDDDIIIIIIIIIIIIIIISPATCH",{ fileName : "GallerySplity.hx", lineNumber : 343, className : "components.GallerySplity", methodName : "onStatus"});
+			if(messageData.metaData.action == components.GallerySplity.CHANGE_PAGE) {
+				haxe.Log.trace("TRRRRRRRRRRRRRRYYYYYY",{ fileName : "GallerySplity.hx", lineNumber : 346, className : "components.GallerySplity", methodName : "onStatus"});
+				this.changePage(messageData.metaData.pageName);
+			}
 			break;
 		}
 	}
 	,onError: function(str) {
-		haxe.Log.trace(str,{ fileName : "GallerySplity.hx", lineNumber : 313, className : "components.GallerySplity", methodName : "onError"});
+		haxe.Log.trace(str,{ fileName : "GallerySplity.hx", lineNumber : 319, className : "components.GallerySplity", methodName : "onError"});
 	}
 	,onMetaDataSet: function(data) {
 		this.initApplication();
@@ -2820,28 +2824,28 @@ components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.pro
 	}
 	,changePage: function(name) {
 		this._remotePageChange = true;
-		brix.component.navigation.Page.openPage(name,false,null,null,null);
+		brix.component.navigation.Page.openPage(name,false,null,null,this.brixInstanceId);
 	}
-	,getContextManger: function() {
-		var contextManagerNode = js.Lib.document.getElementById(components.GallerySplity.CONTEXT_MANAGER_ID);
+	,getContextManager: function() {
+		var contextManagerNode = js.Lib.document.getElementsByClassName(components.GallerySplity.CONTEXT_MANAGER_CLASS)[0];
 		var application = brix.core.Application.get(this.brixInstanceId);
 		return application.getAssociatedComponents(contextManagerNode,brix.component.navigation.ContextManager).first();
 	}
 	,removeFunctionnality: function(name) {
-		this.getContextManger().removeContext(name);
+		this.getContextManager().removeContext(name);
 	}
 	,addFunctionnality: function(name) {
-		this.getContextManger().addContext(name);
+		this.getContextManager().addContext(name);
 	}
-	,onPhoneFunctionnality: function() {
+	,onPhoneFunctionnality: function(data) {
 		this.removeFunctionnality(components.GallerySplity.THUMB_FUNCTIONNALITY);
 		this.addFunctionnality(components.GallerySplity.REMOTE_FUNCTIONNALITY);
-		this.addFunctionnality(components.GallerySplity.DISPLAY_FUNCTIONNALITY);
+		this.removeFunctionnality(components.GallerySplity.DISPLAY_FUNCTIONNALITY);
 	}
 	,setPhoneFunctionnalities: function(functionnalities) {
 		this._splityAPI.requestFunctionnality(components.GallerySplity.REMOTE_FUNCTIONNALITY,$bind(this,this.onPhoneFunctionnality),$bind(this,this.onError));
 	}
-	,onTabletFunctionnality: function() {
+	,onTabletFunctionnality: function(data) {
 		this.removeFunctionnality(components.GallerySplity.REMOTE_FUNCTIONNALITY);
 		this.addFunctionnality(components.GallerySplity.DISPLAY_FUNCTIONNALITY);
 		this.addFunctionnality(components.GallerySplity.THUMB_FUNCTIONNALITY);
@@ -2850,9 +2854,10 @@ components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.pro
 		this._splityAPI.requestFunctionnality(components.GallerySplity.THUMB_FUNCTIONNALITY,$bind(this,this.onTabletFunctionnality),$bind(this,this.onError));
 	}
 	,setDesktopFunctionnalities: function(functionnalities) {
-		var $it0 = functionnalities.iterator();
-		while( $it0.hasNext() ) {
-			var functionnality = $it0.next();
+		var _g = 0;
+		while(_g < functionnalities.length) {
+			var functionnality = functionnalities[_g];
+			++_g;
 			if(functionnality.maxUsage == null) this.addFunctionnality(functionnality.name); else if(functionnality.usage < functionnality.maxUsage) this.addFunctionnality(functionnality.name); else this.removeFunctionnality(functionnality.name);
 		}
 	}
@@ -2874,7 +2879,11 @@ components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.pro
 	}
 	,onPageChange: function(e) {
 		var ce = e;
-		if(this._remotePageChange == false) this._splityAPI.dispatch({ action : components.GallerySplity.CHANGE_PAGE, pageName : ce.detail.page.name},null,null);
+		if(this._remotePageChange == false) {
+			haxe.Log.trace("DISPATCH PAGE CHANGE : " + Std.string(ce.detail.name),{ fileName : "GallerySplity.hx", lineNumber : 137, className : "components.GallerySplity", methodName : "onPageChange"});
+			this._remotePageChange = true;
+			this._splityAPI.dispatch({ action : components.GallerySplity.CHANGE_PAGE, pageName : ce.detail.name},null,null);
+		}
 		this._remotePageChange = false;
 	}
 	,initApplication: function() {
@@ -4281,8 +4290,14 @@ splity.client.SplityAPI.__name__ = ["splity","client","SplityAPI"];
 splity.client.SplityAPI.__super__ = org.phpMessaging.client.Connection;
 splity.client.SplityAPI.prototype = $extend(org.phpMessaging.client.Connection.prototype,{
 	requestFunctionnality: function(name,onSuccess,onError) {
+		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this._serverUrl);
+		cnx.setErrorHandler(onError);
+		cnx.resolve("Server").resolve("requestFunctionality").call([name],onSuccess);
 	}
 	,getFunctionalities: function(onSuccess,onError) {
+		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this._serverUrl);
+		cnx.setErrorHandler(onError);
+		cnx.resolve("Server").resolve("getFunctionalities").call([],onSuccess);
 	}
 	,__class__: splity.client.SplityAPI
 });
@@ -4392,7 +4407,7 @@ brix.core.Application.instances = new Hash();
 haxe.Unserializer.DEFAULT_RESOLVER = Type;
 haxe.Unserializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";
 haxe.Unserializer.CODES = null;
-brix.core.ApplicationContext.htmlDocumentElement = haxe.Unserializer.run("y5557:%3CHTML%3E%0D%0A%3CHEAD%3E%0D%0A%09%3CTITLE%3ESplity%20Gallery%3C%2FTITLE%3E%0D%0A%09%3CLINK%20href%3D%22app.css%22%20type%3D%22text%2Fcss%22%20rel%3D%22stylesheet%22%3E%3C%2FLINK%3E%0D%0A%09%3CMETA%20http-equiv%3D%22Content-Type%22%20content%3D%22text%2Fhtml%3B%20charset%3DUTF-8%22%3E%3C%2FMETA%3E%20%0D%0A%09%3CMETA%20name%3D%22viewport%22%20content%3D%22width%3Ddevice-width%2Cinitial-scale%3D1.0%2Cminimum-scale%3D1.0%2Cmaximum-scale%3D1.0%2Cuser-scalable%3Dno%22%3E%3C%2FMETA%3E%0D%0A%09%3CMETA%20name%3D%22initialPageName%22%20content%3D%22page01%22%3E%3C%2FMETA%3E%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%3C%2FHEAD%3E%0D%0A%0D%0A%3CBODY%3E%0D%0A%09%3CDIV%20class%3D%22GallerySplity%22%3E%3C%2FDIV%3E%0D%0A%09%3CDIV%20class%3D%22main-container%20ContextManager%22%20data-context-list%3D%22display%20thumblist%20remote%22%20data-initial-context%3D%22%22%3E%0D%0A%09%09%3CDIV%20class%3D%22pages-container%22%3E%0D%0A%09%09%09%0D%0A%09%09%0D%0A%09%09%09%3CA%20class%3D%22Page%22%20name%3D%22page01%22%3E%3C%2FA%3E%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group1%20Layer%20page01%22%20data-context%3D%22display%22%3E%0D%0A%09%09%09%09%0D%0A%09%09%09%09%3CDIV%20class%3D%22big-img%22%20style%3D%22background-image%3Aurl%28assets%2Fimage01.jpg%29%3B%22%3E%3C%2FDIV%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group2%20Layer%20page01%22%3E%0D%0A%09%09%09%09%0D%0A%09%09%09%09%3CA%20href%3D%22%23page02%22%20class%3D%22LinkToPage%20TouchLink%20right-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-left%22%20data-group-id%3D%22Group2%22%20data-show-start-style%3D%22page-right%22%20data-touch-type%3D%22right%22%3E%0D%0A%09%09%09%09%3C%2FA%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group3%20Layer%20page01%22%20data-show-end-style%3D%22popup-visible%22%20data-show-start-style%3D%22popup-invisible%22%20data-context%3D%22remote%22%3E%0D%0A%09%09%09%09%3CDIV%20class%3D%22right-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%0D%0A%09%09%0D%0A%09%09%09%3CA%20class%3D%22Page%22%20name%3D%22page02%22%3E%3C%2FA%3E%0D%0A%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group4%20Layer%20page02%22%20data-context%3D%22display%22%3E%0D%0A%09%09%09%09%0D%0A%09%09%09%09%3CDIV%20class%3D%22big-img%22%20style%3D%22background-image%3Aurl%28assets%2Fimage02.jpg%29%3B%22%3E%3C%2FDIV%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group5%20Layer%20page02%22%3E%0D%0A%09%09%09%09%0D%0A%09%09%09%09%3CA%20href%3D%22%23page02nav%22%20class%3D%22LinkToPage%20nav-open%22%20target%3D%22_top%22%20data-group-id%3D%22Group5%22%3E%3C%2FA%3E%0D%0A%09%09%09%09%3CA%20href%3D%22%23page01%22%20class%3D%22LinkToPage%20TouchLink%20left-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-right%22%20data-group-id%3D%22Group5%22%20data-show-start-style%3D%22page-left%22%20data-touch-type%3D%22left%22%3E%0D%0A%09%09%09%09%3C%2FA%3E%0D%0A%09%09%09%09%3CA%20href%3D%22%23page03%22%20class%3D%22LinkToPage%20TouchLink%20right-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-left%22%20data-group-id%3D%22Group5%22%20data-show-start-style%3D%22page-right%22%20data-touch-type%3D%22right%22%3E%0D%0A%09%09%09%09%3C%2FA%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group6%20Layer%20page02%22%20data-show-end-style%3D%22popup-visible%22%20data-show-start-style%3D%22popup-invisible%22%20data-context%3D%22remote%22%3E%0D%0A%09%09%09%09%3CDIV%20class%3D%22left-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%09%0D%0A%09%09%09%09%3CDIV%20class%3D%22right-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%0D%0A%09%09%09%0D%0A%09%09%0D%0A%09%09%09%3CA%20class%3D%22Page%22%20name%3D%22page03%22%3E%3C%2FA%3E%0D%0A%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group7%20Layer%20page03%22%20data-context%3D%22display%22%3E%0D%0A%09%09%09%09%0D%0A%09%09%09%09%3CDIV%20class%3D%22big-img%22%20style%3D%22background-image%3Aurl%28assets%2Fimage03.jpg%29%3B%22%3E%3C%2FDIV%3E%0D%0A%09%09%09%3C%2FDIV%3E%09%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group8%20Layer%20page03%22%3E%0D%0A%09%09%09%09%0D%0A%09%09%09%09%3CA%20href%3D%22%23page03nav%22%20class%3D%22LinkToPage%20nav-open%22%20target%3D%22_top%22%20data-group-id%3D%22Group8%22%3E%3C%2FA%3E%0D%0A%09%09%09%09%3CA%20href%3D%22%23page02%22%20class%3D%22LinkToPage%20TouchLink%20left-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-right%22%20data-group-id%3D%22Group8%22%20data-show-start-style%3D%22page-left%22%20data-touch-type%3D%22left%22%3E%0D%0A%09%09%09%09%3C%2FA%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group9%20Layer%20page03%22%20data-show-end-style%3D%22popup-visible%22%20data-show-start-style%3D%22popup-invisible%22%20data-context%3D%22remote%22%3E%0D%0A%09%09%09%09%3CDIV%20class%3D%22left-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%09%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%0D%0A%09%09%3C%2FDIV%3E%0D%0A%09%3C%2FDIV%3E%0D%0A%3C%2FBODY%3E%3C%2FHTML%3E");
+brix.core.ApplicationContext.htmlDocumentElement = haxe.Unserializer.run("y5647:%3CHTML%3E%0D%0A%3CHEAD%3E%0D%0A%09%3CTITLE%3ESplity%20Gallery%3C%2FTITLE%3E%0D%0A%09%3CLINK%20href%3D%22app.css%22%20type%3D%22text%2Fcss%22%20rel%3D%22stylesheet%22%3E%3C%2FLINK%3E%0D%0A%09%3CMETA%20http-equiv%3D%22Content-Type%22%20content%3D%22text%2Fhtml%3B%20charset%3DUTF-8%22%3E%3C%2FMETA%3E%20%0D%0A%09%3CMETA%20name%3D%22viewport%22%20content%3D%22width%3Ddevice-width%2Cinitial-scale%3D1.0%2Cminimum-scale%3D1.0%2Cmaximum-scale%3D1.0%2Cuser-scalable%3Dno%22%3E%3C%2FMETA%3E%0D%0A%09%3CMETA%20name%3D%22initialPageName%22%20content%3D%22page01%22%3E%3C%2FMETA%3E%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%3C%2FHEAD%3E%0D%0A%0D%0A%3CBODY%3E%0D%0A%09%3CDIV%20class%3D%22GallerySplity%22%3E%3C%2FDIV%3E%0D%0A%09%3CDIV%20class%3D%22main-container%20ContextManager%22%20data-context-list%3D%22display%2Cthumblist%2Cremote%22%20data-initial-context%3D%22%22%3E%0D%0A%09%09%3CDIV%20class%3D%22pages-container%22%3E%0D%0A%09%09%09%0D%0A%09%09%0D%0A%09%09%09%3CA%20class%3D%22Page%22%20name%3D%22page01%22%3E%3C%2FA%3E%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group1%20Layer%20page01%22%20data-context%3D%22display%22%3E%0D%0A%09%09%09%09%0D%0A%09%09%09%09%3CDIV%20class%3D%22big-img%22%20style%3D%22background-image%3Aurl%28assets%2Fimage01.jpg%29%3B%22%3E%3C%2FDIV%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group2%20Layer%20page01%22%20data-context%3D%22remote%22%3E%0D%0A%09%09%09%09%0D%0A%09%09%09%09%3CA%20href%3D%22%23page02%22%20class%3D%22LinkToPage%20TouchLink%20right-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-left%22%20data-group-id%3D%22Group2%22%20data-show-start-style%3D%22page-right%22%20data-touch-type%3D%22right%22%3E%0D%0A%09%09%09%09%3C%2FA%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group3%20Layer%20page01%22%20data-show-end-style%3D%22popup-visible%22%20data-show-start-style%3D%22popup-invisible%22%20data-context%3D%22remote%22%3E%0D%0A%09%09%09%09%3CDIV%20class%3D%22right-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%0D%0A%09%09%0D%0A%09%09%09%3CA%20class%3D%22Page%22%20name%3D%22page02%22%3E%3C%2FA%3E%0D%0A%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group4%20Layer%20page02%22%20data-context%3D%22display%22%3E%0D%0A%09%09%09%09%0D%0A%09%09%09%09%3CDIV%20class%3D%22big-img%22%20style%3D%22background-image%3Aurl%28assets%2Fimage02.jpg%29%3B%22%3E%3C%2FDIV%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group5%20Layer%20page02%22%20data-context%3D%22remote%22%3E%0D%0A%09%09%09%09%0D%0A%09%09%09%09%3CA%20href%3D%22%23page02nav%22%20class%3D%22LinkToPage%20nav-open%22%20target%3D%22_top%22%20data-group-id%3D%22Group5%22%3E%3C%2FA%3E%0D%0A%09%09%09%09%3CA%20href%3D%22%23page01%22%20class%3D%22LinkToPage%20TouchLink%20left-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-right%22%20data-group-id%3D%22Group5%22%20data-show-start-style%3D%22page-left%22%20data-touch-type%3D%22left%22%3E%0D%0A%09%09%09%09%3C%2FA%3E%0D%0A%09%09%09%09%3CA%20href%3D%22%23page03%22%20class%3D%22LinkToPage%20TouchLink%20right-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-left%22%20data-group-id%3D%22Group5%22%20data-show-start-style%3D%22page-right%22%20data-touch-type%3D%22right%22%3E%0D%0A%09%09%09%09%3C%2FA%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group6%20Layer%20page02%22%20data-show-end-style%3D%22popup-visible%22%20data-show-start-style%3D%22popup-invisible%22%20data-context%3D%22remote%22%3E%0D%0A%09%09%09%09%3CDIV%20class%3D%22left-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%09%0D%0A%09%09%09%09%3CDIV%20class%3D%22right-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%0D%0A%09%09%09%0D%0A%09%09%0D%0A%09%09%09%3CA%20class%3D%22Page%22%20name%3D%22page03%22%3E%3C%2FA%3E%0D%0A%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group7%20Layer%20page03%22%20data-context%3D%22display%22%3E%0D%0A%09%09%09%09%0D%0A%09%09%09%09%3CDIV%20class%3D%22big-img%22%20style%3D%22background-image%3Aurl%28assets%2Fimage03.jpg%29%3B%22%3E%3C%2FDIV%3E%0D%0A%09%09%09%3C%2FDIV%3E%09%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group8%20Layer%20page03%22%20data-context%3D%22remote%22%3E%0D%0A%09%09%09%09%0D%0A%09%09%09%09%3CA%20href%3D%22%23page03nav%22%20class%3D%22LinkToPage%20nav-open%22%20target%3D%22_top%22%20data-group-id%3D%22Group8%22%3E%3C%2FA%3E%0D%0A%09%09%09%09%3CA%20href%3D%22%23page02%22%20class%3D%22LinkToPage%20TouchLink%20left-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-right%22%20data-group-id%3D%22Group8%22%20data-show-start-style%3D%22page-left%22%20data-touch-type%3D%22left%22%3E%0D%0A%09%09%09%09%3C%2FA%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group9%20Layer%20page03%22%20data-show-end-style%3D%22popup-visible%22%20data-show-start-style%3D%22popup-invisible%22%20data-context%3D%22remote%22%3E%0D%0A%09%09%09%09%3CDIV%20class%3D%22left-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%09%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%0D%0A%09%09%3C%2FDIV%3E%0D%0A%09%3C%2FDIV%3E%0D%0A%3C%2FBODY%3E%3C%2FHTML%3E");
 brix.util.NodeTypes.ELEMENT_NODE = 1;
 brix.util.NodeTypes.ATTRIBUTE_NODE = 2;
 brix.util.NodeTypes.TEXT_NODE = 3;
@@ -4405,13 +4420,13 @@ brix.util.NodeTypes.DOCUMENT_NODE = 9;
 brix.util.NodeTypes.DOCUMENT_TYPE_NODE = 10;
 brix.util.NodeTypes.DOCUMENT_FRAGMENT_NODE = 11;
 brix.util.NodeTypes.NOTATION_NODE = 12;
-components.GallerySplity.THUMB_FUNCTIONNALITY = "thumb";
+components.GallerySplity.THUMB_FUNCTIONNALITY = "thumblist";
 components.GallerySplity.REMOTE_FUNCTIONNALITY = "remote";
 components.GallerySplity.DISPLAY_FUNCTIONNALITY = "display";
-components.GallerySplity.SPLITY_URL = "http://169.254.240.203:8888/Splity/www/";
+components.GallerySplity.SPLITY_URL = "http://demos.silexlabs.org/splity/splity.php/index.php";
 components.GallerySplity.ID_IDENT = "id";
 components.GallerySplity.CHANGE_PAGE = "changePage";
-components.GallerySplity.CONTEXT_MANAGER_ID = "contextManager";
+components.GallerySplity.CONTEXT_MANAGER_CLASS = "ContextManager";
 haxe.Serializer.USE_CACHE = false;
 haxe.Serializer.USE_ENUM_INDEX = false;
 haxe.Serializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";

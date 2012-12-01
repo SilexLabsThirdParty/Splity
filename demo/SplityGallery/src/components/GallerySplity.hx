@@ -8,6 +8,7 @@ import brix.component.navigation.ContextManager;
 import js.Lib;
 import org.phpMessaging.model.MessageData;
 import splity.client.SplityAPI;
+import splity.server.FunctionalityData;
 
 
 /**
@@ -27,19 +28,19 @@ class GallerySplity extends DisplayObject
 {
 	//functionnalities ids
 	
-	private static var THUMB_FUNCTIONNALITY:String = "thumb";
+	private static var THUMB_FUNCTIONNALITY:String = "thumblist";
 	
 	private static var REMOTE_FUNCTIONNALITY:String = "remote";
 	
 	private static var DISPLAY_FUNCTIONNALITY:String = "display";
 	
-	private static var SPLITY_URL:String = "http://169.254.240.203:8888/Splity/www/";
+	private static var SPLITY_URL:String = "http://demos.silexlabs.org/splity/splity.php/index.php";
 	
 	private static var ID_IDENT:String = "id";
 	
 	private static var CHANGE_PAGE:String = "changePage";
 	
-	private static var CONTEXT_MANAGER_ID:String = "contextManager";
+	private static var CONTEXT_MANAGER_CLASS:String = "ContextManager";
 	
 	/**
 	 * unique id of the client
@@ -82,7 +83,6 @@ class GallerySplity extends DisplayObject
 		_splityAPI = new SplityAPI();
 		_splityAPI.connect(SPLITY_URL, null, null, null);
 		_splityAPI.subscribe(onConnect, onError, onStatus);
-		
 	}
 	
 	/**
@@ -95,7 +95,7 @@ class GallerySplity extends DisplayObject
 		{
 			_mode = DESKTOP;
 		}
-		else if ( Lib.window.innerWidth < 1280 && Lib.window.innerWidth > 780)
+		else if (Lib.window.innerWidth < 1280 && Lib.window.innerWidth > 780)
 		{
 			_mode = TABLET;
 		}
@@ -134,7 +134,9 @@ class GallerySplity extends DisplayObject
 		//infinite dispatch loop
 		if (_remotePageChange == false)
 		{
-			_splityAPI.dispatch({action:CHANGE_PAGE, pageName:ce.detail.page.name}, null, null);
+			trace("DISPATCH PAGE CHANGE : " + ce.detail.name);
+			_remotePageChange = true;
+			_splityAPI.dispatch({action:CHANGE_PAGE, pageName:ce.detail.name}, null, null);
 		}
 		
 		_remotePageChange = false;
@@ -153,7 +155,7 @@ class GallerySplity extends DisplayObject
 	 * Called once the list of functionnalities
 	 * data has ben loaded
 	 */
-	function onFunctionnalities(functionnalities:List<Dynamic>)
+	function onFunctionnalities(functionnalities:Array<FunctionalityData>)
 	{
 		switch (_mode)
 		{
@@ -173,7 +175,7 @@ class GallerySplity extends DisplayObject
 	 * all functionnalities which are not
 	 * displayed by another devices
 	 */
-	function setDesktopFunctionnalities(functionnalities:List<Dynamic>)
+	function setDesktopFunctionnalities(functionnalities:Array<FunctionalityData>)
 	{
 		for (functionnality in functionnalities)
 		{
@@ -196,7 +198,7 @@ class GallerySplity extends DisplayObject
 	 * In tablet mode, request the exclusive display
 	 * of the thumb list
 	 */
-	function setTabletFunctionnalities(functionnalities:List<Dynamic>)
+	function setTabletFunctionnalities(functionnalities:Array<FunctionalityData>)
 	{
 		_splityAPI.requestFunctionnality(THUMB_FUNCTIONNALITY, onTabletFunctionnality, onError);
 	}
@@ -205,7 +207,7 @@ class GallerySplity extends DisplayObject
 	 * Called when a tablet client receives exclusive
 	 * display of thumb functionnality
 	 */
-	function onTabletFunctionnality()
+	function onTabletFunctionnality(data:Dynamic)
 	{
 		removeFunctionnality(REMOTE_FUNCTIONNALITY);
 		addFunctionnality(DISPLAY_FUNCTIONNALITY);
@@ -216,7 +218,7 @@ class GallerySplity extends DisplayObject
 	 * In phone mode, request the exclusive display
 	 * of the remote
 	 */
-	function setPhoneFunctionnalities(functionnalities:List<Dynamic>)
+	function setPhoneFunctionnalities(functionnalities:Array<FunctionalityData>)
 	{
 		_splityAPI.requestFunctionnality(REMOTE_FUNCTIONNALITY, onPhoneFunctionnality, onError);
 	}
@@ -225,11 +227,11 @@ class GallerySplity extends DisplayObject
 	 * Called when a phone client receives exclusive
 	 * display of remote functionnality
 	 */
-	function onPhoneFunctionnality()
+	function onPhoneFunctionnality(data:Dynamic)
 	{
 		removeFunctionnality(THUMB_FUNCTIONNALITY);
 		addFunctionnality(REMOTE_FUNCTIONNALITY);
-		addFunctionnality(DISPLAY_FUNCTIONNALITY);
+		removeFunctionnality(DISPLAY_FUNCTIONNALITY);
 	}
 	
 	//////////////////
@@ -242,7 +244,7 @@ class GallerySplity extends DisplayObject
 	 */
 	function addFunctionnality(name)
 	{
-		getContextManger().addContext(name);
+		getContextManager().addContext(name);
 	}
 	
 	/**
@@ -251,13 +253,17 @@ class GallerySplity extends DisplayObject
 	 */
 	function removeFunctionnality(name)
 	{
-		getContextManger().removeContext(name);
+		getContextManager().removeContext(name);
 	}
 	
-	function getContextManger():ContextManager
+	/**
+	 * Get an instance of a context manager
+	 */
+	function getContextManager():ContextManager
 	{
-		var contextManagerNode = Lib.document.getElementById(CONTEXT_MANAGER_ID);
+		var contextManagerNode = Lib.document.getElementsByClassName(CONTEXT_MANAGER_CLASS)[0];
 		var application:Application = Application.get(brixInstanceId);
+		
 		return application.getAssociatedComponents(contextManagerNode, ContextManager).first();
 	}
 	
@@ -268,7 +274,7 @@ class GallerySplity extends DisplayObject
 	function changePage(name)
 	{
 		_remotePageChange = true;
-		Page.openPage(name, false, null, null, null);
+		Page.openPage(name, false, null, null, brixInstanceId);
 	}
 	
 	/**
@@ -334,8 +340,10 @@ class GallerySplity extends DisplayObject
 				}
 				
 			case MessageData.TYPE_CLIENT_DISPATCH:
+				trace("DDDDDDDDDDDDDDDDDDDDIIIIIIIIIIIIIIISPATCH");
 				if (messageData.metaData.action == CHANGE_PAGE)
 				{
+					trace("TRRRRRRRRRRRRRRYYYYYY");
 					changePage(messageData.metaData.pageName);
 				}
 		}
