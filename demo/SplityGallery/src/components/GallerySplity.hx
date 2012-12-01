@@ -203,11 +203,19 @@ class GallerySplity extends DisplayObject
 	 * Called when a tablet client receives exclusive
 	 * display of thumb functionnality
 	 */
-	function onTabletFunctionnality(data:Dynamic)
+	function onTabletFunctionnality(granted:Bool)
 	{
-		removeFunctionnality(REMOTE_FUNCTIONNALITY);
-		addFunctionnality(DISPLAY_FUNCTIONNALITY);
-		addFunctionnality(THUMB_FUNCTIONNALITY);
+		if (granted == true)
+		{
+			removeFunctionnality(REMOTE_FUNCTIONNALITY);
+			addFunctionnality(DISPLAY_FUNCTIONNALITY);
+			addFunctionnality(THUMB_FUNCTIONNALITY);
+		}
+		else
+		{
+			onFunctionnalityDenied();
+		}
+		
 	}
 	
 	/**
@@ -223,11 +231,30 @@ class GallerySplity extends DisplayObject
 	 * Called when a phone client receives exclusive
 	 * display of remote functionnality
 	 */
-	function onPhoneFunctionnality(data:Dynamic)
+	function onPhoneFunctionnality(granted:Bool)
 	{
+		if (granted == true)
+		{
+			removeFunctionnality(THUMB_FUNCTIONNALITY);
+			addFunctionnality(REMOTE_FUNCTIONNALITY);
+			removeFunctionnality(DISPLAY_FUNCTIONNALITY);
+		}
+		//here request was denied
+		else
+		{
+			onFunctionnalityDenied();
+		}
+	}
+	
+	/**
+	 * When a functionnality request is denied,
+	 * default to only showing the display
+	 */
+	function onFunctionnalityDenied()
+	{
+		removeFunctionnality(REMOTE_FUNCTIONNALITY);
 		removeFunctionnality(THUMB_FUNCTIONNALITY);
-		addFunctionnality(REMOTE_FUNCTIONNALITY);
-		removeFunctionnality(DISPLAY_FUNCTIONNALITY);
+		addFunctionnality(DISPLAY_FUNCTIONNALITY);
 	}
 	
 	//////////////////
