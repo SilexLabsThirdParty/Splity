@@ -58,13 +58,6 @@ class GallerySplity extends DisplayObject
 	 */
 	private var _splityAPI:SplityAPI;
 	
-	/**
-	 * Wether the last page change was triggered
-	 * because of user action (false) or because
-	 * of a Splity dispatch (true)
-	 */
-	private var _remotePageChange:Bool;
-	
 	public function new(rootElement:HtmlDom, brixId:String) 
 	{
 		super(rootElement, brixId);
@@ -77,7 +70,6 @@ class GallerySplity extends DisplayObject
 	override function init()
 	{
 		_id = "" + Math.round(Math.random() * 1000);
-		_remotePageChange = false;
 		initMode();
 		
 		_splityAPI = new SplityAPI();
@@ -127,19 +119,7 @@ class GallerySplity extends DisplayObject
 	function onPageChange(e:Event)
 	{
 		var ce:CustomEvent = cast(e);
-		
-		//check that page change is result of user
-		//action. If result of another splity
-		//dispatch, should not dispatch else 
-		//infinite dispatch loop
-		if (_remotePageChange == false)
-		{
-			trace("DISPATCH PAGE CHANGE : " + ce.detail.name);
-			_remotePageChange = true;
-			_splityAPI.dispatch({action:CHANGE_PAGE, pageName:ce.detail.name}, null, null);
-		}
-		
-		_remotePageChange = false;
+		_splityAPI.dispatch({action:CHANGE_PAGE, pageName:ce.detail.name, id:_id}, null, null);
 	}
 	
 	/**
@@ -273,8 +253,8 @@ class GallerySplity extends DisplayObject
 	 */
 	function changePage(name)
 	{
-		_remotePageChange = true;
-		Page.openPage(name, false, null, null, brixInstanceId);
+		var page:Page = Page.getPageByName(name, brixInstanceId);
+		page.open(null, null, true, true, true);
 	}
 	
 	/**
@@ -340,11 +320,12 @@ class GallerySplity extends DisplayObject
 				}
 				
 			case MessageData.TYPE_CLIENT_DISPATCH:
-				trace("DDDDDDDDDDDDDDDDDDDDIIIIIIIIIIIIIIISPATCH");
 				if (messageData.metaData.action == CHANGE_PAGE)
 				{
-					trace("TRRRRRRRRRRRRRRYYYYYY");
-					changePage(messageData.metaData.pageName);
+					if (messageData.metaData.id != _id)
+					{
+						changePage(messageData.metaData.pageName);
+					}
 				}
 		}
 	}
