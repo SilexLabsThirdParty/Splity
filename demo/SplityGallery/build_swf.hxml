@@ -1,0 +1,10 @@
+#sources
+-main Cocktail
+-cp ../Cocktail/src/
+-cp src
+
+#binary
+-swf bin/app.swf
+-swf-version 10.2
+--remap js:cocktail
+--macro Cocktail.create('src/index.html','Main')

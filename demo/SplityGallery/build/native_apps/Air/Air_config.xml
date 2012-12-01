@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<application xmlns="http://ns.adobe.com/air/application/2.7"> 
+    <id>fr.intermedia-paris.test1</id> 
+    <name>Test1</name> 
+    <filename>Test1</filename> 
+    <versionNumber>0.0.1</versionNumber> 
+    <copyright>Copyright Intermedia Paris</copyright> 
+	<initialWindow>
+		<content>app.swf</content>
+		<aspectRatio>portrait</aspectRatio>
+		<autoOrients>true</autoOrients>
+		<renderMode>direct</renderMode>
+		<systemChrome>standard</systemChrome>
+		<transparent>false</transparent>
+		<visible>true</visible>
+		<minimizable>true</minimizable>
+		<maximizable>true</maximizable>
+		<resizable>true</resizable>
+		<fullScreen>true</fullScreen>
+		<width>330</width>
+		<height>460</height>
+		<x>150</x>
+		<y>150</y>
+		<minSize>0 0</minSize>
+	</initialWindow> 
+	<android> 
+		<manifestAdditions> 
+			<![CDATA[ 
+				<manifest> 
+					<application android:hardwareAccelerated="true"/> 
+					<supports-screens android:smallScreens="true"/>
+					<supports-screens android:normalScreens="true"/>
+					<supports-screens android:largeScreens="false"/>
+					<supports-screens android:xlargeScreens="false"/>
+				</manifest> 
+			]]> 
+		</manifestAdditions> 
+	</android>
+	<icon> 
+		<image29x29>icons/icon_29.png</image29x29>
+		<image36x36>icons/icon_36.png</image36x36>
+		<image48x48>icons/icon_48.png</image48x48>
+		<image57x57>icons/icon_57.png</image57x57>
+		<image72x72>icons/icon_72.png</image72x72>
+		<image114x114>icons/icon_114.png</image114x114>
+		<image512x512>icons/icon_512.png</image512x512>
+	</icon>
+	<!-- iOS specific capabilities -->
+    <iPhone>
+		<!-- A list of plist key/value pairs to be added to the application Info.plist -->
+		<InfoAdditions>
+			<![CDATA[
+				<key>UIDeviceFamily</key>
+				<array>
+					<string>1</string>
+					<string>2</string>
+				</array>
+				<key>UIPrerenderedIcon</key>
+				<true/>
+				<key>UIApplicationExitsOnSuspend</key>
+				<true/>	
+			]]>
+		</InfoAdditions>
+		<requestedDisplayResolution>standard</requestedDisplayResolution>
+	</iPhone>
+</application>
