@@ -1,7 +1,12 @@
 package components;
 
+import brix.component.navigation.Page;
+import brix.core.Application;
 import js.Dom;
 import brix.component.ui.DisplayObject;
+import brix.component.navigation.ContextManager;
+import js.Lib;
+import splity.client.SplityAPI;
 
 
 /**
@@ -33,30 +38,45 @@ class GallerySplity extends DisplayObject
 	
 	private static var CHANGE_PAGE:String = "changePage";
 	
+	/**
+	 * unique id of the client
+	 */
 	private var _id:String;
 	
+	/**
+	 * current mode of gallery
+	 */
 	private var _mode:GalleryMode;
 	
+	/**
+	 * instance of SplityAPI communicating
+	 * with Splity server
+	 */
 	private var _splityAPI:SplityAPI;
 	
+	/**
+	 * Wether the last page change was triggered
+	 * because of user action (false) or because
+	 * of a Splity dispatch (true)
+	 */
 	private var _remotePageChange:Bool;
 	
 	public function new(rootElement:HtmlDom, brixId:String) 
 	{
-		init();
+		super(rootElement, brixId);
 	}
 	
 	/**
 	 * init calls attributes, connect
 	 * with Splity server
 	 */
-	function init()
+	override function init()
 	{
 		_id = "" + Math.round(Math.random() * 1000);
 		_remotePageChange = false;
 		
 		_splityAPI = new SplityAPI();
-		_splityAPI.connect(SPLITY_URL);
+		_splityAPI.connect(SPLITY_URL, null, null, null);
 		_splityAPI.subscribe(onConnect, onError, onStatus);
 		
 		initMode();
@@ -90,11 +110,15 @@ class GallerySplity extends DisplayObject
 	 * dispatch with splity to update all
 	 * clients
 	 */
-	function onPageChange()
+	function onPageChange(e:Event)
 	{
+		//check that page change is result of user
+		//action. If result of another splity
+		//dispatch, should not dispatch else 
+		//infinite dispatch loop
 		if (_remotePageChange == false)
 		{
-			_splityAPI.dispatch(CHANGE_PAGE);
+			_splityAPI.dispatch(CHANGE_PAGE, null, null);
 		}
 		
 		_remotePageChange = false;
@@ -133,7 +157,7 @@ class GallerySplity extends DisplayObject
 	 * all functionnalities which are not
 	 * displayed by another devices
 	 */
-	function setDesktopFunctionnalities(functionnalities)
+	function setDesktopFunctionnalities(functionnalities:List<Dynamic>)
 	{
 		for (functionnality in functionnalities)
 		{
@@ -202,7 +226,7 @@ class GallerySplity extends DisplayObject
 	 */
 	function addFunctionnality(name)
 	{
-		ContextManager.addContext(name);
+		getContextManger().addContext(name);
 	}
 	
 	/**
@@ -211,7 +235,14 @@ class GallerySplity extends DisplayObject
 	 */
 	function removeFunctionnality(name)
 	{
-		ContextManager.removeContext(name);
+		getContextManger().removeContext(name);
+	}
+	
+	function getContextManger():ContextManager
+	{
+		var contextManagerNode = Lib.document.getElementById("contextManager");
+		var application:Application = Application.get(brixInstanceId);
+		return application.getAssociatedComponents(contextManagerNode, ContextManager).first();
 	}
 	
 	/**
@@ -220,7 +251,8 @@ class GallerySplity extends DisplayObject
 	 */
 	function changePage(name)
 	{
-		Page.openPage(name);
+		_remotePageChange = true;
+		Page.openPage(name, false, null, null, null);
 	}
 	
 	/**
@@ -229,7 +261,7 @@ class GallerySplity extends DisplayObject
 	 */
 	function listenToPageChange()
 	{
-		Lib.document.body.addEventListener("pageChange", onPageChange);
+		Lib.document.body.addEventListener(Page.EVENT_TYPE_OPEN_START, onPageChange, false);
 	}
 	
 	//////////////////
@@ -250,9 +282,9 @@ class GallerySplity extends DisplayObject
 	 * Once the id is registered, start
 	 * the application
 	 */
-	function onMetaDataSet()
+	function onMetaDataSet(data:Dynamic)
 	{
-		initAppliation();
+		initApplication();
 	}
 	
 	/**
@@ -269,27 +301,27 @@ class GallerySplity extends DisplayObject
 	 * Called when there is an update from
 	 * the Splity server
 	 */
-	function onStatus(messageData:MessageDataModel)
+	function onStatus(messageData)
 	{
 		switch (messageData.type)
 		{
-			case MessageDataModel.SPLITY:
-				if (_mode == DESKTOP)
-				{
-					refreshFunctionnalities();
-				}
-				
-			case MessageDataModel.TYPE_CLIENT_DELETED:
-				if (_mode == DESKTOP)
-				{
-					refreshFunctionnalities();
-				}
-				
-			case MessageDataModel.TYPE_CLIENT_DISPATCH:
-				if (messageData.name == CHANGE_PAGE)
-				{
-					changePage(messageData.pageName);
-				}
+			//case MessageDataModel.SPLITY:
+				//if (_mode == DESKTOP)
+				//{
+					//refreshFunctionnalities();
+				//}
+				//
+			//case MessageDataModel.TYPE_CLIENT_DELETED:
+				//if (_mode == DESKTOP)
+				//{
+					//refreshFunctionnalities();
+				//}
+				//
+			//case MessageDataModel.TYPE_CLIENT_DISPATCH:
+				//if (messageData.name == CHANGE_PAGE)
+				//{
+					//changePage(messageData.pageName);
+				//}
 		}
 	}
 }
