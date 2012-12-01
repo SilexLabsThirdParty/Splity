@@ -1,0 +1,104 @@
+<html>
+<head>
+	<title>Splity Gallery</title>
+	<link href="app.css" type="text/css" rel="stylesheet"></link>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta> 
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta name="initialPageName" content="page01"></meta>
+	<script data-brix-use="brix.component.group.Group"></script>
+	<script data-brix-use="brix.component.navigation.Page"></script>
+	<script data-brix-use="brix.component.navigation.Layer"></script>
+	<script data-brix-use="brix.component.navigation.link.LinkToPage"></script>
+	<script data-brix-use="brix.component.navigation.link.LinkClosePage"></script>
+	<script data-brix-use="brix.component.navigation.link.TouchLink"></script>
+</head>
+<body>
+	<div class="pages-container">
+		
+	<!-- PAGE 01 -->
+		<a class="Page" name="page01"></a>
+		
+		<!-- CONTENT -->
+		<div class="Layer page01 Group">
+			<!-- IMAGE -->
+			<div class="big-img" style="background-image:url('assets/image01.jpg')"></div>
+		</div>
+		
+		<!-- NAVIGATION GESTURES -->
+		<div class="Layer page01 Group">
+			<!-- NAV -->
+			<a href="#page02" class="LinkToPage TouchLink right-container"
+				data-touch-type="right"
+				data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
+				data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
+			</a>
+		</div>
+		
+		<!-- NAVIGATION ARROWS-->
+		<div class="Layer page01 Group"
+			data-show-start-style="popup-invisible" data-show-end-style="popup-visible">
+			<div class="right-arrow ResizeIcon"/>
+		</div>
+
+	<!-- IMAGE02 -->
+
+		<!-- IMAGE -->
+		<a class="Page" name="page02"></a>
+		<div class="Layer page02 Group">
+			<!-- IMAGE -->
+			<div class="big-img" style="background-image:url('assets/image02.jpg')"></div>
+		</div>
+		
+		<!-- NAVIGATION GESTURES -->
+		<div class="Layer page02 Group">
+			<!-- NAV -->
+			<a href="#page02nav" class="LinkToPage nav-open" target="_top"></a>
+			<a href="#page01" class="LinkToPage TouchLink left-container"
+				data-touch-type="left"
+				data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
+				data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
+			</a>
+			<a href="#page03" class="LinkToPage TouchLink right-container"
+				data-touch-type="right"
+				data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
+				data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
+			</a>
+		</div>
+		
+		<!-- NAVIGATION ARROWS-->
+		<div class="Layer page02 Group"
+			data-show-start-style="popup-invisible" data-show-end-style="popup-visible">
+			<div class="left-arrow ResizeIcon"/>	
+			<div class="right-arrow ResizeIcon"/>
+		</div>
+
+		
+	<!-- IMAGE03 -->
+
+		<!-- IMAGE -->
+		<a class="Page" name="page03"></a>
+		<div class="Layer page03 Group">
+			<!-- IMAGE -->
+			<div class="big-img" style="background-image:url('assets/image03.jpg')"></div>
+		</div>	
+		
+		<!-- NAVIGATION GESTURES -->
+		<div class="Layer page03 Group">
+			<!-- NAV -->
+			<a href="#page03nav" class="LinkToPage nav-open" target="_top"></a>
+			<a href="#page02" class="LinkToPage TouchLink left-container"
+				data-touch-type="left"
+				data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
+				data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
+			</a>
+		</div>
+		
+		<!-- NAVIGATION ARROWS-->
+		<div class="Layer page03 Group"
+			data-show-start-style="popup-invisible" data-show-end-style="popup-visible">
+			<div class="left-arrow ResizeIcon"/>	
+		</div>
+
+	</div>
+</body>
+</html>
