@@ -27,6 +27,9 @@ class Splity extends Server
 	{
 		// force instance name to the ip
 		instanceName = Web.getClientIP();
+		// fixeme : for tests
+		instanceName = "splity.test1";
+		name = "splity";
 		// add info to meta
 		metaData.instanceName=instanceName;
 		metaData.appName=name;
