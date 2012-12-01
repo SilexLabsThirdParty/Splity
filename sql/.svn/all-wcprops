@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svnroot/php-polling/!svn/ver/89/trunk/bin/sql
+END
+application.sql
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svnroot/php-polling/!svn/ver/89/trunk/bin/sql/application.sql
+END
+messages.sql
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svnroot/php-polling/!svn/ver/89/trunk/bin/sql/messages.sql
+END
+client.sql
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svnroot/php-polling/!svn/ver/89/trunk/bin/sql/client.sql
+END
