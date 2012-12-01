@@ -128,3 +128,59 @@ a{
 	background-image:url("assets/arrow_right.png");
 	background-position:right center;
 }
+
+/**********/
+/* THUMBS */
+/**********/
+
+.thumbs-open{
+	position:absolute;
+	margin-left:10%;
+	width:80%;
+	height:100%;
+	z-index:5;
+}
+
+.thumbs-close{
+	position:absolute;
+	margin-left:10%;
+	width:80%;
+	height:100%;
+	z-index:6;
+}
+
+.thumbs{
+	position:absolute;
+	width:100%;
+	height:100%;
+}
+
+.thumbs-container{
+	position:absolute;
+	bottom:0;	
+	width:100%;
+	height:20%;
+	position:absolute;	
+	background-color: rgba(66,66,66,0.5);
+	overflow-x:hidden;
+	overflow-y:hidden;
+	z-index:20;
+}
+.thumbs-mask{
+	width:10000px;
+}
+.thumb{
+	max-height:80px;
+	max-width:130px;
+	height:100%;
+	/*width:100%;*/
+	margin-left:10px;
+	position:relative;
+	/*margin-top:10px;*/
+	border: lavender 2px solid;
+	opacity:0.5;
+	z-index:12;
+}
+.thumb:hover{
+	opacity:1;
+}
