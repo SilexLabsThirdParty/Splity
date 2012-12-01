@@ -1200,7 +1200,7 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 				element.pause();
 				element.currentTime = 0;
 			} catch( e ) {
-				haxe.Log.trace("Layer error: could not access audio or video element",{ fileName : "Layer.hx", lineNumber : 576, className : "brix.component.navigation.Layer", methodName : "cleanupVideoElements"});
+				haxe.Log.trace("Layer error: could not access audio or video element",{ fileName : "Layer.hx", lineNumber : 575, className : "brix.component.navigation.Layer", methodName : "cleanupVideoElements"});
 			}
 		}
 	}
@@ -1213,7 +1213,7 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 				element.pause();
 				element.currentTime = 0;
 			} catch( e ) {
-				haxe.Log.trace("Layer error: could not access audio or video element",{ fileName : "Layer.hx", lineNumber : 554, className : "brix.component.navigation.Layer", methodName : "cleanupAudioElements"});
+				haxe.Log.trace("Layer error: could not access audio or video element",{ fileName : "Layer.hx", lineNumber : 553, className : "brix.component.navigation.Layer", methodName : "cleanupAudioElements"});
 			}
 		}
 	}
@@ -1229,7 +1229,7 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 				}
 				element.muted = brix.component.sound.SoundOn.isMuted;
 			} catch( e ) {
-				haxe.Log.trace("Layer error: could not access audio or video element",{ fileName : "Layer.hx", lineNumber : 532, className : "brix.component.navigation.Layer", methodName : "setupVideoElements"});
+				haxe.Log.trace("Layer error: could not access audio or video element",{ fileName : "Layer.hx", lineNumber : 531, className : "brix.component.navigation.Layer", methodName : "setupVideoElements"});
 			}
 		}
 	}
@@ -1245,18 +1245,18 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 				}
 				element.muted = brix.component.sound.SoundOn.isMuted;
 			} catch( e ) {
-				haxe.Log.trace("Layer error: could not access audio or video element",{ fileName : "Layer.hx", lineNumber : 507, className : "brix.component.navigation.Layer", methodName : "setupAudioElements"});
+				haxe.Log.trace("Layer error: could not access audio or video element",{ fileName : "Layer.hx", lineNumber : 506, className : "brix.component.navigation.Layer", methodName : "setupAudioElements"});
 			}
 		}
 	}
 	,doHide: function(transitionData,transitionObserver,preventTransitions,e) {
-		haxe.Log.trace("doHide " + Std.string(preventTransitions),{ fileName : "Layer.hx", lineNumber : 433, className : "brix.component.navigation.Layer", methodName : "doHide"});
+		haxe.Log.trace("doHide " + Std.string(preventTransitions),{ fileName : "Layer.hx", lineNumber : 432, className : "brix.component.navigation.Layer", methodName : "doHide"});
 		if(e != null && e.target != this.rootElement) {
-			haxe.Log.trace("End transition event from another html element",{ fileName : "Layer.hx", lineNumber : 436, className : "brix.component.navigation.Layer", methodName : "doHide"});
+			haxe.Log.trace("End transition event from another html element",{ fileName : "Layer.hx", lineNumber : 435, className : "brix.component.navigation.Layer", methodName : "doHide"});
 			return;
 		}
 		if(preventTransitions == false && this.doHideCallback == null) {
-			haxe.Log.trace("Warning: end transition callback already called",{ fileName : "Layer.hx", lineNumber : 441, className : "brix.component.navigation.Layer", methodName : "doHide"});
+			haxe.Log.trace("Warning: end transition callback already called",{ fileName : "Layer.hx", lineNumber : 440, className : "brix.component.navigation.Layer", methodName : "doHide"});
 			return;
 		}
 		if(preventTransitions == false) {
@@ -1269,7 +1269,7 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 			event.initCustomEvent("onLayerHideStop",false,false,{ transitionData : transitionData, target : this.rootElement, layer : this});
 			this.rootElement.dispatchEvent(event);
 		} catch( e1 ) {
-			haxe.Log.trace("Error: could not dispatch event " + Std.string(e1),{ fileName : "Layer.hx", lineNumber : 466, className : "brix.component.navigation.Layer", methodName : "doHide"});
+			haxe.Log.trace("Error: could not dispatch event " + Std.string(e1),{ fileName : "Layer.hx", lineNumber : 465, className : "brix.component.navigation.Layer", methodName : "doHide"});
 		}
 		if(transitionObserver != null) transitionObserver.removeTransition(this);
 		while(this.rootElement.childNodes.length > 0) {
@@ -1282,11 +1282,11 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 	,hide: function(transitionData,transitionObserver,preventTransitions) {
 		if(preventTransitions == null) preventTransitions = false;
 		if(this.status == brix.component.navigation.LayerStatus.hideTransition) {
-			haxe.Log.trace("Warning: hide break previous transition hide",{ fileName : "Layer.hx", lineNumber : 371, className : "brix.component.navigation.Layer", methodName : "hide"});
+			haxe.Log.trace("Warning: hide break previous transition hide",{ fileName : "Layer.hx", lineNumber : 370, className : "brix.component.navigation.Layer", methodName : "hide"});
 			this.doHideCallback(null);
 			this.removeTransitionEvent(this.doHideCallback);
 		} else if(this.status == brix.component.navigation.LayerStatus.showTransition) {
-			haxe.Log.trace("Warning: hide break previous transition show",{ fileName : "Layer.hx", lineNumber : 378, className : "brix.component.navigation.Layer", methodName : "hide"});
+			haxe.Log.trace("Warning: hide break previous transition show",{ fileName : "Layer.hx", lineNumber : 377, className : "brix.component.navigation.Layer", methodName : "hide"});
 			this.doShowCallback(null);
 			this.removeTransitionEvent(this.doShowCallback);
 		}
@@ -1298,7 +1298,7 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 			event.initCustomEvent("onLayerHideStart",false,false,{ transitionData : transitionData, target : this.rootElement, layer : this});
 			this.rootElement.dispatchEvent(event);
 		} catch( e ) {
-			haxe.Log.trace("Error: could not dispatch event " + Std.string(e),{ fileName : "Layer.hx", lineNumber : 407, className : "brix.component.navigation.Layer", methodName : "hide"});
+			haxe.Log.trace("Error: could not dispatch event " + Std.string(e),{ fileName : "Layer.hx", lineNumber : 406, className : "brix.component.navigation.Layer", methodName : "hide"});
 		}
 		var audioNodes = this.rootElement.getElementsByTagName("audio");
 		this.cleanupAudioElements(audioNodes);
@@ -1312,18 +1312,18 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 			})($bind(this,this.doHide),transitionData,transitionObserver,preventTransitions);
 			this.startTransition(brix.component.navigation.transition.TransitionType.hide,transitionData,this.doHideCallback);
 		} else {
-			haxe.Log.trace("no transition",{ fileName : "Layer.hx", lineNumber : 424, className : "brix.component.navigation.Layer", methodName : "hide"});
+			haxe.Log.trace("no transition",{ fileName : "Layer.hx", lineNumber : 423, className : "brix.component.navigation.Layer", methodName : "hide"});
 			this.doHide(transitionData,transitionObserver,preventTransitions,null);
 		}
 	}
 	,doShow: function(transitionData,transitionObserver,preventTransitions,e) {
-		haxe.Log.trace("doShow",{ fileName : "Layer.hx", lineNumber : 317, className : "brix.component.navigation.Layer", methodName : "doShow"});
+		haxe.Log.trace("doShow",{ fileName : "Layer.hx", lineNumber : 316, className : "brix.component.navigation.Layer", methodName : "doShow"});
 		if(e != null && e.target != this.rootElement) {
-			haxe.Log.trace("End transition event from another html element",{ fileName : "Layer.hx", lineNumber : 319, className : "brix.component.navigation.Layer", methodName : "doShow"});
+			haxe.Log.trace("End transition event from another html element",{ fileName : "Layer.hx", lineNumber : 318, className : "brix.component.navigation.Layer", methodName : "doShow"});
 			return;
 		}
 		if(preventTransitions == false && this.doShowCallback == null) {
-			haxe.Log.trace("Warning: end transition callback already called",{ fileName : "Layer.hx", lineNumber : 323, className : "brix.component.navigation.Layer", methodName : "doShow"});
+			haxe.Log.trace("Warning: end transition callback already called",{ fileName : "Layer.hx", lineNumber : 322, className : "brix.component.navigation.Layer", methodName : "doShow"});
 			return;
 		}
 		if(preventTransitions == false) this.endTransition(brix.component.navigation.transition.TransitionType.show,transitionData,this.doShowCallback);
@@ -1338,7 +1338,7 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 			event.initCustomEvent("onLayerShowStop",false,false,{ transitionData : transitionData, target : this.rootElement, layer : this});
 			this.rootElement.dispatchEvent(event);
 		} catch( e1 ) {
-			haxe.Log.trace("Error: could not dispatch event " + Std.string(e1),{ fileName : "Layer.hx", lineNumber : 353, className : "brix.component.navigation.Layer", methodName : "doShow"});
+			haxe.Log.trace("Error: could not dispatch event " + Std.string(e1),{ fileName : "Layer.hx", lineNumber : 352, className : "brix.component.navigation.Layer", methodName : "doShow"});
 		}
 		if(transitionObserver != null) transitionObserver.removeTransition(this);
 	}
@@ -1378,8 +1378,7 @@ brix.component.navigation.Layer.prototype = $extend(brix.component.ui.DisplayObj
 			haxe.Log.trace("no trnasition",{ fileName : "Layer.hx", lineNumber : 305, className : "brix.component.navigation.Layer", methodName : "show"});
 			this.doShow(transitionData,transitionObserver,preventTransitions,null);
 		}
-		haxe.Log.trace("set display to null",{ fileName : "Layer.hx", lineNumber : 308, className : "brix.component.navigation.Layer", methodName : "show"});
-		this.rootElement.style.display = "block";
+		this.rootElement.style.display = null;
 	}
 	,removeTransitionEvent: function(onEndCallback) {
 		this.rootElement.removeEventListener("transitionend",onEndCallback,false);
@@ -1663,7 +1662,6 @@ brix.component.navigation.link.LinkBase.__interfaces__ = [brix.component.group.I
 brix.component.navigation.link.LinkBase.__super__ = brix.component.ui.DisplayObject;
 brix.component.navigation.link.LinkBase.prototype = $extend(brix.component.ui.DisplayObject.prototype,{
 	onClick: function(e) {
-		haxe.Log.trace("click on link",{ fileName : "LinkBase.hx", lineNumber : 119, className : "brix.component.navigation.link.LinkBase", methodName : "onClick"});
 		e.preventDefault();
 		this.transitionDataShow = brix.component.navigation.transition.TransitionTools.getTransitionData(this.rootElement,brix.component.navigation.transition.TransitionType.show);
 		this.transitionDataHide = brix.component.navigation.transition.TransitionTools.getTransitionData(this.rootElement,brix.component.navigation.transition.TransitionType.hide);
@@ -1697,7 +1695,6 @@ brix.component.navigation.link.LinkToPage.__super__ = brix.component.navigation.
 brix.component.navigation.link.LinkToPage.prototype = $extend(brix.component.navigation.link.LinkBase.prototype,{
 	onClick: function(e) {
 		brix.component.navigation.link.LinkBase.prototype.onClick.call(this,e);
-		haxe.Log.trace("link to page clicked",{ fileName : "LinkToPage.hx", lineNumber : 30, className : "brix.component.navigation.link.LinkToPage", methodName : "onClick"});
 		brix.component.navigation.Page.openPage(this.linkName,this.targetAttr == "_top",this.transitionDataShow,this.transitionDataHide,this.brixInstanceId,this.groupElement);
 	}
 	,__class__: brix.component.navigation.link.LinkToPage
@@ -2483,6 +2480,8 @@ brix.core.ApplicationContext.prototype = {
 		this.registeredUIComponents.push({ classname : "brix.component.navigation.link.TouchLink", args : null});
 		brix.component.navigation.Page;
 		this.registeredUIComponents.push({ classname : "brix.component.navigation.Page", args : null});
+		brix.component.navigation.ContextManager;
+		this.registeredUIComponents.push({ classname : "brix.component.navigation.ContextManager", args : null});
 		components.GallerySplity;
 		this.registeredUIComponents.push({ classname : "components.GallerySplity", args : null});
 	}
@@ -4393,7 +4392,7 @@ brix.core.Application.instances = new Hash();
 haxe.Unserializer.DEFAULT_RESOLVER = Type;
 haxe.Unserializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";
 haxe.Unserializer.CODES = null;
-brix.core.ApplicationContext.htmlDocumentElement = haxe.Unserializer.run("y4988:%3CHTML%3E%0D%0A%3CHEAD%3E%0D%0A%09%3CTITLE%3ESplity%20Gallery%3C%2FTITLE%3E%0D%0A%09%3CLINK%20href%3D%22app.css%22%20type%3D%22text%2Fcss%22%20rel%3D%22stylesheet%22%3E%3C%2FLINK%3E%0D%0A%09%3CMETA%20http-equiv%3D%22Content-Type%22%20content%3D%22text%2Fhtml%3B%20charset%3DUTF-8%22%3E%3C%2FMETA%3E%20%0D%0A%09%3CMETA%20name%3D%22viewport%22%20content%3D%22width%3Ddevice-width%2Cinitial-scale%3D1.0%2Cminimum-scale%3D1.0%2Cmaximum-scale%3D1.0%2Cuser-scalable%3Dno%22%3E%3C%2FMETA%3E%0D%0A%09%3CMETA%20name%3D%22initialPageName%22%20content%3D%22page01%22%3E%3C%2FMETA%3E%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%3C%2FHEAD%3E%0D%0A%0D%0A%3CBODY%3E%0D%0A%09%3CDIV%20class%3D%22GallerySplity%22%3E%3C%2FDIV%3E%0D%0A%09%3CDIV%20class%3D%22pages-container%22%3E%0D%0A%09%09%0D%0A%09%0D%0A%09%09%3CA%20class%3D%22Page%22%20name%3D%22page01%22%3E%3C%2FA%3E%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group1%20Layer%20page01%22%3E%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22big-img%22%20style%3D%22background-image%3Aurl%28assets%2Fimage01.jpg%29%3B%22%3E%3C%2FDIV%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group2%20Layer%20page01%22%3E%0D%0A%09%09%09%0D%0A%09%09%09%3CA%20href%3D%22%23page02%22%20class%3D%22LinkToPage%20TouchLink%20right-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-left%22%20data-group-id%3D%22Group2%22%20data-show-start-style%3D%22page-right%22%20data-touch-type%3D%22right%22%3E%0D%0A%09%09%09%3C%2FA%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group3%20Layer%20page01%22%20data-show-end-style%3D%22popup-visible%22%20data-show-start-style%3D%22popup-invisible%22%3E%0D%0A%09%09%09%3CDIV%20class%3D%22right-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%0D%0A%09%0D%0A%0D%0A%09%09%0D%0A%09%09%3CA%20class%3D%22Page%22%20name%3D%22page02%22%3E%3C%2FA%3E%0D%0A%09%09%3CDIV%20class%3D%22Group4%20Layer%20page02%22%3E%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22big-img%22%20style%3D%22background-image%3Aurl%28assets%2Fimage02.jpg%29%3B%22%3E%3C%2FDIV%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group5%20Layer%20page02%22%3E%0D%0A%09%09%09%0D%0A%09%09%09%3CA%20href%3D%22%23page02nav%22%20class%3D%22LinkToPage%20nav-open%22%20target%3D%22_top%22%20data-group-id%3D%22Group5%22%3E%3C%2FA%3E%0D%0A%09%09%09%3CA%20href%3D%22%23page01%22%20class%3D%22LinkToPage%20TouchLink%20left-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-right%22%20data-group-id%3D%22Group5%22%20data-show-start-style%3D%22page-left%22%20data-touch-type%3D%22left%22%3E%0D%0A%09%09%09%3C%2FA%3E%0D%0A%09%09%09%3CA%20href%3D%22%23page03%22%20class%3D%22LinkToPage%20TouchLink%20right-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-left%22%20data-group-id%3D%22Group5%22%20data-show-start-style%3D%22page-right%22%20data-touch-type%3D%22right%22%3E%0D%0A%09%09%09%3C%2FA%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group6%20Layer%20page02%22%20data-show-end-style%3D%22popup-visible%22%20data-show-start-style%3D%22popup-invisible%22%3E%0D%0A%09%09%09%3CDIV%20class%3D%22left-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%09%0D%0A%09%09%09%3CDIV%20class%3D%22right-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%0D%0A%09%09%0D%0A%09%0D%0A%0D%0A%09%09%0D%0A%09%09%3CA%20class%3D%22Page%22%20name%3D%22page03%22%3E%3C%2FA%3E%0D%0A%09%09%3CDIV%20class%3D%22Group7%20Layer%20page03%22%3E%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22big-img%22%20style%3D%22background-image%3Aurl%28assets%2Fimage03.jpg%29%3B%22%3E%3C%2FDIV%3E%0D%0A%09%09%3C%2FDIV%3E%09%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group8%20Layer%20page03%22%3E%0D%0A%09%09%09%0D%0A%09%09%09%3CA%20href%3D%22%23page03nav%22%20class%3D%22LinkToPage%20nav-open%22%20target%3D%22_top%22%20data-group-id%3D%22Group8%22%3E%3C%2FA%3E%0D%0A%09%09%09%3CA%20href%3D%22%23page02%22%20class%3D%22LinkToPage%20TouchLink%20left-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-right%22%20data-group-id%3D%22Group8%22%20data-show-start-style%3D%22page-left%22%20data-touch-type%3D%22left%22%3E%0D%0A%09%09%09%3C%2FA%3E%0D%0A%09%09%3C%2FDIV%3E%0D%0A%09%09%0D%0A%09%09%0D%0A%09%09%3CDIV%20class%3D%22Group9%20Layer%20page03%22%20data-show-end-style%3D%22popup-visible%22%20data-show-start-style%3D%22popup-invisible%22%3E%0D%0A%09%09%09%3CDIV%20class%3D%22left-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%09%0D%0A%09%09%3C%2FDIV%3E%0D%0A%0D%0A%09%3C%2FDIV%3E%0D%0A%3C%2FBODY%3E%3C%2FHTML%3E");
+brix.core.ApplicationContext.htmlDocumentElement = haxe.Unserializer.run("y5557:%3CHTML%3E%0D%0A%3CHEAD%3E%0D%0A%09%3CTITLE%3ESplity%20Gallery%3C%2FTITLE%3E%0D%0A%09%3CLINK%20href%3D%22app.css%22%20type%3D%22text%2Fcss%22%20rel%3D%22stylesheet%22%3E%3C%2FLINK%3E%0D%0A%09%3CMETA%20http-equiv%3D%22Content-Type%22%20content%3D%22text%2Fhtml%3B%20charset%3DUTF-8%22%3E%3C%2FMETA%3E%20%0D%0A%09%3CMETA%20name%3D%22viewport%22%20content%3D%22width%3Ddevice-width%2Cinitial-scale%3D1.0%2Cminimum-scale%3D1.0%2Cmaximum-scale%3D1.0%2Cuser-scalable%3Dno%22%3E%3C%2FMETA%3E%0D%0A%09%3CMETA%20name%3D%22initialPageName%22%20content%3D%22page01%22%3E%3C%2FMETA%3E%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%09%0D%0A%3C%2FHEAD%3E%0D%0A%0D%0A%3CBODY%3E%0D%0A%09%3CDIV%20class%3D%22GallerySplity%22%3E%3C%2FDIV%3E%0D%0A%09%3CDIV%20class%3D%22main-container%20ContextManager%22%20data-context-list%3D%22display%20thumblist%20remote%22%20data-initial-context%3D%22%22%3E%0D%0A%09%09%3CDIV%20class%3D%22pages-container%22%3E%0D%0A%09%09%09%0D%0A%09%09%0D%0A%09%09%09%3CA%20class%3D%22Page%22%20name%3D%22page01%22%3E%3C%2FA%3E%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group1%20Layer%20page01%22%20data-context%3D%22display%22%3E%0D%0A%09%09%09%09%0D%0A%09%09%09%09%3CDIV%20class%3D%22big-img%22%20style%3D%22background-image%3Aurl%28assets%2Fimage01.jpg%29%3B%22%3E%3C%2FDIV%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group2%20Layer%20page01%22%3E%0D%0A%09%09%09%09%0D%0A%09%09%09%09%3CA%20href%3D%22%23page02%22%20class%3D%22LinkToPage%20TouchLink%20right-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-left%22%20data-group-id%3D%22Group2%22%20data-show-start-style%3D%22page-right%22%20data-touch-type%3D%22right%22%3E%0D%0A%09%09%09%09%3C%2FA%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group3%20Layer%20page01%22%20data-show-end-style%3D%22popup-visible%22%20data-show-start-style%3D%22popup-invisible%22%20data-context%3D%22remote%22%3E%0D%0A%09%09%09%09%3CDIV%20class%3D%22right-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%0D%0A%09%09%0D%0A%09%09%09%3CA%20class%3D%22Page%22%20name%3D%22page02%22%3E%3C%2FA%3E%0D%0A%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group4%20Layer%20page02%22%20data-context%3D%22display%22%3E%0D%0A%09%09%09%09%0D%0A%09%09%09%09%3CDIV%20class%3D%22big-img%22%20style%3D%22background-image%3Aurl%28assets%2Fimage02.jpg%29%3B%22%3E%3C%2FDIV%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group5%20Layer%20page02%22%3E%0D%0A%09%09%09%09%0D%0A%09%09%09%09%3CA%20href%3D%22%23page02nav%22%20class%3D%22LinkToPage%20nav-open%22%20target%3D%22_top%22%20data-group-id%3D%22Group5%22%3E%3C%2FA%3E%0D%0A%09%09%09%09%3CA%20href%3D%22%23page01%22%20class%3D%22LinkToPage%20TouchLink%20left-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-right%22%20data-group-id%3D%22Group5%22%20data-show-start-style%3D%22page-left%22%20data-touch-type%3D%22left%22%3E%0D%0A%09%09%09%09%3C%2FA%3E%0D%0A%09%09%09%09%3CA%20href%3D%22%23page03%22%20class%3D%22LinkToPage%20TouchLink%20right-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-left%22%20data-group-id%3D%22Group5%22%20data-show-start-style%3D%22page-right%22%20data-touch-type%3D%22right%22%3E%0D%0A%09%09%09%09%3C%2FA%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group6%20Layer%20page02%22%20data-show-end-style%3D%22popup-visible%22%20data-show-start-style%3D%22popup-invisible%22%20data-context%3D%22remote%22%3E%0D%0A%09%09%09%09%3CDIV%20class%3D%22left-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%09%0D%0A%09%09%09%09%3CDIV%20class%3D%22right-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%0D%0A%09%09%09%0D%0A%09%09%0D%0A%09%09%09%3CA%20class%3D%22Page%22%20name%3D%22page03%22%3E%3C%2FA%3E%0D%0A%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group7%20Layer%20page03%22%20data-context%3D%22display%22%3E%0D%0A%09%09%09%09%0D%0A%09%09%09%09%3CDIV%20class%3D%22big-img%22%20style%3D%22background-image%3Aurl%28assets%2Fimage03.jpg%29%3B%22%3E%3C%2FDIV%3E%0D%0A%09%09%09%3C%2FDIV%3E%09%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group8%20Layer%20page03%22%3E%0D%0A%09%09%09%09%0D%0A%09%09%09%09%3CA%20href%3D%22%23page03nav%22%20class%3D%22LinkToPage%20nav-open%22%20target%3D%22_top%22%20data-group-id%3D%22Group8%22%3E%3C%2FA%3E%0D%0A%09%09%09%09%3CA%20href%3D%22%23page02%22%20class%3D%22LinkToPage%20TouchLink%20left-container%22%20data-hide-start-style%3D%22page-center-horizontal%22%20data-show-end-style%3D%22page-center-horizontal%22%20data-hide-end-style%3D%22page-right%22%20data-group-id%3D%22Group8%22%20data-show-start-style%3D%22page-left%22%20data-touch-type%3D%22left%22%3E%0D%0A%09%09%09%09%3C%2FA%3E%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%09%09%09%0D%0A%09%09%09%0D%0A%09%09%09%3CDIV%20class%3D%22Group9%20Layer%20page03%22%20data-show-end-style%3D%22popup-visible%22%20data-show-start-style%3D%22popup-invisible%22%20data-context%3D%22remote%22%3E%0D%0A%09%09%09%09%3CDIV%20class%3D%22left-arrow%20ResizeIcon%22%3E%3C%2FDIV%3E%09%0D%0A%09%09%09%3C%2FDIV%3E%0D%0A%0D%0A%09%09%3C%2FDIV%3E%0D%0A%09%3C%2FDIV%3E%0D%0A%3C%2FBODY%3E%3C%2FHTML%3E");
 brix.util.NodeTypes.ELEMENT_NODE = 1;
 brix.util.NodeTypes.ATTRIBUTE_NODE = 2;
 brix.util.NodeTypes.TEXT_NODE = 3;
