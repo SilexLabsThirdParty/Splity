@@ -63,6 +63,10 @@ class splity_server_Splity extends org_phpMessaging_server_Server {
 		$instanceName = $_SERVER['REMOTE_ADDR'];
 		$instanceName = "splity.test1";
 		$name = "splity";
+		$params = php_Web::getParams();
+		if($params->exists("app")) {
+			$name = $params->get("app");
+		}
 		if($metaData === null) {
 			$metaData = _hx_anonymous(array());
 		}

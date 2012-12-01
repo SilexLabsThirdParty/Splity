@@ -40,7 +40,7 @@ $config = '<xml>
 	<splity>
 	 	<functionalities>
 		 	<functionality>
-		 		<name>thumbs</name>
+		 		<name>thumblist</name>
 		 		<maxUsage>1</maxUsage>
 		 	</functionality>
 		 	<functionality>

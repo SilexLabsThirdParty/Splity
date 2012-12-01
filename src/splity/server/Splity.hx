@@ -37,6 +37,10 @@ class Splity extends Server
 		// fixeme : for tests
 		instanceName = "splity.test1";
 		name = "splity";
+        var params = php.Web.getParams();
+        if(params.exists('app'))
+        	name = params.get('app');
+
 		// add info to meta
 		if (metaData == null)
 			metaData = {};
