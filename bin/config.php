@@ -3,10 +3,10 @@
 $config = '<xml>
 	<db>
 	 	<!-- Data base host name 
-		<dbHost>localhost</dbHost>
+		<dbHost>../SLDialog.sqlite2</dbHost>
 		-->
 	 	<!-- Data base host name -->
-		<dbHost>../SLDialog.sqlite2</dbHost>
+		<dbHost>localhost</dbHost>
 
 	 	<!-- Data base port -->
 		<dbPort></dbPort>
@@ -18,11 +18,7 @@ $config = '<xml>
 		<dbPassword>root</dbPassword>
 
 	 	<!-- Data base name -->
-<!-- 
-		<dbName>php-messaging</dbName>
-		<dbName>sldialog</dbName>
- -->
-		<dbName></dbName>
+		<dbName>splity</dbName>
 	</db>
 	<polling>
 	 	<!-- total time allowed to hold the client in the long polling in MS (milli seconds) -->

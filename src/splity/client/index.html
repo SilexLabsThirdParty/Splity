@@ -1,0 +1,44 @@
+<!DOCTYPE html > 
+<html><head> 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+    <title>SLDIALOG</title> 
+	<meta name="description" content="This is a sample application, an example of use of the php-messaging library" />
+	<meta name="keywords" content="php, neko, haxe, messaging, collaborative, web applications, remoting, cross platform" />
+	<style type="text/css">
+		.my-style{
+			color: red;
+		}
+		.message{
+			background-color: grey;
+		}
+		.trace{
+			background-color: yellow;
+		}
+	</style>
+</head> 
+<body>
+	<button id="dispatch">dispatch</button>
+	<button id="refresh">refresh</button>
+	<div id="template">
+		<p>::count:: clients</p>
+		<p>myId=::myId::</p>
+		<ul>
+			::foreach clients::
+			<li>
+				<ul class="::if (myId==metaData.myId)::my-style::end::">
+					<li>id : ::id::</li>
+					<li>applicationId : ::applicationId::</li>
+					<li>time : ::time::</li>
+					<li>lastActivity : ::lastActivity::</li>
+					<li>metaData : ::metaData::</li>
+				</ul>
+			</li>
+			::end::
+		</ul>
+	</div>
+	<div id="message" class="message">
+	</div>
+	<div id="trace" class="trace">
+	</div>
+</body>
+</html>
