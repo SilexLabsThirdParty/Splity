@@ -2796,10 +2796,19 @@ components.GallerySplity.__super__ = brix.component.ui.DisplayObject;
 components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.prototype,{
 	onStatus: function(messageData) {
 		switch(messageData.type) {
+		case splity.client.SplityAPI.SPLITY:
+			if(this._mode == components.GalleryMode.DESKTOP) this.refreshFunctionnalities();
+			break;
+		case "TYPE_CLIENT_DELETED":
+			if(this._mode == components.GalleryMode.DESKTOP) this.refreshFunctionnalities();
+			break;
+		case "TYPE_CLIENT_DISPATCH":
+			if(messageData.metaData.action == components.GallerySplity.CHANGE_PAGE) this.changePage(messageData.metaData.pageName);
+			break;
 		}
 	}
 	,onError: function(str) {
-		haxe.Log.trace(str,{ fileName : "GallerySplity.hx", lineNumber : 297, className : "components.GallerySplity", methodName : "onError"});
+		haxe.Log.trace(str,{ fileName : "GallerySplity.hx", lineNumber : 313, className : "components.GallerySplity", methodName : "onError"});
 	}
 	,onMetaDataSet: function(data) {
 		this.initApplication();
@@ -2815,7 +2824,7 @@ components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.pro
 		brix.component.navigation.Page.openPage(name,false,null,null,null);
 	}
 	,getContextManger: function() {
-		var contextManagerNode = js.Lib.document.getElementById("contextManager");
+		var contextManagerNode = js.Lib.document.getElementById(components.GallerySplity.CONTEXT_MANAGER_ID);
 		var application = brix.core.Application.get(this.brixInstanceId);
 		return application.getAssociatedComponents(contextManagerNode,brix.component.navigation.ContextManager).first();
 	}
@@ -2865,7 +2874,8 @@ components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.pro
 		this._splityAPI.getFunctionalities($bind(this,this.onFunctionnalities),$bind(this,this.onError));
 	}
 	,onPageChange: function(e) {
-		if(this._remotePageChange == false) this._splityAPI.dispatch(components.GallerySplity.CHANGE_PAGE,null,null);
+		var ce = e;
+		if(this._remotePageChange == false) this._splityAPI.dispatch({ action : components.GallerySplity.CHANGE_PAGE, pageName : ce.detail.page.name},null,null);
 		this._remotePageChange = false;
 	}
 	,initApplication: function() {
@@ -2873,14 +2883,15 @@ components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.pro
 		this.listenToPageChange();
 	}
 	,initMode: function() {
+		if(js.Lib.window.innerWidth > 1280) this._mode = components.GalleryMode.DESKTOP; else if(js.Lib.window.innerWidth < 1280 && js.Lib.window.innerWidth > 780) this._mode = components.GalleryMode.TABLET; else this._mode = components.GalleryMode.PHONE;
 	}
 	,init: function() {
 		this._id = "" + Math.round(Math.random() * 1000);
 		this._remotePageChange = false;
+		this.initMode();
 		this._splityAPI = new splity.client.SplityAPI();
 		this._splityAPI.connect(components.GallerySplity.SPLITY_URL,null,null,null);
 		this._splityAPI.subscribe($bind(this,this.onConnect),$bind(this,this.onError),$bind(this,this.onStatus));
-		this.initMode();
 	}
 	,_remotePageChange: null
 	,_splityAPI: null
@@ -4398,9 +4409,10 @@ brix.util.NodeTypes.NOTATION_NODE = 12;
 components.GallerySplity.THUMB_FUNCTIONNALITY = "thumb";
 components.GallerySplity.REMOTE_FUNCTIONNALITY = "remote";
 components.GallerySplity.DISPLAY_FUNCTIONNALITY = "display";
-components.GallerySplity.SPLITY_URL = "Fake.php";
+components.GallerySplity.SPLITY_URL = "http://169.254.240.203:8888/Splity/www/";
 components.GallerySplity.ID_IDENT = "id";
 components.GallerySplity.CHANGE_PAGE = "changePage";
+components.GallerySplity.CONTEXT_MANAGER_ID = "contextManager";
 haxe.Serializer.USE_CACHE = false;
 haxe.Serializer.USE_ENUM_INDEX = false;
 haxe.Serializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";
@@ -4414,6 +4426,7 @@ js.Lib.onerror = null;
 org.phpMessaging.model.MessageData.TYPE_CLIENT_CREATED = "TYPE_NEW_CLIENT";
 org.phpMessaging.model.MessageData.TYPE_CLIENT_DELETED = "TYPE_CLIENT_DELETED";
 org.phpMessaging.model.MessageData.TYPE_CLIENT_DISPATCH = "TYPE_CLIENT_DISPATCH";
+splity.client.SplityAPI.SPLITY = "splity";
 brix.core.Application.main();
 function $hxExpose(src, path) {
 	var o = window;

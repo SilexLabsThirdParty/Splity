@@ -8,6 +8,8 @@ package splity.client;
 class SplityAPI extends org.phpMessaging.client.Connection
 {
 
+	public static var SPLITY:String = "splity";
+	
 	public function new() 
 	{
 		super();
