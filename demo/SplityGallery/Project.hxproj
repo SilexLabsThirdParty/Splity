@@ -16,8 +16,8 @@
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="src" />
-    <class path="..\Cocktail\src" />
-    <class path="..\Brix\src" />
+    <class path="..\..\..\Cocktail\src" />
+    <class path="..\..\..\Brix\src" />
   </classpaths>
   <!-- Build options -->
   <build>
