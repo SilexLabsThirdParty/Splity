@@ -2838,16 +2838,14 @@ components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.pro
 			if(this._mode == components.GalleryMode.DESKTOP) this.refreshFunctionnalities();
 			break;
 		case "TYPE_CLIENT_DISPATCH":
-			haxe.Log.trace("DDDDDDDDDDDDDDDDDDDDIIIIIIIIIIIIIIISPATCH",{ fileName : "GallerySplity.hx", lineNumber : 343, className : "components.GallerySplity", methodName : "onStatus"});
 			if(messageData.metaData.action == components.GallerySplity.CHANGE_PAGE) {
-				haxe.Log.trace("TRRRRRRRRRRRRRRYYYYYY",{ fileName : "GallerySplity.hx", lineNumber : 346, className : "components.GallerySplity", methodName : "onStatus"});
-				this.changePage(messageData.metaData.pageName);
+				if(messageData.metaData.id != this._id) this.changePage(messageData.metaData.pageName);
 			}
 			break;
 		}
 	}
 	,onError: function(str) {
-		haxe.Log.trace(str,{ fileName : "GallerySplity.hx", lineNumber : 319, className : "components.GallerySplity", methodName : "onError"});
+		haxe.Log.trace(str,{ fileName : "GallerySplity.hx", lineNumber : 322, className : "components.GallerySplity", methodName : "onError"});
 	}
 	,onMetaDataSet: function(data) {
 		this.initApplication();
@@ -2855,12 +2853,17 @@ components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.pro
 	,onConnect: function() {
 		this._splityAPI.setClientMetaData(components.GallerySplity.ID_IDENT,this._id,$bind(this,this.onMetaDataSet),$bind(this,this.onError));
 	}
+	,onTransitionEnd: function(e) {
+		this._remotePageChange = false;
+	}
 	,listenToPageChange: function() {
 		js.Lib.document.body.addEventListener("pageOpenStart",$bind(this,this.onPageChange),false);
+		js.Lib.document.body.addEventListener("pageOpenStop",$bind(this,this.onTransitionEnd),false);
 	}
 	,changePage: function(name) {
 		this._remotePageChange = true;
-		brix.component.navigation.Page.openPage(name,false,null,null,this.brixInstanceId);
+		var page = brix.component.navigation.Page.getPageByName(name,this.brixInstanceId);
+		page.open(null,null,true,true,true);
 	}
 	,getContextManager: function() {
 		var contextManagerNode = js.Lib.document.getElementsByClassName(components.GallerySplity.CONTEXT_MANAGER_CLASS)[0];
@@ -2915,12 +2918,7 @@ components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.pro
 	}
 	,onPageChange: function(e) {
 		var ce = e;
-		if(this._remotePageChange == false) {
-			haxe.Log.trace("DISPATCH PAGE CHANGE : " + Std.string(ce.detail.name),{ fileName : "GallerySplity.hx", lineNumber : 137, className : "components.GallerySplity", methodName : "onPageChange"});
-			this._remotePageChange = true;
-			this._splityAPI.dispatch({ action : components.GallerySplity.CHANGE_PAGE, pageName : ce.detail.name},null,null);
-		}
-		this._remotePageChange = false;
+		if(this._remotePageChange == false) this._splityAPI.dispatch({ action : components.GallerySplity.CHANGE_PAGE, pageName : ce.detail.name, id : this._id},null,null);
 	}
 	,initApplication: function() {
 		this.refreshFunctionnalities();
