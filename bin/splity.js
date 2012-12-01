@@ -1831,7 +1831,9 @@ splity.client.Main.prototype = {
 	onStatus: function(messageData) {
 		haxe.Log.trace("onStatus " + Std.string(messageData),{ fileName : "Main.hx", lineNumber : 166, className : "splity.client.Main", methodName : "onStatus"});
 		if(messageData.type == "TYPE_NEW_CLIENT") this.showMessage("New user"); else if(messageData.type == "TYPE_CLIENT_DELETED") this.showMessage("User left "); else if(messageData.type == "TYPE_CLIENT_DISPATCH") {
-			if(messageData.metaData.type == "sendCoord") this.showMessage("SEND COORD: " + Std.string(messageData.metaData.x) + ", " + Std.string(messageData.metaData.y)); else this.showMessage("User message: " + Std.string(messageData.metaData));
+			if(messageData.metaData.type == "sendCoord") {
+				if(messageData.metaData.myId != this.myId) this.showMessage("SEND COORD: " + Std.string(messageData.metaData.x) + ", " + Std.string(messageData.metaData.y));
+			} else this.showMessage("User message: " + Std.string(messageData.metaData));
 		}
 	}
 	,showMessage: function(str) {
@@ -1861,7 +1863,7 @@ splity.client.Main.prototype = {
 		haxe.Log.trace("onSuccessSendCoord",{ fileName : "Main.hx", lineNumber : 106, className : "splity.client.Main", methodName : "onSuccessSendCoord"});
 	}
 	,sendCoordCallback: function(e) {
-		this.connection.dispatch({ type : "sendCoord", x : 25, y : 300},null,$bind(this,this.onSuccessSendCoord));
+		this.connection.dispatch({ type : "sendCoord", x : 25, y : 300, myId : this.myId},null,$bind(this,this.onSuccessSendCoord));
 	}
 	,refreshCallback: function(e) {
 		this.refresh();

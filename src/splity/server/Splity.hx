@@ -76,6 +76,12 @@ class Splity extends Server
 		meta.push(functionalityName);
 		client.setMetaData("functionalities", meta);
 		Log.trace("requestFunctionality "+client.clientData.metaData);
+
+			// dispatch a "new client" message
+			var message : Message = new Message(null, application.applicationData.id, null, "splity");
+			message.messageData.type = MessageData.TYPE_CLIENT_CREATED;
+			message.send();
+
 		// ends the process
 		_cleanup();
 		return true;
