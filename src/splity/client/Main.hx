@@ -8,7 +8,7 @@
 	To read the license please visit http://www.gnu.org/copyleft/gpl.html
 */
 
-package ;
+package splity.client;
 
 import org.phpMessaging.client.Connection;
 import org.phpMessaging.model.ClientData;
@@ -23,7 +23,7 @@ import js.Dom;
  * @author	lexa
  * @link	http://php-polling.sourceforge.net/
  */
-class MainJs
+class Main
 {
 	/**
 	 * the connection object, used to interact with the server
@@ -38,7 +38,7 @@ class MainJs
 	 */
 	static function main() 
 	{ 
-		new MainJs();
+		new Main();
 	}
 	/**
 	 * constructor of the MainJS class
@@ -59,7 +59,7 @@ class MainJs
 		myId = ""+Math.round(Math.random()*1000);
 		// opens the connection with the messaging server
 		connection = new Connection();
-		connection.connect("server.php/", "admin", "admin", { login: "admin", pubKey: "fdsf1435s1fs2q1d" } );
+		connection.connect("splity.php/", "admin", "admin", { login: "admin", pubKey: "fdsf1435s1fs2q1d" } );
 		// start listening for the server notifications, 
 		// with _onStatus as a callback to handle these notifications
 		connection.subscribe(onConnect, onError, onStatus);

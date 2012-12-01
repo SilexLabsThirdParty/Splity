@@ -1,14 +1,4 @@
-/*
-	This project is © 2010-2011 Silex Labs and is released under the GPL License:
-	
-	This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License (GPL) as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version. 
-	
-	This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-	
-	To read the license please visit http://www.gnu.org/copyleft/gpl.html
-*/
-
-package ;
+package splity.server;
 
 import org.phpMessaging.server.Application;
 import org.phpMessaging.server.ServerConfig;
@@ -23,7 +13,7 @@ import php.Sys;
  * @author	lexa
  * @link	http://php-polling.sourceforge.net/
  */
-class MainPhp
+class Main
 {
 	/**
 	 * path of the config file, relative to this script
@@ -36,7 +26,7 @@ class MainPhp
 	{
 		// create a remoting context and expose the php-messaging service
 		var ctx = new haxe.remoting.Context();
-		var server = new Admin(getServerConfig());
+		var server = new Splity(getServerConfig());
 		ctx.addObject("Server", server);
 		
 		//trace(server.getClients());

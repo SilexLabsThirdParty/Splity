@@ -1,0 +1,15 @@
+#build JS
+-cp ../src
+-cp ../../SLDialog/src
+-cp ../../Cocktail/src
+-cp ../../Brix/src
+-js ../bin/splity.js
+-main splity.client.Main
+
+--next
+
+#build PHP
+-cp ../src
+-cp ../../SLDialog/src
+-main splity.server.Main
+-php ../bin/splity.php
