@@ -110,7 +110,7 @@ class Main
 		trace("onSuccessSendCoord");
 	}
 	private function refresh(){
-		//pollClients();
+		pollClients();
 	}
 	private function dispatch(e:Event) 
 	{
