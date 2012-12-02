@@ -112,6 +112,7 @@ class GallerySplity extends DisplayObject
 	{
 		refreshFunctionnalities();
 		listenToPageChange();
+		listenToApplicationClose();
 	}
 	
 	//////////////////
@@ -237,7 +238,7 @@ class GallerySplity extends DisplayObject
 		{
 			removeFunctionnality(THUMB_FUNCTIONNALITY);
 			addFunctionnality(REMOTE_FUNCTIONNALITY);
-			removeFunctionnality(DISPLAY_FUNCTIONNALITY);
+			addFunctionnality(DISPLAY_FUNCTIONNALITY);
 		}
 		//here request was denied
 		else
@@ -312,6 +313,27 @@ class GallerySplity extends DisplayObject
 	}
 	
 	/**
+	 * Listen to web page close
+	 */
+	function listenToApplicationClose()
+	{
+		Lib.window.addEventListener("unload", onClose, false);
+	}
+	
+	/**
+	 * Signal to Splity that connection
+	 * should end
+	 */
+	function onClose(e:Event)
+	{
+		Lib.document.body.removeEventListener(Page.EVENT_TYPE_OPEN_START, onPageChange, false);
+		Lib.document.body.removeEventListener(Page.EVENT_TYPE_OPEN_STOP, onTransitionEnd, false);
+		Lib.window.removeEventListener("unload", onClose, false);
+		
+		_splityAPI.unsubscribe();
+	}
+	
+	/**
 	 * on transition end, set dirty flag to false
 	 */
 	function onTransitionEnd(e:Event)
@@ -367,10 +389,14 @@ class GallerySplity extends DisplayObject
 				}
 				
 			case MessageData.TYPE_CLIENT_DELETED:
+				trace("client deleted");	
 				if (_mode == DESKTOP)
 				{
 					refreshFunctionnalities();
 				}
+				
+			case MessageData.TYPE_CLIENT_CREATED:
+				trace("client crated");	
 				
 			case MessageData.TYPE_CLIENT_DISPATCH:
 				if (messageData.metaData.action == CHANGE_PAGE)
