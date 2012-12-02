@@ -1735,7 +1735,6 @@ org.phpMessaging.client.Connection.prototype = {
 			this._connectSuccessCallback();
 		}
 		if(messageData != null) {
-			if(messageData.type == "TYPE_CLIENT_RECONNECT") this._connectSuccessCallback();
 			if(this._pollStatusCallback != null) this._pollStatusCallback(messageData);
 		}
 		if(this._isPolling) haxe.Timer.delay($bind(this,this._poll),1);
@@ -1877,6 +1876,7 @@ splity.client.Main.prototype = {
 		cnx.resolve("Server").resolve("requestFunctionality").call(["thumblist"],$bind(this,this.onDispatched));
 	}
 	,refresh: function() {
+		this.pollClients();
 	}
 	,onSuccessSendCoord: function() {
 		haxe.Log.trace("onSuccessSendCoord",{ fileName : "Main.hx", lineNumber : 110, className : "splity.client.Main", methodName : "onSuccessSendCoord"});

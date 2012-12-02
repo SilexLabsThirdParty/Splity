@@ -52,10 +52,10 @@ class Splity extends Server
 	}
 	public function requestFunctionality(functionalityName:String, ?metaData:Dynamic=null):Bool
 	{
+		var functionalities = getFunctionalities();
 		// start the process
 		_init();
 		Log.trace("requestFunctionality "+functionalityName);
-//		var functionalities = getFunctionalities();
 		for (functionality in functionalities)
 		{
 			if (functionality.name == functionalityName 
