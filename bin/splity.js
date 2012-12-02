@@ -1876,6 +1876,7 @@ splity.client.Main.prototype = {
 		cnx.resolve("Server").resolve("requestFunctionality").call(["thumblist"],$bind(this,this.onDispatched));
 	}
 	,refresh: function() {
+		this.pollClients();
 	}
 	,onSuccessSendCoord: function() {
 		haxe.Log.trace("onSuccessSendCoord",{ fileName : "Main.hx", lineNumber : 110, className : "splity.client.Main", methodName : "onSuccessSendCoord"});
