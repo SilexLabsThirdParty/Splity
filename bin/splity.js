@@ -1689,6 +1689,8 @@ var org = org || {}
 if(!org.phpMessaging) org.phpMessaging = {}
 if(!org.phpMessaging.client) org.phpMessaging.client = {}
 org.phpMessaging.client.Connection = $hxClasses["org.phpMessaging.client.Connection"] = function() {
+	this._isPolling = false;
+	this._firstPollFlag = true;
 };
 org.phpMessaging.client.Connection.__name__ = ["org","phpMessaging","client","Connection"];
 org.phpMessaging.client.Connection.prototype = {
@@ -1728,29 +1730,44 @@ org.phpMessaging.client.Connection.prototype = {
 		Reflect.field(cnx.resolve("Server"),methodName).call(params,callbackResult);
 	}
 	,_pollCallback: function(messageData) {
-		if(this._pollSuccessCallback != null) {
-			this._pollSuccessCallback();
-			this._pollSuccessCallback = null;
+		if(this._connectSuccessCallback != null && this._firstPollFlag) {
+			this._firstPollFlag = false;
+			this._connectSuccessCallback();
 		}
 		if(messageData != null) {
+			if(messageData.type == "TYPE_CLIENT_RECONNECT") this._connectSuccessCallback();
 			if(this._pollStatusCallback != null) this._pollStatusCallback(messageData);
 		}
-		haxe.Timer.delay($bind(this,this._poll),1);
+		if(this._isPolling) haxe.Timer.delay($bind(this,this._poll),1);
 	}
 	,_pollError: function(str) {
-		if(this._pollErrorCallback != null) this._pollErrorCallback(str); else haxe.Log.trace(str,{ fileName : "Connection.hx", lineNumber : 109, className : "org.phpMessaging.client.Connection", methodName : "_pollError"});
+		if(this._pollErrorCallback != null) this._pollErrorCallback(str); else haxe.Log.trace(str,{ fileName : "Connection.hx", lineNumber : 149, className : "org.phpMessaging.client.Connection", methodName : "_pollError"});
 	}
 	,_poll: function() {
-		haxe.Log.trace("_poll ",{ fileName : "Connection.hx", lineNumber : 99, className : "org.phpMessaging.client.Connection", methodName : "_poll"});
+		haxe.Log.trace("_poll ",{ fileName : "Connection.hx", lineNumber : 139, className : "org.phpMessaging.client.Connection", methodName : "_poll"});
 		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this._serverUrl);
 		cnx.setErrorHandler($bind(this,this._pollError));
 		cnx.resolve("Server").resolve("poll").call([this._applicationName,this._instanceName,this._params],$bind(this,this._pollCallback));
 	}
+	,unsubscribe: function() {
+		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this._serverUrl);
+		cnx.resolve("Server").resolve("unsubscribe").call([]);
+		this._isPolling = false;
+		this._applicationName = null;
+		this._instanceName = null;
+		this._params = null;
+		this._serverUrl = null;
+	}
 	,subscribe: function(successCallback,errorCallback,statusCallback) {
-		this._pollSuccessCallback = successCallback;
+		this._connectSuccessCallback = successCallback;
 		this._pollErrorCallback = errorCallback;
 		this._pollStatusCallback = statusCallback;
-		haxe.Timer.delay($bind(this,this._poll),1);
+		this._isPolling = true;
+		this._firstPollFlag = true;
+		this._poll();
+	}
+	,disconnect: function() {
+		this.unsubscribe();
 	}
 	,connect: function(serverUrl,applicationName,instanceName,params) {
 		this._applicationName = applicationName;
@@ -1760,11 +1777,13 @@ org.phpMessaging.client.Connection.prototype = {
 	}
 	,_pollStatusCallback: null
 	,_pollErrorCallback: null
-	,_pollSuccessCallback: null
+	,_connectSuccessCallback: null
 	,_params: null
 	,_serverUrl: null
 	,_instanceName: null
 	,_applicationName: null
+	,_firstPollFlag: null
+	,_isPolling: null
 	,clientData: null
 	,__class__: org.phpMessaging.client.Connection
 }
@@ -1829,7 +1848,7 @@ splity.client.Main.main = function() {
 }
 splity.client.Main.prototype = {
 	onStatus: function(messageData) {
-		haxe.Log.trace("onStatus " + Std.string(messageData),{ fileName : "Main.hx", lineNumber : 166, className : "splity.client.Main", methodName : "onStatus"});
+		haxe.Log.trace("onStatus " + Std.string(messageData),{ fileName : "Main.hx", lineNumber : 170, className : "splity.client.Main", methodName : "onStatus"});
 		if(messageData.type == "TYPE_NEW_CLIENT") this.showMessage("New user"); else if(messageData.type == "TYPE_CLIENT_DELETED") this.showMessage("User left "); else if(messageData.type == "TYPE_CLIENT_DISPATCH") {
 			if(messageData.metaData.type == "sendCoord") {
 				if(messageData.metaData.myId != this.myId) this.showMessage("SEND COORD: " + Std.string(messageData.metaData.x) + ", " + Std.string(messageData.metaData.y));
@@ -1837,11 +1856,11 @@ splity.client.Main.prototype = {
 		}
 	}
 	,showMessage: function(str) {
-		haxe.Log.trace("showMessage " + str,{ fileName : "Main.hx", lineNumber : 157, className : "splity.client.Main", methodName : "showMessage"});
+		haxe.Log.trace("showMessage " + str,{ fileName : "Main.hx", lineNumber : 161, className : "splity.client.Main", methodName : "showMessage"});
 		this.messageDiv.innerHTML = "" + str;
 	}
 	,onGetFunctionalities: function(functionalities) {
-		haxe.Log.trace("onGetFunctionalities " + Std.string(functionalities),{ fileName : "Main.hx", lineNumber : 133, className : "splity.client.Main", methodName : "onGetFunctionalities"});
+		haxe.Log.trace("onGetFunctionalities " + Std.string(functionalities),{ fileName : "Main.hx", lineNumber : 137, className : "splity.client.Main", methodName : "onGetFunctionalities"});
 	}
 	,pollClients: function() {
 		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this.connection._serverUrl);
@@ -1849,7 +1868,7 @@ splity.client.Main.prototype = {
 		cnx.resolve("Server").resolve("getFunctionalities").call([],$bind(this,this.onGetFunctionalities));
 	}
 	,onDispatched: function(res) {
-		haxe.Log.trace("onDispatched " + Std.string(res),{ fileName : "Main.hx", lineNumber : 122, className : "splity.client.Main", methodName : "onDispatched"});
+		haxe.Log.trace("onDispatched " + Std.string(res),{ fileName : "Main.hx", lineNumber : 126, className : "splity.client.Main", methodName : "onDispatched"});
 		this.pollClients();
 	}
 	,dispatch: function(e) {
@@ -1860,24 +1879,27 @@ splity.client.Main.prototype = {
 	,refresh: function() {
 	}
 	,onSuccessSendCoord: function() {
-		haxe.Log.trace("onSuccessSendCoord",{ fileName : "Main.hx", lineNumber : 106, className : "splity.client.Main", methodName : "onSuccessSendCoord"});
+		haxe.Log.trace("onSuccessSendCoord",{ fileName : "Main.hx", lineNumber : 110, className : "splity.client.Main", methodName : "onSuccessSendCoord"});
 	}
 	,sendCoordCallback: function(e) {
 		this.connection.dispatch({ type : "sendCoord", x : 25, y : 300, myId : this.myId},null,$bind(this,this.onSuccessSendCoord));
+	}
+	,disconnectCallback: function(e) {
+		this.connection.disconnect();
 	}
 	,refreshCallback: function(e) {
 		this.refresh();
 	}
 	,onConnect: function() {
 		var _g = this;
-		haxe.Log.trace("onConnect ",{ fileName : "Main.hx", lineNumber : 93, className : "splity.client.Main", methodName : "onConnect"});
+		haxe.Log.trace("onConnect ",{ fileName : "Main.hx", lineNumber : 94, className : "splity.client.Main", methodName : "onConnect"});
 		this.connection.setClientMetaData("myId",this.myId,function(d) {
-			haxe.Log.trace("setClientMetaData " + _g.myId + " - " + Std.string(d),{ fileName : "Main.hx", lineNumber : 95, className : "splity.client.Main", methodName : "onConnect"});
+			haxe.Log.trace("setClientMetaData " + _g.myId + " - " + Std.string(d),{ fileName : "Main.hx", lineNumber : 96, className : "splity.client.Main", methodName : "onConnect"});
 			_g.refresh();
 		},$bind(this,this.onError));
 	}
 	,onError: function(str) {
-		haxe.Log.trace("error: " + Std.string(str),{ fileName : "Main.hx", lineNumber : 83, className : "splity.client.Main", methodName : "onError"});
+		haxe.Log.trace("error: " + Std.string(str),{ fileName : "Main.hx", lineNumber : 84, className : "splity.client.Main", methodName : "onError"});
 	}
 	,init: function() {
 		var lang = navigator.language;
@@ -1889,6 +1911,7 @@ splity.client.Main.prototype = {
 		js.Lib.document.getElementById("dispatch").onclick = $bind(this,this.dispatch);
 		js.Lib.document.getElementById("refresh").onclick = $bind(this,this.refreshCallback);
 		js.Lib.document.getElementById("sendCoord").onclick = $bind(this,this.sendCoordCallback);
+		js.Lib.document.getElementById("disconnect").onclick = $bind(this,this.disconnectCallback);
 		this.template = js.Lib.document.getElementById("template").innerHTML;
 		js.Lib.document.getElementById("template").innerHTML = "";
 	}
@@ -1966,4 +1989,5 @@ js.Lib.onerror = null;
 org.phpMessaging.model.MessageData.TYPE_CLIENT_CREATED = "TYPE_NEW_CLIENT";
 org.phpMessaging.model.MessageData.TYPE_CLIENT_DELETED = "TYPE_CLIENT_DELETED";
 org.phpMessaging.model.MessageData.TYPE_CLIENT_DISPATCH = "TYPE_CLIENT_DISPATCH";
+org.phpMessaging.model.MessageData.TYPE_CLIENT_RECONNECT = "TYPE_CLIENT_RECONNECT";
 splity.client.Main.main();

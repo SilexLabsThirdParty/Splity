@@ -73,6 +73,7 @@ class Main
 		Lib.document.getElementById("dispatch").onclick = dispatch;
 		Lib.document.getElementById("refresh").onclick = refreshCallback;
 		Lib.document.getElementById("sendCoord").onclick = sendCoordCallback;
+		Lib.document.getElementById("disconnect").onclick = disconnectCallback;
 		template = Lib.document.getElementById("template").innerHTML;
 		Lib.document.getElementById("template").innerHTML = "";
 		//templateApps = Lib.document.getElementById("template-apps").innerHTML;
@@ -98,6 +99,9 @@ class Main
 	}
 	private function refreshCallback(e:Event){
 		refresh();
+	}
+	private function disconnectCallback(e:Event){
+		connection.disconnect();
 	}
 	private function sendCoordCallback(e:Event){
 		connection.dispatch({type:"sendCoord", x:25, y:300, myId:myId}, onSuccessSendCoord);

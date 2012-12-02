@@ -2835,7 +2835,11 @@ components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.pro
 			if(this._mode == components.GalleryMode.DESKTOP) this.refreshFunctionnalities();
 			break;
 		case "TYPE_CLIENT_DELETED":
+			haxe.Log.trace("client deleted",{ fileName : "GallerySplity.hx", lineNumber : 392, className : "components.GallerySplity", methodName : "onStatus"});
 			if(this._mode == components.GalleryMode.DESKTOP) this.refreshFunctionnalities();
+			break;
+		case "TYPE_NEW_CLIENT":
+			haxe.Log.trace("client crated",{ fileName : "GallerySplity.hx", lineNumber : 399, className : "components.GallerySplity", methodName : "onStatus"});
 			break;
 		case "TYPE_CLIENT_DISPATCH":
 			if(messageData.metaData.action == components.GallerySplity.CHANGE_PAGE) {
@@ -2845,7 +2849,7 @@ components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.pro
 		}
 	}
 	,onError: function(str) {
-		haxe.Log.trace(str,{ fileName : "GallerySplity.hx", lineNumber : 325, className : "components.GallerySplity", methodName : "onError"});
+		haxe.Log.trace(str,{ fileName : "GallerySplity.hx", lineNumber : 374, className : "components.GallerySplity", methodName : "onError"});
 	}
 	,onMetaDataSet: function(data) {
 		this.initApplication();
@@ -2855,6 +2859,15 @@ components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.pro
 	}
 	,onTransitionEnd: function(e) {
 		this._remotePageChange = false;
+	}
+	,onClose: function(e) {
+		js.Lib.document.body.removeEventListener("pageOpenStart",$bind(this,this.onPageChange),false);
+		js.Lib.document.body.removeEventListener("pageOpenStop",$bind(this,this.onTransitionEnd),false);
+		js.Lib.window.removeEventListener("unload",$bind(this,this.onClose),false);
+		this._splityAPI.unsubscribe();
+	}
+	,listenToApplicationClose: function() {
+		js.Lib.window.addEventListener("unload",$bind(this,this.onClose),false);
 	}
 	,listenToPageChange: function() {
 		js.Lib.document.body.addEventListener("pageOpenStart",$bind(this,this.onPageChange),false);
@@ -2876,18 +2889,27 @@ components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.pro
 	,addFunctionnality: function(name) {
 		this.getContextManager().addContext(name);
 	}
-	,onPhoneFunctionnality: function(data) {
+	,onFunctionnalityDenied: function() {
+		this.removeFunctionnality(components.GallerySplity.REMOTE_FUNCTIONNALITY);
 		this.removeFunctionnality(components.GallerySplity.THUMB_FUNCTIONNALITY);
-		this.addFunctionnality(components.GallerySplity.REMOTE_FUNCTIONNALITY);
-		this.removeFunctionnality(components.GallerySplity.DISPLAY_FUNCTIONNALITY);
+		this.addFunctionnality(components.GallerySplity.DISPLAY_FUNCTIONNALITY);
+	}
+	,onPhoneFunctionnality: function(granted) {
+		if(granted == true) {
+			this.removeFunctionnality(components.GallerySplity.THUMB_FUNCTIONNALITY);
+			this.addFunctionnality(components.GallerySplity.REMOTE_FUNCTIONNALITY);
+			this.addFunctionnality(components.GallerySplity.DISPLAY_FUNCTIONNALITY);
+		} else this.onFunctionnalityDenied();
 	}
 	,setPhoneFunctionnalities: function(functionnalities) {
 		this._splityAPI.requestFunctionnality(components.GallerySplity.REMOTE_FUNCTIONNALITY,$bind(this,this.onPhoneFunctionnality),$bind(this,this.onError));
 	}
-	,onTabletFunctionnality: function(data) {
-		this.removeFunctionnality(components.GallerySplity.REMOTE_FUNCTIONNALITY);
-		this.addFunctionnality(components.GallerySplity.DISPLAY_FUNCTIONNALITY);
-		this.addFunctionnality(components.GallerySplity.THUMB_FUNCTIONNALITY);
+	,onTabletFunctionnality: function(granted) {
+		if(granted == true) {
+			this.removeFunctionnality(components.GallerySplity.REMOTE_FUNCTIONNALITY);
+			this.addFunctionnality(components.GallerySplity.DISPLAY_FUNCTIONNALITY);
+			this.addFunctionnality(components.GallerySplity.THUMB_FUNCTIONNALITY);
+		} else this.onFunctionnalityDenied();
 	}
 	,setTabletFunctionnalities: function(functionnalities) {
 		this._splityAPI.requestFunctionnality(components.GallerySplity.THUMB_FUNCTIONNALITY,$bind(this,this.onTabletFunctionnality),$bind(this,this.onError));
@@ -2923,6 +2945,7 @@ components.GallerySplity.prototype = $extend(brix.component.ui.DisplayObject.pro
 	,initApplication: function() {
 		this.refreshFunctionnalities();
 		this.listenToPageChange();
+		this.listenToApplicationClose();
 	}
 	,initMode: function() {
 		if(js.Lib.window.innerWidth > 1280) this._mode = components.GalleryMode.DESKTOP; else if(js.Lib.window.innerWidth < 1280 && js.Lib.window.innerWidth > 780) this._mode = components.GalleryMode.TABLET; else this._mode = components.GalleryMode.PHONE;
@@ -4197,6 +4220,8 @@ var org = {}
 org.phpMessaging = {}
 org.phpMessaging.client = {}
 org.phpMessaging.client.Connection = function() {
+	this._isPolling = false;
+	this._firstPollFlag = true;
 };
 $hxClasses["org.phpMessaging.client.Connection"] = org.phpMessaging.client.Connection;
 org.phpMessaging.client.Connection.__name__ = ["org","phpMessaging","client","Connection"];
@@ -4237,29 +4262,44 @@ org.phpMessaging.client.Connection.prototype = {
 		Reflect.field(cnx.resolve("Server"),methodName).call(params,callbackResult);
 	}
 	,_pollCallback: function(messageData) {
-		if(this._pollSuccessCallback != null) {
-			this._pollSuccessCallback();
-			this._pollSuccessCallback = null;
+		if(this._connectSuccessCallback != null && this._firstPollFlag) {
+			this._firstPollFlag = false;
+			this._connectSuccessCallback();
 		}
 		if(messageData != null) {
+			if(messageData.type == "TYPE_CLIENT_RECONNECT") this._connectSuccessCallback();
 			if(this._pollStatusCallback != null) this._pollStatusCallback(messageData);
 		}
-		haxe.Timer.delay($bind(this,this._poll),1);
+		if(this._isPolling) haxe.Timer.delay($bind(this,this._poll),1);
 	}
 	,_pollError: function(str) {
-		if(this._pollErrorCallback != null) this._pollErrorCallback(str); else haxe.Log.trace(str,{ fileName : "Connection.hx", lineNumber : 109, className : "org.phpMessaging.client.Connection", methodName : "_pollError"});
+		if(this._pollErrorCallback != null) this._pollErrorCallback(str); else haxe.Log.trace(str,{ fileName : "Connection.hx", lineNumber : 149, className : "org.phpMessaging.client.Connection", methodName : "_pollError"});
 	}
 	,_poll: function() {
-		haxe.Log.trace("_poll ",{ fileName : "Connection.hx", lineNumber : 99, className : "org.phpMessaging.client.Connection", methodName : "_poll"});
+		haxe.Log.trace("_poll ",{ fileName : "Connection.hx", lineNumber : 139, className : "org.phpMessaging.client.Connection", methodName : "_poll"});
 		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this._serverUrl);
 		cnx.setErrorHandler($bind(this,this._pollError));
 		cnx.resolve("Server").resolve("poll").call([this._applicationName,this._instanceName,this._params],$bind(this,this._pollCallback));
 	}
+	,unsubscribe: function() {
+		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this._serverUrl);
+		cnx.resolve("Server").resolve("unsubscribe").call([]);
+		this._isPolling = false;
+		this._applicationName = null;
+		this._instanceName = null;
+		this._params = null;
+		this._serverUrl = null;
+	}
 	,subscribe: function(successCallback,errorCallback,statusCallback) {
-		this._pollSuccessCallback = successCallback;
+		this._connectSuccessCallback = successCallback;
 		this._pollErrorCallback = errorCallback;
 		this._pollStatusCallback = statusCallback;
-		haxe.Timer.delay($bind(this,this._poll),1);
+		this._isPolling = true;
+		this._firstPollFlag = true;
+		this._poll();
+	}
+	,disconnect: function() {
+		this.unsubscribe();
 	}
 	,connect: function(serverUrl,applicationName,instanceName,params) {
 		this._applicationName = applicationName;
@@ -4269,11 +4309,13 @@ org.phpMessaging.client.Connection.prototype = {
 	}
 	,_pollStatusCallback: null
 	,_pollErrorCallback: null
-	,_pollSuccessCallback: null
+	,_connectSuccessCallback: null
 	,_params: null
 	,_serverUrl: null
 	,_instanceName: null
 	,_applicationName: null
+	,_firstPollFlag: null
+	,_isPolling: null
 	,clientData: null
 	,__class__: org.phpMessaging.client.Connection
 }
@@ -4477,6 +4519,7 @@ js.Lib.onerror = null;
 org.phpMessaging.model.MessageData.TYPE_CLIENT_CREATED = "TYPE_NEW_CLIENT";
 org.phpMessaging.model.MessageData.TYPE_CLIENT_DELETED = "TYPE_CLIENT_DELETED";
 org.phpMessaging.model.MessageData.TYPE_CLIENT_DISPATCH = "TYPE_CLIENT_DISPATCH";
+org.phpMessaging.model.MessageData.TYPE_CLIENT_RECONNECT = "TYPE_CLIENT_RECONNECT";
 splity.client.SplityAPI.SPLITY = "splity";
 brix.core.Application.main();
 function $hxExpose(src, path) {

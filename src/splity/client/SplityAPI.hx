@@ -28,5 +28,4 @@ class SplityAPI extends org.phpMessaging.client.Connection
 	    cnx.setErrorHandler( onError );
 	    cnx.Server.requestFunctionality.call([name], onSuccess);
 	}
-	
 }
