@@ -17,8 +17,8 @@ a{text-decoration:none;}
 .left-arrow{left:0;top:50%;margin-top:-25px;margin-left:5px;background-image:url("assets/arrow_left.png");background-position:left center;}
 .right-arrow{right:0;top:50%;margin-top:-25px;margin-right:5px;background-image:url("assets/arrow_right.png");background-position:right center;}
 .thumbs{position:absolute;width:100%;height:100%;}
-.thumbs-container{position:absolute;margin-bottom:1%;bottom:0;width:100%;height:12%;position:absolute;overflow-x:hidden;overflow-y:hidden;z-index:20;}
-.thumbs-mask{width:10000px;height:100%;}
-.thumb{bottom:0;max-height:80px;max-width:130px;height:100%;margin-left:10px;position:relative;border:rgba(66,66,66,0.5) 1px solid;opacity:1;z-index:12;}
+.thumbs-container{position:absolute;margin-bottom:1%;bottom:0;width:100%;height:12%;position:absolute;overflow-x:auto;overflow-y:hidden;z-index:20;}
+.thumbs-mask{width:1500px;height:100%;}
+.thumb{bottom:0;max-height:80px;max-width:130px;height:100%;margin-left:10px;position:relative;float:left;border:rgba(66,66,66,0.5) 1px solid;opacity:1;z-index:12;}
 .thumb:hover{opacity:1;}
 
