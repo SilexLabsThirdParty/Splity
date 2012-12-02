@@ -5,19 +5,25 @@ class org_phpMessaging_server_Client {
 		if(!php_Boot::$skip_constructor) {
 		if(php_Session::get("clientID") !== null) {
 			$this->clientData = org_phpMessaging_model_ClientData::$manager->get(php_Session::get("clientID"), null);
-		}
-		if($this->clientData === null) {
-			$this->clientData = new org_phpMessaging_model_ClientData();
-			$this->clientData->applicationId = $applicationId;
-			$this->clientData->time = Date::now();
-			$this->clientData->lastActivity = Date::now();
-			$this->clientData->metaData = $metaData;
-			$this->clientData->insert();
-			php_Session::clear();
-			php_Session::set("clientID", $this->clientData->id);
-			$message = new org_phpMessaging_server_Message(null, $applicationId, $this->clientData->toDataModel(), null);
-			$message->messageData->type = "TYPE_NEW_CLIENT";
-			$message->send();
+			if($this->clientData === null) {
+				$message = new org_phpMessaging_server_Message(php_Session::get("clientID"), $applicationId, $this->clientData->toDataModel(), null);
+				$message->messageData->type = "TYPE_CLIENT_RECONNECT";
+				$message->send();
+			}
+		} else {
+			if($this->clientData === null) {
+				$this->clientData = new org_phpMessaging_model_ClientData();
+				$this->clientData->applicationId = $applicationId;
+				$this->clientData->time = Date::now();
+				$this->clientData->lastActivity = Date::now();
+				$this->clientData->metaData = $metaData;
+				$this->clientData->insert();
+				php_Session::clear();
+				php_Session::set("clientID", $this->clientData->id);
+				$message = new org_phpMessaging_server_Message(null, $applicationId, $this->clientData->toDataModel(), null);
+				$message->messageData->type = "TYPE_NEW_CLIENT";
+				$message->send();
+			}
 		}
 	}}
 	public function getMetaData($name) {

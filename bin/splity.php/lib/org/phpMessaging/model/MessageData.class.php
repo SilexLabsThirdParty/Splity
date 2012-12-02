@@ -28,6 +28,7 @@ class org_phpMessaging_model_MessageData extends php_db_Object {
 	static $TYPE_CLIENT_CREATED = "TYPE_NEW_CLIENT";
 	static $TYPE_CLIENT_DELETED = "TYPE_CLIENT_DELETED";
 	static $TYPE_CLIENT_DISPATCH = "TYPE_CLIENT_DISPATCH";
+	static $TYPE_CLIENT_RECONNECT = "TYPE_CLIENT_RECONNECT";
 	static $TABLE_NAME = "MessageData";
 	static $PRIVATE_FIELDS;
 	static $manager;
