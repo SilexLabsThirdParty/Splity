@@ -22,10 +22,10 @@ class SplityAPI extends org.phpMessaging.client.Connection
 	    cnx.Server.getFunctionalities.call([], onSuccess);
 	}
 	
-	public function requestFunctionnality(name, onSuccess, onError)
+	public function requestFunctionnality(name, onSuccess, onError, metaData)
 	{
 		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(_serverUrl);
 	    cnx.setErrorHandler( onError );
-	    cnx.Server.requestFunctionality.call([name], onSuccess);
+	    cnx.Server.requestFunctionality.call([name, metaData], onSuccess);
 	}
 }
