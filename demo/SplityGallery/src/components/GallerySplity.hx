@@ -197,7 +197,7 @@ class GallerySplity extends DisplayObject
 	 */
 	function setTabletFunctionnalities(functionnalities:Array<FunctionalityData>)
 	{
-		_splityAPI.requestFunctionnality(THUMB_FUNCTIONNALITY, onTabletFunctionnality, onError);
+		_splityAPI.requestFunctionnality(THUMB_FUNCTIONNALITY, onTabletFunctionnality, onError, {id:_id});
 	}
 	
 	/**
@@ -225,7 +225,7 @@ class GallerySplity extends DisplayObject
 	 */
 	function setPhoneFunctionnalities(functionnalities:Array<FunctionalityData>)
 	{
-		_splityAPI.requestFunctionnality(REMOTE_FUNCTIONNALITY, onPhoneFunctionnality, onError);
+		_splityAPI.requestFunctionnality(REMOTE_FUNCTIONNALITY, onPhoneFunctionnality, onError, {id:_id});
 	}
 	
 	/**
@@ -380,6 +380,7 @@ class GallerySplity extends DisplayObject
 	 */
 	function onStatus(messageData:MessageDataModel)
 	{
+		trace(messageData);
 		switch (messageData.type)
 		{
 			case SplityAPI.SPLITY:
@@ -393,6 +394,7 @@ class GallerySplity extends DisplayObject
 				{
 					refreshFunctionnalities();
 				}
+				
 				
 			case MessageData.TYPE_CLIENT_DISPATCH:
 				if (messageData.metaData.action == CHANGE_PAGE)
