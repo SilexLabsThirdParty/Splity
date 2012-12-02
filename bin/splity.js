@@ -1690,6 +1690,7 @@ if(!org.phpMessaging) org.phpMessaging = {}
 if(!org.phpMessaging.client) org.phpMessaging.client = {}
 org.phpMessaging.client.Connection = $hxClasses["org.phpMessaging.client.Connection"] = function() {
 	this._isPolling = false;
+	this._firstPollFlag = true;
 };
 org.phpMessaging.client.Connection.__name__ = ["org","phpMessaging","client","Connection"];
 org.phpMessaging.client.Connection.prototype = {
@@ -1729,20 +1730,21 @@ org.phpMessaging.client.Connection.prototype = {
 		Reflect.field(cnx.resolve("Server"),methodName).call(params,callbackResult);
 	}
 	,_pollCallback: function(messageData) {
-		if(this._pollSuccessCallback != null) {
-			this._pollSuccessCallback();
-			this._pollSuccessCallback = null;
+		if(this._connectSuccessCallback != null && this._firstPollFlag) {
+			this._firstPollFlag = false;
+			this._connectSuccessCallback();
 		}
 		if(messageData != null) {
+			if(messageData.type == "TYPE_CLIENT_RECONNECT") this._connectSuccessCallback();
 			if(this._pollStatusCallback != null) this._pollStatusCallback(messageData);
 		}
 		if(this._isPolling) haxe.Timer.delay($bind(this,this._poll),1);
 	}
 	,_pollError: function(str) {
-		if(this._pollErrorCallback != null) this._pollErrorCallback(str); else haxe.Log.trace(str,{ fileName : "Connection.hx", lineNumber : 143, className : "org.phpMessaging.client.Connection", methodName : "_pollError"});
+		if(this._pollErrorCallback != null) this._pollErrorCallback(str); else haxe.Log.trace(str,{ fileName : "Connection.hx", lineNumber : 149, className : "org.phpMessaging.client.Connection", methodName : "_pollError"});
 	}
 	,_poll: function() {
-		haxe.Log.trace("_poll ",{ fileName : "Connection.hx", lineNumber : 133, className : "org.phpMessaging.client.Connection", methodName : "_poll"});
+		haxe.Log.trace("_poll ",{ fileName : "Connection.hx", lineNumber : 139, className : "org.phpMessaging.client.Connection", methodName : "_poll"});
 		var cnx = haxe.remoting.HttpAsyncConnection.urlConnect(this._serverUrl);
 		cnx.setErrorHandler($bind(this,this._pollError));
 		cnx.resolve("Server").resolve("poll").call([this._applicationName,this._instanceName,this._params],$bind(this,this._pollCallback));
@@ -1757,10 +1759,11 @@ org.phpMessaging.client.Connection.prototype = {
 		this._serverUrl = null;
 	}
 	,subscribe: function(successCallback,errorCallback,statusCallback) {
-		this._pollSuccessCallback = successCallback;
+		this._connectSuccessCallback = successCallback;
 		this._pollErrorCallback = errorCallback;
 		this._pollStatusCallback = statusCallback;
 		this._isPolling = true;
+		this._firstPollFlag = true;
 		this._poll();
 	}
 	,disconnect: function() {
@@ -1774,11 +1777,12 @@ org.phpMessaging.client.Connection.prototype = {
 	}
 	,_pollStatusCallback: null
 	,_pollErrorCallback: null
-	,_pollSuccessCallback: null
+	,_connectSuccessCallback: null
 	,_params: null
 	,_serverUrl: null
 	,_instanceName: null
 	,_applicationName: null
+	,_firstPollFlag: null
 	,_isPolling: null
 	,clientData: null
 	,__class__: org.phpMessaging.client.Connection
@@ -1985,4 +1989,5 @@ js.Lib.onerror = null;
 org.phpMessaging.model.MessageData.TYPE_CLIENT_CREATED = "TYPE_NEW_CLIENT";
 org.phpMessaging.model.MessageData.TYPE_CLIENT_DELETED = "TYPE_CLIENT_DELETED";
 org.phpMessaging.model.MessageData.TYPE_CLIENT_DISPATCH = "TYPE_CLIENT_DISPATCH";
+org.phpMessaging.model.MessageData.TYPE_CLIENT_RECONNECT = "TYPE_CLIENT_RECONNECT";
 splity.client.Main.main();
