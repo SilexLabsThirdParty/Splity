@@ -112,6 +112,7 @@ class GallerySplity extends DisplayObject
 	{
 		refreshFunctionnalities();
 		listenToPageChange();
+		listenToApplicationClose();
 	}
 	
 	//////////////////
@@ -134,12 +135,8 @@ class GallerySplity extends DisplayObject
 		//infinite dispatch loop
 		if (_remotePageChange == false)
 		{
-			trace("DISPATCH PAGE CHANGE : " + ce.detail.name);
-			_remotePageChange = true;
-			_splityAPI.dispatch({action:CHANGE_PAGE, pageName:ce.detail.name}, null, null);
+			_splityAPI.dispatch({action:CHANGE_PAGE, pageName:ce.detail.name, id:_id}, null, null);
 		}
-		
-		_remotePageChange = false;
 	}
 	
 	/**
@@ -207,11 +204,19 @@ class GallerySplity extends DisplayObject
 	 * Called when a tablet client receives exclusive
 	 * display of thumb functionnality
 	 */
-	function onTabletFunctionnality(data:Dynamic)
+	function onTabletFunctionnality(granted:Bool)
 	{
-		removeFunctionnality(REMOTE_FUNCTIONNALITY);
-		addFunctionnality(DISPLAY_FUNCTIONNALITY);
-		addFunctionnality(THUMB_FUNCTIONNALITY);
+		if (granted == true)
+		{
+			removeFunctionnality(REMOTE_FUNCTIONNALITY);
+			addFunctionnality(DISPLAY_FUNCTIONNALITY);
+			addFunctionnality(THUMB_FUNCTIONNALITY);
+		}
+		else
+		{
+			onFunctionnalityDenied();
+		}
+		
 	}
 	
 	/**
@@ -227,11 +232,30 @@ class GallerySplity extends DisplayObject
 	 * Called when a phone client receives exclusive
 	 * display of remote functionnality
 	 */
-	function onPhoneFunctionnality(data:Dynamic)
+	function onPhoneFunctionnality(granted:Bool)
 	{
+		if (granted == true)
+		{
+			removeFunctionnality(THUMB_FUNCTIONNALITY);
+			addFunctionnality(REMOTE_FUNCTIONNALITY);
+			addFunctionnality(DISPLAY_FUNCTIONNALITY);
+		}
+		//here request was denied
+		else
+		{
+			onFunctionnalityDenied();
+		}
+	}
+	
+	/**
+	 * When a functionnality request is denied,
+	 * default to only showing the display
+	 */
+	function onFunctionnalityDenied()
+	{
+		removeFunctionnality(REMOTE_FUNCTIONNALITY);
 		removeFunctionnality(THUMB_FUNCTIONNALITY);
-		addFunctionnality(REMOTE_FUNCTIONNALITY);
-		removeFunctionnality(DISPLAY_FUNCTIONNALITY);
+		addFunctionnality(DISPLAY_FUNCTIONNALITY);
 	}
 	
 	//////////////////
@@ -274,7 +298,8 @@ class GallerySplity extends DisplayObject
 	function changePage(name)
 	{
 		_remotePageChange = true;
-		Page.openPage(name, false, null, null, brixInstanceId);
+		var page:Page = Page.getPageByName(name, brixInstanceId);
+		page.open(null, null, true, true, true);
 	}
 	
 	/**
@@ -284,6 +309,36 @@ class GallerySplity extends DisplayObject
 	function listenToPageChange()
 	{
 		Lib.document.body.addEventListener(Page.EVENT_TYPE_OPEN_START, onPageChange, false);
+		Lib.document.body.addEventListener(Page.EVENT_TYPE_OPEN_STOP, onTransitionEnd, false);
+	}
+	
+	/**
+	 * Listen to web page close
+	 */
+	function listenToApplicationClose()
+	{
+		Lib.window.addEventListener("unload", onClose, false);
+	}
+	
+	/**
+	 * Signal to Splity that connection
+	 * should end
+	 */
+	function onClose(e:Event)
+	{
+		Lib.document.body.removeEventListener(Page.EVENT_TYPE_OPEN_START, onPageChange, false);
+		Lib.document.body.removeEventListener(Page.EVENT_TYPE_OPEN_STOP, onTransitionEnd, false);
+		Lib.window.removeEventListener("unload", onClose, false);
+		
+		_splityAPI.unsubscribe();
+	}
+	
+	/**
+	 * on transition end, set dirty flag to false
+	 */
+	function onTransitionEnd(e:Event)
+	{
+		_remotePageChange = false;
 	}
 	
 	//////////////////
@@ -340,11 +395,12 @@ class GallerySplity extends DisplayObject
 				}
 				
 			case MessageData.TYPE_CLIENT_DISPATCH:
-				trace("DDDDDDDDDDDDDDDDDDDDIIIIIIIIIIIIIIISPATCH");
 				if (messageData.metaData.action == CHANGE_PAGE)
 				{
-					trace("TRRRRRRRRRRRRRRYYYYYY");
-					changePage(messageData.metaData.pageName);
+					if (messageData.metaData.id != _id)
+					{
+						changePage(messageData.metaData.pageName);
+					}
 				}
 		}
 	}
