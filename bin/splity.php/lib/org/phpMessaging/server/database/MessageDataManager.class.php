@@ -33,7 +33,8 @@ class org_phpMessaging_server_database_MessageDataManager extends php_db_Manager
 		return 0;
 	}
 	public function getNextMessage($clientId, $applicationId) {
-		$messageData = $this->object($this->select("id>" . _hx_string_rec(org_phpMessaging_server_database_MessageDataManager::$_lastMessageID, "") . " AND (clientId=" . _hx_string_rec($clientId, "") . " OR applicationId=" . _hx_string_rec($applicationId, "") . ")"), true);
+		$req = "id>" . _hx_string_rec(org_phpMessaging_server_database_MessageDataManager::$_lastMessageID, "") . " AND (clientId=" . _hx_string_rec($clientId, "") . " OR (applicationId=" . _hx_string_rec($applicationId, "") . " AND clientId IS NULL))";
+		$messageData = $this->object($this->select($req), true);
 		if($messageData !== null) {
 			org_phpMessaging_server_database_MessageDataManager::$_lastMessageID = $messageData->id;
 			if(!php_Session::$started) {
