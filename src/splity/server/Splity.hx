@@ -35,7 +35,7 @@ class Splity extends Server
 		// force instance name to the ip
 		instanceName = Web.getClientIP();
 		// fixeme : for tests
-		instanceName = "splity.test1";
+		// instanceName = "splity.test1";
 		name = "splity";
         var params = php.Web.getParams();
         if(params.exists('app'))
