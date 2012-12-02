@@ -389,14 +389,10 @@ class GallerySplity extends DisplayObject
 				}
 				
 			case MessageData.TYPE_CLIENT_DELETED:
-				trace("client deleted");	
 				if (_mode == DESKTOP)
 				{
 					refreshFunctionnalities();
 				}
-				
-			case MessageData.TYPE_CLIENT_CREATED:
-				trace("client crated");	
 				
 			case MessageData.TYPE_CLIENT_DISPATCH:
 				if (messageData.metaData.action == CHANGE_PAGE)
