@@ -1,6 +1,5 @@
-
 #build PHP
--cp ../src
--cp ../../SLDialog/src
+-cp ../../src
+-cp ../../../SLDialog/src
 -main splity.server.Main
--php ../bin/splity.php
+-php bin/splity.php
