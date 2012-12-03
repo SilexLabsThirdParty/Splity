@@ -175,3 +175,12 @@ a{
 .thumb:hover{
 	opacity:1;
 }
+.thumb{
+	opacity: 0.8;
+}
+.thumb{
+	opacity: 0.8;
+}
+.page-opened img{
+	border: red solid;
+}

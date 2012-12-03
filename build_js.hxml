@@ -1,8 +1,0 @@
-#sources
--main Cocktail
--cp ../Cocktail/src/
--cp src
-
-#binary
--js bin/app.js
---macro Cocktail.create('src/index.html','Main')
