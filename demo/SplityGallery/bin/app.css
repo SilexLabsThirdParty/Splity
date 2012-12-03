@@ -134,29 +134,24 @@ a{
 /* THUMBS */
 /**********/
 
-.thumbs{
-	position:absolute;
-	width:100%;
-	height:100%;
-}
-
 .thumbs-container{
 	position:absolute;
-	margin-bottom:1%;	
 	bottom:0;	
 	width:100%;
 	/*height:90px;*/
-	height:12%;
+	height:10%;
 	position:absolute;
+	padding-bottom:2%;
 	/*background-color: rgba(66,66,66,0.5);*/
 	overflow-x:auto;
 	overflow-y:hidden;
 	z-index:20;
 }
 .thumbs-mask{
-	width:1700px;
-	/*width:auto;*/
+	/*width:1700px;*/
+	width:auto;
 	height:100%;
+	white-space:nowrap;
 }
 .thumb{
 	bottom:0;
@@ -165,8 +160,9 @@ a{
 	height:100%;
 	/*width:100%;*/
 	margin-left:10px;
+	margin-bottom:10%;	
 	position:relative;
-	float:left;
+	/*float:left;*/
 	/*margin-top:10px;*/
 	border: rgba(66,66,66,0.5) 1px solid;
 	opacity:1;
@@ -180,6 +176,9 @@ a{
 }
 .thumb{
 	opacity: 0.8;
+}
+.thumb-last-item{
+	margin-right:10px;
 }
 .page-opened img{
 	border: red solid;
