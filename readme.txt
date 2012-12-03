@@ -1,70 +1,77 @@
+## Splity
 
+Multi-screen made easy
+
+Splity is an API which allows developpers to easily split applications functionalities between several devices. 
+
+It is a specialization of SLDialog, a Silex Labs project. And Splity is lisenced like SLDialog.
+It is developped in Haxe and Brix, and can be compiled cross-platform with Cocktail and NME.
+It is an application developped during a Hackathon by Intermedia Paris
+
+## Key functionalities
+
+* Find the devices (same local network, geoloc, ...)
+* Share functionalities between the clients and apps (roles, split the app)
+* share screens (video capture, real time, ...) - not yet implemented
+
+## Links
+
+Splity
+https://github.com/SilexLabsThirdParty/Splity
 
 SLDialog
 http://sourceforge.net/projects/php-polling/
 
-Splity test server
-http://169.254.240.203:8888/Splity/www/
+Silex Labs
+http://silexlabs.org/
 
-Gallery Splity 
+Intermedia Paris
+http://www.intermedia-paris.fr/
 
-- Au dÈmarrage, appli invisible.
-- Au dÈmarrage, gallery connect ‡ serveur splity
-	- appli ‡ 3 mode determinÈe par rÈsolution Ècran (type de device ?)
-		- desktop : affiche maximum de fonctionnalitÈ (mode par dÈfualt)
-		- tablette : mode desktop + demande fonctionnalitÈ thumb
-		- telephone : mode desktop + demande fonctionnalitÈ suivant/precedent
-	- un css diffÈrent est appliquÈ ‡ chaque mode.	
-	
-- quand connect, genere ID metadata, demande liste des fonctionnalitÈs (tous mode)
-- qaund liste fonctionnalitÈ reÁu :
-	- mode desktop : affiche toutes les fonctionnalitÈ qui ne sont pas au max
-	- mode tablette : demande fonctionnalitÈ thumb
-	- mode telephone : demande fonctionnalitÈ suivant/precedant
-	
-- quand demande fonctionnalitÈ reÁu : 
-	- si telephone/tablette affiche bonne fonctionnalitÈ
-	- si desktop, masque fonnctionnalitÈ au max.
-		
-- aprËs dÈmarrage.
-- quand un lien est cliquÈ (lien brix) par utilisateur dans une des applis :
-	- appli envoi mÈthode sur serveur splity avec nom de page
-	- serveur splity dispatch evenement changement de page sur toutes les applis
-	- toutes les autres appli ouvre pages dans onstatus
-	
-- appli ferme
-- deconnecte auprËs du serveur splitty
-- dans deconnect callback : 
-	- si desktop, check si doit rÈcuperer fonctionnalitÈ
-	
+## Usage
 
+See the sample: the Splity gallery in demo/
 
+Installation:
 
-getFunctionalities()
-[
+* Install Haxe with the Brix library
+* Intall SLDialog in ../SLDialog/ - see http://sourceforge.net/projects/php-polling/
+* build demo/SplityGallery/build.hxml (run: "haxe build.hxml")
+
+## Changes made to SLDialog
+
+This is what was added to SLDialog in order to make Splity, an API specialized in multi-screen apps, not just messaging.
+
+* onStatus event, dispatched when someone has taken a functionnality
+	SPLITY
 	{
-		name
-		usage
-		maxUsage
-		clients
-		{
-			...
-		}
 	}
-]
 
-requestFunctionality(name)
-bool
+* Method to list all functionnalities available for this app. The list comes from the config.php file. And usage is the number of apps which have taken this functionnality.
 
-onStatus
-SPLITY
-{
-}
+	This method is implemented in src/splity/client/SplityAPI.hx and in src/splity/server/Splity.hx
+	The client side methods calls the server side method with haxe remoting.
+
+	getFunctionalities()
+	[
+		{
+			name
+			usage
+			maxUsage
+			clients
+			{
+				...
+			}
+		}
+	]
+
+* Method to take a functionnality. The server may refuse and return false.
+
+	This method is implemented in src/splity/client/SplityAPI.hx and in src/splity/server/Splity.hx
+	The client side methods calls the server side method with haxe remoting.
+
+	requestFunctionality(name)
+	bool
 
 
-lex to do
-- server local
-- functionalities server side
-- deconnect clients
-- web socket
 

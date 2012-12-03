@@ -523,7 +523,7 @@
 			"file": "/Users/lexa/Dropbox/fdt-workspace/Splity/src/server/admin/src/Main.hx",
 			"settings":
 			{
-				"buffer_size": 4275,
+				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
 		},
@@ -531,7 +531,7 @@
 			"file": "/Users/lexa/Dropbox/fdt-workspace/Splity/src/splity/server/Main.hx",
 			"settings":
 			{
-				"buffer_size": 3641,
+				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
 		},
@@ -539,15 +539,18 @@
 			"file": "/Users/lexa/Dropbox/fdt-workspace/Splity/src/splity/server/Splity.hx",
 			"settings":
 			{
-				"buffer_size": 2417,
+				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
 		},
 		{
+			"contents": "",
 			"file": "build.hx",
+			"file_size": -1,
+			"file_write_time": -1,
 			"settings":
 			{
-				"buffer_size": 186,
+				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
 		}
@@ -887,15 +890,15 @@
 					"file": "/Users/lexa/Dropbox/fdt-workspace/Splity/src/server/admin/src/Main.hx",
 					"settings":
 					{
-						"buffer_size": 4275,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2168,
-								2168
+								0,
+								0
 							]
 						],
 						"settings":
@@ -915,15 +918,15 @@
 					"file": "/Users/lexa/Dropbox/fdt-workspace/Splity/src/splity/server/Main.hx",
 					"settings":
 					{
-						"buffer_size": 3641,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1339,
-								1339
+								0,
+								0
 							]
 						],
 						"settings":
@@ -943,7 +946,7 @@
 					"file": "/Users/lexa/Dropbox/fdt-workspace/Splity/src/splity/server/Splity.hx",
 					"settings":
 					{
-						"buffer_size": 2417,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
@@ -971,15 +974,15 @@
 					"file": "build.hx",
 					"settings":
 					{
-						"buffer_size": 186,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								181,
-								181
+								0,
+								0
 							]
 						],
 						"settings":
