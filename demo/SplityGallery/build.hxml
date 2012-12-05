@@ -2,12 +2,28 @@
 -cp ../../../Cocktail/src/
 -cp ../../../Brix/src/
 -cp ../../../SLDialog/src/
--cp src
 -cp ../../src
+-cp src
 -lib hscript
 
 #binary
 -js bin/app.js
+-main brix.core.Application
+--macro brix.core.Builder.create('./src/index.html')
+
+--next
+
+#sources
+-cp ../../../Cocktail/src/
+-cp ../../../Brix/src/
+-cp ../../../SLDialog/src/
+-cp ../../src
+-cp src
+
+#binary
+-swf bin/app.swf
+-swf-version 10.2
+--remap js:cocktail
 -main brix.core.Application
 --macro brix.core.Builder.create('./src/index.html')
 
