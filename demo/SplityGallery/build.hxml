@@ -2,8 +2,8 @@
 -cp ../../../Cocktail/src/
 -cp ../../../Brix/src/
 -cp ../../../SLDialog/src/
--cp src
 -cp ../../src
+-cp src
 -lib hscript
 
 #binary

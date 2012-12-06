@@ -43,6 +43,8 @@ class GallerySplity extends DisplayObject
 	
 	private static var CONTEXT_MANAGER_CLASS:String = "ContextManager";
 	
+	public static var TYPE_REQUEST_SEND:String = "RequestSend";
+	
 	/**
 	 * unique id of the client
 	 */
@@ -114,8 +116,13 @@ class GallerySplity extends DisplayObject
 		refreshFunctionnalities();
 		listenToPageChange();
 		listenToApplicationClose();
+        rootElement.addEventListener(TYPE_REQUEST_SEND, cast(onSendMessageRequest), true);
 	}
-	
+	function onSendMessageRequest(e:CustomEvent) 
+	{
+		e.detail.id = _id;
+		_splityAPI.dispatch(e.detail, null, null);
+	}
 	//////////////////
 	// GALLERY LOGIC
 	/////////////////
@@ -381,7 +388,7 @@ class GallerySplity extends DisplayObject
 	 */
 	function onStatus(messageData:MessageDataModel)
 	{
-		trace(messageData);
+		//trace(messageData);
 		switch (messageData.type)
 		{
 			case SplityAPI.SPLITY:
@@ -398,11 +405,17 @@ class GallerySplity extends DisplayObject
 				
 				
 			case MessageData.TYPE_CLIENT_DISPATCH:
-				if (messageData.metaData.action == CHANGE_PAGE)
-				{
-					if (messageData.metaData.id != _id)
+				if (messageData.metaData.id != _id)
+				{//trace("received dispatch from "+messageData.metaData.id+"("+_id);
+					if (messageData.metaData.action == CHANGE_PAGE)
 					{
-						changePage(messageData.metaData.pageName);
+							changePage(messageData.metaData.pageName);
+					}
+					else
+					{
+				        var event : CustomEvent = cast Lib.document.createEvent("CustomEvent");
+				        event.initCustomEvent(MessageData.TYPE_CLIENT_DISPATCH, false, false, messageData.metaData);
+				        rootElement.dispatchEvent(event);
 					}
 				}
 		}

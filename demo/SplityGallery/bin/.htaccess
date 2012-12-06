@@ -1,0 +1,5 @@
+Header add Access-Control-Allow-Methods "*"
+Header add Access-Control-Allow-Headers "X-Haxe-Remoting"
+Header add Access-Control-Request-Method "*"
+
+ErrorDocument 404 /splity/index-js.html
