@@ -9,16 +9,6 @@ import js.Lib;
 import org.phpMessaging.model.MessageData;
 import splity.client.SplityAPI;
 import splity.server.FunctionalityData;
-
-
-/**
- * The display modes of the galery
- */
-enum GalleryMode {
-	DESKTOP;
-	TABLET;
-	PHONE;
-}
  
 /**
  * A gallery which can be displayed on multiple
@@ -35,9 +25,10 @@ class GallerySplity extends DisplayObject
 	private static var DISPLAY_FUNCTIONNALITY:String = "display";
 	
 	private static var SPLITY_URL:String = "splity.php/index.php";
-	//private static var SPLITY_URL:String = "http://demos.silexlabs.org/splity/splity.php/index.php";
 	
 	private static var ID_IDENT:String = "id";
+	
+	private static var MASTER_ID_IDENT:String = "masterID";
 	
 	private static var CHANGE_PAGE:String = "changePage";
 	
@@ -49,11 +40,6 @@ class GallerySplity extends DisplayObject
 	 * unique id of the client
 	 */
 	private var _id:String;
-	
-	/**
-	 * current mode of gallery
-	 */
-	private var _mode:GalleryMode;
 	
 	/**
 	 * instance of SplityAPI communicating
@@ -79,9 +65,7 @@ class GallerySplity extends DisplayObject
 	 */
 	override function init()
 	{
-		_id = "" + Math.round(Math.random() * 1000);
 		_remotePageChange = false;
-		initMode();
 		
 		_splityAPI = new SplityAPI();
 		_splityAPI.connect(SPLITY_URL, null, null, null);
@@ -89,40 +73,20 @@ class GallerySplity extends DisplayObject
 	}
 	
 	/**
-	 * Determine the mode the
-	 * gallery should use based on device
-	 */
-	function initMode()
-	{
-		if (Lib.window.innerWidth > 1280)
-		{
-			_mode = DESKTOP;
-		}
-		else if (Lib.window.innerWidth < 1280 && Lib.window.innerWidth > 780)
-		{
-			_mode = TABLET;
-		}
-		else
-		{
-			_mode = PHONE;
-		}
-	}
-	
-	/**
 	 * start application
 	 */
 	function initApplication()
 	{
-		refreshFunctionnalities();
 		listenToPageChange();
-		listenToApplicationClose();
         rootElement.addEventListener(TYPE_REQUEST_SEND, cast(onSendMessageRequest), true);
 	}
+	
 	function onSendMessageRequest(e:CustomEvent) 
 	{
 		e.detail.id = _id;
 		_splityAPI.dispatch(e.detail, null, null);
 	}
+	
 	//////////////////
 	// GALLERY LOGIC
 	/////////////////
@@ -145,125 +109,6 @@ class GallerySplity extends DisplayObject
 		{
 			_splityAPI.dispatch({action:CHANGE_PAGE, pageName:ce.detail.name, id:_id}, null, null);
 		}
-	}
-	
-	/**
-	 * fetch the current list of functionalities
-	 * and data on their usage
-	 */
-	function refreshFunctionnalities()
-	{
-		_splityAPI.getFunctionalities(onFunctionnalities, onError);
-	}
-	
-	/**
-	 * Called once the list of functionnalities
-	 * data has ben loaded
-	 */
-	function onFunctionnalities(functionnalities:Array<FunctionalityData>)
-	{
-		switch (_mode)
-		{
-			case DESKTOP:
-				setDesktopFunctionnalities(functionnalities);
-				
-			case TABLET:
-				setTabletFunctionnalities(functionnalities);
-				
-			case PHONE:
-				setPhoneFunctionnalities(functionnalities);
-		}
-	}
-	
-	/**
-	 * In desktop mode, the gallery displays
-	 * all functionnalities which are not
-	 * displayed by another devices
-	 */
-	function setDesktopFunctionnalities(functionnalities:Array<FunctionalityData>)
-	{
-		for (functionnality in functionnalities)
-		{
-			if (functionnality.maxUsage == null)
-			{
-				addFunctionnality(functionnality.name);
-			}
-			else if (functionnality.usage < functionnality.maxUsage)
-			{
-				addFunctionnality(functionnality.name);
-			}
-			else
-			{
-				removeFunctionnality(functionnality.name);
-			}
-		}
-	}
-	
-	/**
-	 * In tablet mode, request the exclusive display
-	 * of the thumb list
-	 */
-	function setTabletFunctionnalities(functionnalities:Array<FunctionalityData>)
-	{
-		_splityAPI.requestFunctionnality(THUMB_FUNCTIONNALITY, onTabletFunctionnality, onError, {id:_id});
-	}
-	
-	/**
-	 * Called when a tablet client receives exclusive
-	 * display of thumb functionnality
-	 */
-	function onTabletFunctionnality(granted:Bool)
-	{
-		if (granted == true)
-		{
-			removeFunctionnality(REMOTE_FUNCTIONNALITY);
-			addFunctionnality(DISPLAY_FUNCTIONNALITY);
-			addFunctionnality(THUMB_FUNCTIONNALITY);
-		}
-		else
-		{
-			onFunctionnalityDenied();
-		}
-		
-	}
-	
-	/**
-	 * In phone mode, request the exclusive display
-	 * of the remote
-	 */
-	function setPhoneFunctionnalities(functionnalities:Array<FunctionalityData>)
-	{
-		_splityAPI.requestFunctionnality(REMOTE_FUNCTIONNALITY, onPhoneFunctionnality, onError, {id:_id});
-	}
-	
-	/**
-	 * Called when a phone client receives exclusive
-	 * display of remote functionnality
-	 */
-	function onPhoneFunctionnality(granted:Bool)
-	{
-		if (granted == true)
-		{
-			removeFunctionnality(THUMB_FUNCTIONNALITY);
-			addFunctionnality(REMOTE_FUNCTIONNALITY);
-			addFunctionnality(DISPLAY_FUNCTIONNALITY);
-		}
-		//here request was denied
-		else
-		{
-			onFunctionnalityDenied();
-		}
-	}
-	
-	/**
-	 * When a functionnality request is denied,
-	 * default to only showing the display
-	 */
-	function onFunctionnalityDenied()
-	{
-		removeFunctionnality(REMOTE_FUNCTIONNALITY);
-		removeFunctionnality(THUMB_FUNCTIONNALITY);
-		addFunctionnality(DISPLAY_FUNCTIONNALITY);
 	}
 	
 	//////////////////
@@ -321,27 +166,6 @@ class GallerySplity extends DisplayObject
 	}
 	
 	/**
-	 * Listen to web page close
-	 */
-	function listenToApplicationClose()
-	{
-		Lib.window.addEventListener("unload", onClose, false);
-	}
-	
-	/**
-	 * Signal to Splity that connection
-	 * should end
-	 */
-	function onClose(e:Event)
-	{
-		Lib.document.body.removeEventListener(Page.EVENT_TYPE_OPEN_START, onPageChange, false);
-		Lib.document.body.removeEventListener(Page.EVENT_TYPE_OPEN_STOP, onTransitionEnd, false);
-		Lib.window.removeEventListener("unload", onClose, false);
-		
-		_splityAPI.unsubscribe();
-	}
-	
-	/**
 	 * on transition end, set dirty flag to false
 	 */
 	function onTransitionEnd(e:Event)
@@ -355,19 +179,85 @@ class GallerySplity extends DisplayObject
 	
 	/**
 	 * When successfully connected with Splity
-	 * server, register a unique id for this
-	 * client
+	 * server, retrieve client id
 	 */
 	function onConnect()
 	{
-		_splityAPI.setClientMetaData(ID_IDENT, _id, onMetaDataSet, onError);
+		_splityAPI.getClientMetaData(ID_IDENT, onIDMetaDataReceived, onError);
 	}
 	
 	/**
-	 * Once the id is registered, start
-	 * the application
+	 * If id is null, this is
+	 * the first time this client connects
+	 * to the application, create and regisyter an id for
+	 * it, else use the already existing one
+	 */
+	function onIDMetaDataReceived(id:String)
+	{
+		if (id == null)
+		{
+			_id = "" + Math.round(Math.random() * 1000);
+			_splityAPI.setClientMetaData(ID_IDENT, _id, onMetaDataSet, onError);
+		}
+		else
+		{
+			_id = id;
+			onMetaDataSet(null);
+		}
+	}
+	
+	/**
+	 * Once the id of this client is ready,
+	 * retrieve the id of the client which 
+	 * must have the navigation functionnality,
+	 * stored in the application metadata
 	 */
 	function onMetaDataSet(data:Dynamic)
+	{
+		_splityAPI.getApplicationMetaData(MASTER_ID_IDENT, onMasterIDReceived, onError);
+	}
+	
+	/**
+	 * Called once the id forthe client which
+	 * should have the navigation functionnalities
+	 * has been retrieved
+	 */
+	function onMasterIDReceived(id:String)
+	{
+		//if id not set yet, then this client is
+		//the first to connect and becomes the master
+		//client, store its id as the master id
+		if (id == null)
+		{
+			addFunctionnality(THUMB_FUNCTIONNALITY);
+			addFunctionnality(REMOTE_FUNCTIONNALITY);
+			addFunctionnality(DISPLAY_FUNCTIONNALITY);
+			_splityAPI.setApplicationMetaData(MASTER_ID_IDENT, _id, onMasterIDSet, onError);
+		}
+		//else if master id is this client's id, 
+		//then show all the navigation UI
+		else if (id == _id)
+		{
+			addFunctionnality(THUMB_FUNCTIONNALITY);
+			addFunctionnality(REMOTE_FUNCTIONNALITY);
+			addFunctionnality(DISPLAY_FUNCTIONNALITY);
+			initApplication();
+		}
+		//else hide the navigation UI
+		else
+		{
+			addFunctionnality(DISPLAY_FUNCTIONNALITY);
+			removeFunctionnality(THUMB_FUNCTIONNALITY);
+			removeFunctionnality(REMOTE_FUNCTIONNALITY);
+			initApplication();
+		}
+	}
+	
+	/**
+	 * Called when the id of this client as
+	 * been successfuly set as the master id
+	 */
+	function onMasterIDSet(data:Dynamic)
 	{
 		initApplication();
 	}
@@ -388,25 +278,11 @@ class GallerySplity extends DisplayObject
 	 */
 	function onStatus(messageData:MessageDataModel)
 	{
-		//trace(messageData);
 		switch (messageData.type)
 		{
-			case SplityAPI.SPLITY:
-				if (_mode == DESKTOP)
-				{
-					refreshFunctionnalities();
-				}
-				
-			case MessageData.TYPE_CLIENT_DELETED:
-				if (_mode == DESKTOP)
-				{
-					refreshFunctionnalities();
-				}
-				
-				
 			case MessageData.TYPE_CLIENT_DISPATCH:
 				if (messageData.metaData.id != _id)
-				{//trace("received dispatch from "+messageData.metaData.id+"("+_id);
+				{
 					if (messageData.metaData.action == CHANGE_PAGE)
 					{
 							changePage(messageData.metaData.pageName);
