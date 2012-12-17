@@ -1,6 +1,7 @@
 package components;
 
 import brix.component.navigation.Page;
+import brix.util.DomTools;
 import brix.core.Application;
 import js.Dom;
 import brix.component.ui.DisplayObject;
@@ -28,11 +29,13 @@ class GallerySplity extends DisplayObject
 	
 	private static var ID_IDENT:String = "id";
 	
-	private static var MASTER_ID_IDENT:String = "masterID";
-	
 	private static var CHANGE_PAGE:String = "changePage";
 	
 	private static var CONTEXT_MANAGER_CLASS:String = "ContextManager";
+	
+	private static var MASTER_BUTTON_ID:String = "master";
+	
+	private static var MASTER_BUTTON_DOWN_CLASS:String = "down";
 	
 	public static var TYPE_REQUEST_SEND:String = "RequestSend";
 	
@@ -54,6 +57,12 @@ class GallerySplity extends DisplayObject
 	 */
 	private var _remotePageChange:Bool;
 	
+	/**
+	 * Wether this client can currently control
+	 * the gallery
+	 */
+	private var _isMaster:Bool;
+	
 	public function new(rootElement:HtmlDom, brixId:String) 
 	{
 		super(rootElement, brixId);
@@ -66,25 +75,10 @@ class GallerySplity extends DisplayObject
 	override function init()
 	{
 		_remotePageChange = false;
-		
+		_isMaster = false;
 		_splityAPI = new SplityAPI();
 		_splityAPI.connect(SPLITY_URL, null, null, null);
 		_splityAPI.subscribe(onConnect, onError, onStatus);
-	}
-	
-	/**
-	 * start application
-	 */
-	function initApplication()
-	{
-		listenToPageChange();
-        rootElement.addEventListener(TYPE_REQUEST_SEND, cast(onSendMessageRequest), true);
-	}
-	
-	function onSendMessageRequest(e:CustomEvent) 
-	{
-		e.detail.id = _id;
-		_splityAPI.dispatch(e.detail, null, null);
 	}
 	
 	//////////////////
@@ -109,6 +103,54 @@ class GallerySplity extends DisplayObject
 		{
 			_splityAPI.dispatch({action:CHANGE_PAGE, pageName:ce.detail.name, id:_id}, null, null);
 		}
+	}
+	
+	/**
+	 * start application
+	 */
+	function initApplication()
+	{
+		addFunctionnality(DISPLAY_FUNCTIONNALITY);
+		listenToPageChange();
+		listenToMasterButton();
+        rootElement.addEventListener(TYPE_REQUEST_SEND, cast(onSendMessageRequest), true);
+	}
+	
+	/**
+	 * Listen to master button click
+	 */
+	function listenToMasterButton():Void
+	{
+		Lib.document.getElementById(MASTER_BUTTON_ID).addEventListener("click", onMasterButtonClick, false);
+	}
+	
+	/**
+	 * When the master button is clicked, 
+	 * toggle the display of the controls
+	 */
+	function onMasterButtonClick(e:Event)
+	{
+		DomTools.toggleClass(e.target, MASTER_BUTTON_DOWN_CLASS);
+		
+		if (_isMaster == true)
+		{
+			removeFunctionnality(THUMB_FUNCTIONNALITY);
+			removeFunctionnality(REMOTE_FUNCTIONNALITY);
+			
+			_isMaster = false;
+		}
+		else
+		{
+			addFunctionnality(THUMB_FUNCTIONNALITY);
+			addFunctionnality(REMOTE_FUNCTIONNALITY);
+			_isMaster = true;
+		}
+	}
+	
+	function onSendMessageRequest(e:CustomEvent) 
+	{
+		e.detail.id = _id;
+		_splityAPI.dispatch(e.detail, null, null);
 	}
 	
 	//////////////////
@@ -179,85 +221,19 @@ class GallerySplity extends DisplayObject
 	
 	/**
 	 * When successfully connected with Splity
-	 * server, retrieve client id
+	 * server, set an id for this client
 	 */
 	function onConnect()
 	{
-		_splityAPI.getClientMetaData(ID_IDENT, onIDMetaDataReceived, onError);
-	}
-	
-	/**
-	 * If id is null, this is
-	 * the first time this client connects
-	 * to the application, create and regisyter an id for
-	 * it, else use the already existing one
-	 */
-	function onIDMetaDataReceived(id:String)
-	{
-		if (id == null)
-		{
-			_id = "" + Math.round(Math.random() * 1000);
-			_splityAPI.setClientMetaData(ID_IDENT, _id, onMetaDataSet, onError);
-		}
-		else
-		{
-			_id = id;
-			onMetaDataSet(null);
-		}
+		_id = "" + Math.round(Math.random() * 1000);
+		_splityAPI.setClientMetaData(ID_IDENT, _id, onMetaDataSet, onError);
 	}
 	
 	/**
 	 * Once the id of this client is ready,
-	 * retrieve the id of the client which 
-	 * must have the navigation functionnality,
-	 * stored in the application metadata
+	 * init the application
 	 */
 	function onMetaDataSet(data:Dynamic)
-	{
-		_splityAPI.getApplicationMetaData(MASTER_ID_IDENT, onMasterIDReceived, onError);
-	}
-	
-	/**
-	 * Called once the id forthe client which
-	 * should have the navigation functionnalities
-	 * has been retrieved
-	 */
-	function onMasterIDReceived(id:String)
-	{
-		//if id not set yet, then this client is
-		//the first to connect and becomes the master
-		//client, store its id as the master id
-		if (id == null)
-		{
-			addFunctionnality(THUMB_FUNCTIONNALITY);
-			addFunctionnality(REMOTE_FUNCTIONNALITY);
-			addFunctionnality(DISPLAY_FUNCTIONNALITY);
-			_splityAPI.setApplicationMetaData(MASTER_ID_IDENT, _id, onMasterIDSet, onError);
-		}
-		//else if master id is this client's id, 
-		//then show all the navigation UI
-		else if (id == _id)
-		{
-			addFunctionnality(THUMB_FUNCTIONNALITY);
-			addFunctionnality(REMOTE_FUNCTIONNALITY);
-			addFunctionnality(DISPLAY_FUNCTIONNALITY);
-			initApplication();
-		}
-		//else hide the navigation UI
-		else
-		{
-			addFunctionnality(DISPLAY_FUNCTIONNALITY);
-			removeFunctionnality(THUMB_FUNCTIONNALITY);
-			removeFunctionnality(REMOTE_FUNCTIONNALITY);
-			initApplication();
-		}
-	}
-	
-	/**
-	 * Called when the id of this client as
-	 * been successfuly set as the master id
-	 */
-	function onMasterIDSet(data:Dynamic)
 	{
 		initApplication();
 	}
