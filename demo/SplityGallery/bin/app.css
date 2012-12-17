@@ -130,6 +130,22 @@ a{
 	background-position:right center;
 }
 
+#master{
+	position:fixed;
+	right:5px;
+	top:5px;
+	background:url("assets/master_icon-off.png");
+	width:50px;
+	height:50px;
+	z-index:20;
+	cursor: pointer;
+}
+
+#master.down{
+	background:url("assets/master_icon-on.png");
+}
+
+
 /**********/
 /* THUMBS */
 /**********/
