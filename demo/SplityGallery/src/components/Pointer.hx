@@ -22,7 +22,8 @@ class Pointer extends DisplayObject
         super(rootElement, brixId);
         // get the image node
         imageElement = DomTools.getSingleElement(rootElement, "pointer-image");
-		imageElement.style.position  = "absolute";
+		imageElement.style.position  = "fixed";
+		imageElement.style.zIndex = 30;
 		imageElement.style.top  = "0px";
 		imageElement.style.left = "0px";
         imageElement.style.display = 'none';
@@ -80,11 +81,14 @@ class Pointer extends DisplayObject
     }
     public function sendDraw() 
     {
+		var percentX = mouseX / Lib.window.innerWidth;
+		var percentY = mouseY / Lib.window.innerHeight;
+		
         var event : CustomEvent = cast Lib.document.createEvent("CustomEvent");
         event.initCustomEvent(GallerySplity.TYPE_REQUEST_SEND, false, false, {
             type: "sendDraw",
-            clientX: mouseX,
-            clientY: mouseY,
+            clientX: percentX,
+            clientY: percentY,
         });
         rootElement.dispatchEvent(event);
     }
@@ -92,8 +96,8 @@ class Pointer extends DisplayObject
 	{
         if (e.detail.type == "sendDraw")
         {
-            var x:Int = e.detail.clientX;
-            var y:Int = e.detail.clientY;
+            var x:Int = Math.round(e.detail.clientX * Lib.window.innerWidth);
+            var y:Int = Math.round(e.detail.clientY * Lib.window.innerHeight);
             draw(x, y);
         }
 	}
