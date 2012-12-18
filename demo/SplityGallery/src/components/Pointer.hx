@@ -37,7 +37,7 @@ class Pointer extends DisplayObject
         var container = DomTools.getSingleElement(rootElement, "pages-container");
         container.style.cursor = 'url(assets/hand.png)';
         container.addEventListener("mousemove", cast(onMouseMove), true);
-        container.addEventListener("mousedown", cast(onMouseDown), true);
+        //container.addEventListener("mousedown", cast(onMouseDown), true);
         container.addEventListener("mouseup", cast(onMouseUp), true);
         rootElement.addEventListener(MessageData.TYPE_CLIENT_DISPATCH, cast(onDraw), true);
     }
@@ -58,8 +58,8 @@ class Pointer extends DisplayObject
         }
         timer = null;
         imageElement.style.display="none";           
-        mouseX = -1000;
-        mouseY = -1000;
+        //mouseX = -1000;
+        //mouseY = -1000;
         sendDraw();
     }
     

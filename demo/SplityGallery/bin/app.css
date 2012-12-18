@@ -46,6 +46,9 @@ a{
 	background-color:#F5F5F5;
 	z-index:0;
 }
+.gesture{
+	z-index:100;
+}
 
 /********************/
 /* PAGES TRANSITION */
