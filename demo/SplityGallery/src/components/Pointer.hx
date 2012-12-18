@@ -61,6 +61,7 @@ class Pointer extends DisplayObject
         //mouseX = -1000;
         //mouseY = -1000;
         sendDraw();
+		draw(mouseX,mouseY);
     }
     
     /**
