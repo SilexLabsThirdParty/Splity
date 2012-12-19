@@ -12,23 +12,33 @@
 	<script data-brix-use="brix.component.navigation.link.LinkClosePage"></script>
 	<script data-brix-use="brix.component.navigation.link.TouchLink"></script>
 	<script data-brix-use="brix.component.navigation.ContextManager"></script>
-	<script data-brix-use="components.GallerySplity"></script>
+	<script data-brix-use="brix.component.navigation.link.LinkAddContext"></script>
+	<script data-brix-use="brix.component.navigation.link.LinkRemoveContext"></script>
 	<script data-brix-use="brix.component.navigation.link.LinkReplaceContext"></script>
+	<script data-brix-use="brix.component.layout.Panel"></script>
+	<script data-brix-use="components.GallerySplity"></script>
 	<script data-brix-use="components.Pointer"></script>
 </head>
 <body>
 	<!-- MASTER BUTTON -->
 	<div id="master" title="Become the master"></div>
 	<div class="main-container ContextManager GallerySplity Pointer"
-		data-context-list="display, thumblist, remote">
+		data-context-list="display, thumblist, remote, hand-pointer">
 
 		<!-- POINTER -->
-		<img src="assets/hand.png" class="pointer-image" />
-			
-		<!-- THUMBLIST -->
-			<!--<a class="Page" name="thumblist"></a>
-			<div class="Layer thumblist">-->
-				<div class="thumbs-container thumblist">
+		<a title="Display the cursor" class="LinkAddContext" data-context="hand-pointer">
+			<div class="pointer-display"></div>
+		</a>
+		<a title="Hide the cursor" class="LinkRemoveContext hand-pointer" data-context="hand-pointer">
+			<div class="pointer-hide"></div>
+		</a>
+		<!--<img src="assets/hand.png" class="pointer-image hand-pointer" />-->
+		<div id="pointer" class="pointer-image hand-pointer" />
+		
+		<div class="Panel">
+			<!-- THUMBLIST -->
+			<div class="panel-footer thumblist">
+				<div class="thumbs-container">
 					<div class="thumbs-mask">
 						<a href="#page01" class="LinkToPage thumb-anchor">
 							<img src="assets/image01.jpg" class="thumb"></img>
@@ -70,400 +80,402 @@
 							<img src="assets/image13.jpg" class="thumb thumb-last-item"></img>
 						</a>
 					</div>
-				<!--</div>-->
+				</div>
 			</div>
 			
-		<div class="pages-container">
-			
-		<!-- PAGE 01 -->
-			<a class="Page" name="page01"></a>
-			
-			<!-- CONTENT -->
-			<div class="Layer page01 Group display">
-				<!-- IMAGE -->
-				<div class="big-img" style="background-image:url('assets/image01.jpg')"></div>
-			</div>
-			
-			<!-- NAVIGATION GESTURES -->
-			<div class="Layer page01 Group remote gesture">
-				<!-- NAV -->
-				<a href="#page02" class="LinkToPage TouchLink right-container"
-					data-touch-type="right"
-					data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
-				</a>
-			</div>
-			
-			<!-- NAVIGATION ARROWS-->
-			<div class="Layer page01 Group remote">
-				<div class="right-arrow ResizeIcon"/>
-			</div>
+			<div class="panel-body">
+				<div class="pages-container">
+					
+				<!-- PAGE 01 -->
+					<a class="Page" name="page01"></a>
+					
+				<!-- CONTENT -->
+					<div class="Layer page01 Group display">
+						<!-- IMAGE -->
+						<div class="big-img" style="background-image:url('assets/image01.jpg')"></div>
+					</div>
+					
+					<!-- NAVIGATION GESTURES -->
+					<div class="Layer page01 Group remote gesture">
+						<!-- NAV -->
+						<a href="#page02" class="LinkToPage TouchLink right-container"
+							data-touch-type="right"
+							data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
+						</a>
+					</div>
+					
+					<!-- NAVIGATION ARROWS-->
+					<div class="Layer page01 Group remote">
+						<div class="right-arrow ResizeIcon"/>
+					</div>
 
-		<!-- PAGE 02 -->
-			<a class="Page" name="page02"></a>
+				<!-- PAGE 02 -->
+					<a class="Page" name="page02"></a>
 
-			<!-- IMAGE -->
-			<div class="Layer page02 Group display">
-				<!-- IMAGE -->
-				<div class="big-img" style="background-image:url('assets/image02.jpg')"></div>
-			</div>
-			
-			<!-- NAVIGATION GESTURES -->
-			<div class="Layer page02 Group remote gesture">
-				<!-- NAV -->
-				<a href="#page01" class="LinkToPage TouchLink left-container"
-					data-touch-type="left"
-					data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
-				</a>
-				<a href="#page03" class="LinkToPage TouchLink right-container"
-					data-touch-type="right"
-					data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
-				</a>
-			</div>
-			
-			<!-- NAVIGATION ARROWS-->
-			<div class="Layer page02 Group remote">
-				<div class="left-arrow ResizeIcon"/>	
-				<div class="right-arrow ResizeIcon"/>
-			</div>
-			
-		
-		<!-- PAGE 03 -->
-			<a class="Page" name="page03"></a>
+					<!-- IMAGE -->
+					<div class="Layer page02 Group display">
+						<!-- IMAGE -->
+						<div class="big-img" style="background-image:url('assets/image02.jpg')"></div>
+					</div>
+					
+					<!-- NAVIGATION GESTURES -->
+					<div class="Layer page02 Group remote gesture">
+						<!-- NAV -->
+						<a href="#page01" class="LinkToPage TouchLink left-container"
+							data-touch-type="left"
+							data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
+						</a>
+						<a href="#page03" class="LinkToPage TouchLink right-container"
+							data-touch-type="right"
+							data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
+						</a>
+					</div>
+					
+					<!-- NAVIGATION ARROWS-->
+					<div class="Layer page02 Group remote">
+						<div class="left-arrow ResizeIcon"/>	
+						<div class="right-arrow ResizeIcon"/>
+					</div>
+					
+				
+				<!-- PAGE 03 -->
+					<a class="Page" name="page03"></a>
 
-			<!-- IMAGE -->
-			<div class="Layer page03 Group display">
-				<!-- IMAGE -->
-				<div class="big-img" style="background-image:url('assets/image03.jpg')"></div>
-			</div>
-			
-			<!-- NAVIGATION GESTURES -->
-			<div class="Layer page03 Group remote gesture">
-				<!-- NAV -->
-				<a href="#page02" class="LinkToPage TouchLink left-container"
-					data-touch-type="left"
-					data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
-				</a>
-				<a href="#page04" class="LinkToPage TouchLink right-container"
-					data-touch-type="right"
-					data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
-				</a>
-			</div>
-			
-			<!-- NAVIGATION ARROWS-->
-			<div class="Layer page03 Group remote">
-				<div class="left-arrow ResizeIcon"/>	
-				<div class="right-arrow ResizeIcon"/>
-			</div>
-			
-		
-		<!-- PAGE 04 -->
-			<a class="Page" name="page04"></a>
+					<!-- IMAGE -->
+					<div class="Layer page03 Group display">
+						<!-- IMAGE -->
+						<div class="big-img" style="background-image:url('assets/image03.jpg')"></div>
+					</div>
+					
+					<!-- NAVIGATION GESTURES -->
+					<div class="Layer page03 Group remote gesture">
+						<!-- NAV -->
+						<a href="#page02" class="LinkToPage TouchLink left-container"
+							data-touch-type="left"
+							data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
+						</a>
+						<a href="#page04" class="LinkToPage TouchLink right-container"
+							data-touch-type="right"
+							data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
+						</a>
+					</div>
+					
+					<!-- NAVIGATION ARROWS-->
+					<div class="Layer page03 Group remote">
+						<div class="left-arrow ResizeIcon"/>	
+						<div class="right-arrow ResizeIcon"/>
+					</div>
+					
+				
+				<!-- PAGE 04 -->
+					<a class="Page" name="page04"></a>
 
-			<!-- IMAGE -->
-			<div class="Layer page04 Group display">
-				<!-- IMAGE -->
-				<div class="big-img" style="background-image:url('assets/image04.jpg')"></div>
-			</div>
-			
-			<!-- NAVIGATION GESTURES -->
-			<div class="Layer page04 Group remote gesture">
-				<!-- NAV -->
-				<a href="#page03" class="LinkToPage TouchLink left-container"
-					data-touch-type="left"
-					data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
-				</a>
-				<a href="#page05" class="LinkToPage TouchLink right-container"
-					data-touch-type="right"
-					data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
-				</a>
-			</div>
-			
-			<!-- NAVIGATION ARROWS-->
-			<div class="Layer page04 Group remote">
-				<div class="left-arrow ResizeIcon"/>	
-				<div class="right-arrow ResizeIcon"/>
-			</div>
-			
-		
-		<!-- PAGE 05 -->
-			<a class="Page" name="page05"></a>
+					<!-- IMAGE -->
+					<div class="Layer page04 Group display">
+						<!-- IMAGE -->
+						<div class="big-img" style="background-image:url('assets/image04.jpg')"></div>
+					</div>
+					
+					<!-- NAVIGATION GESTURES -->
+					<div class="Layer page04 Group remote gesture">
+						<!-- NAV -->
+						<a href="#page03" class="LinkToPage TouchLink left-container"
+							data-touch-type="left"
+							data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
+						</a>
+						<a href="#page05" class="LinkToPage TouchLink right-container"
+							data-touch-type="right"
+							data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
+						</a>
+					</div>
+					
+					<!-- NAVIGATION ARROWS-->
+					<div class="Layer page04 Group remote">
+						<div class="left-arrow ResizeIcon"/>	
+						<div class="right-arrow ResizeIcon"/>
+					</div>
+					
+				
+				<!-- PAGE 05 -->
+					<a class="Page" name="page05"></a>
 
-			<!-- IMAGE -->
-			<div class="Layer page05 Group display">
-				<!-- IMAGE -->
-				<div class="big-img" style="background-image:url('assets/image05.jpg')"></div>
-			</div>
-			
-			<!-- NAVIGATION GESTURES -->
-			<div class="Layer page05 Group remote gesture">
-				<!-- NAV -->
-				<a href="#page04" class="LinkToPage TouchLink left-container"
-					data-touch-type="left"
-					data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
-				</a>
-				<a href="#page06" class="LinkToPage TouchLink right-container"
-					data-touch-type="right"
-					data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
-				</a>
-			</div>
-			
-			<!-- NAVIGATION ARROWS-->
-			<div class="Layer page05 Group remote">
-				<div class="left-arrow ResizeIcon"/>	
-				<div class="right-arrow ResizeIcon"/>
-			</div>
-			
-		
-		<!-- PAGE 06 -->
-			<a class="Page" name="page06"></a>
+					<!-- IMAGE -->
+					<div class="Layer page05 Group display">
+						<!-- IMAGE -->
+						<div class="big-img" style="background-image:url('assets/image05.jpg')"></div>
+					</div>
+					
+					<!-- NAVIGATION GESTURES -->
+					<div class="Layer page05 Group remote gesture">
+						<!-- NAV -->
+						<a href="#page04" class="LinkToPage TouchLink left-container"
+							data-touch-type="left"
+							data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
+						</a>
+						<a href="#page06" class="LinkToPage TouchLink right-container"
+							data-touch-type="right"
+							data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
+						</a>
+					</div>
+					
+					<!-- NAVIGATION ARROWS-->
+					<div class="Layer page05 Group remote">
+						<div class="left-arrow ResizeIcon"/>	
+						<div class="right-arrow ResizeIcon"/>
+					</div>
+					
+				
+				<!-- PAGE 06 -->
+					<a class="Page" name="page06"></a>
 
-			<!-- IMAGE -->
-			<div class="Layer page06 Group display">
-				<!-- IMAGE -->
-				<div class="big-img" style="background-image:url('assets/image06.jpg')"></div>
-			</div>
-			
-			<!-- NAVIGATION GESTURES -->
-			<div class="Layer page06 Group remote gesture">
-				<!-- NAV -->
-				<a href="#page05" class="LinkToPage TouchLink left-container"
-					data-touch-type="left"
-					data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
-				</a>
-				<a href="#page07" class="LinkToPage TouchLink right-container"
-					data-touch-type="right"
-					data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
-				</a>
-			</div>
-			
-			<!-- NAVIGATION ARROWS-->
-			<div class="Layer page06 Group remote">
-				<div class="left-arrow ResizeIcon"/>	
-				<div class="right-arrow ResizeIcon"/>
-			</div>
-			
-		
-		<!-- PAGE 07 -->
-			<a class="Page" name="page07"></a>
+					<!-- IMAGE -->
+					<div class="Layer page06 Group display">
+						<!-- IMAGE -->
+						<div class="big-img" style="background-image:url('assets/image06.jpg')"></div>
+					</div>
+					
+					<!-- NAVIGATION GESTURES -->
+					<div class="Layer page06 Group remote gesture">
+						<!-- NAV -->
+						<a href="#page05" class="LinkToPage TouchLink left-container"
+							data-touch-type="left"
+							data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
+						</a>
+						<a href="#page07" class="LinkToPage TouchLink right-container"
+							data-touch-type="right"
+							data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
+						</a>
+					</div>
+					
+					<!-- NAVIGATION ARROWS-->
+					<div class="Layer page06 Group remote">
+						<div class="left-arrow ResizeIcon"/>	
+						<div class="right-arrow ResizeIcon"/>
+					</div>
+					
+				
+				<!-- PAGE 07 -->
+					<a class="Page" name="page07"></a>
 
-			<!-- IMAGE -->
-			<div class="Layer page07 Group display">
-				<!-- IMAGE -->
-				<div class="big-img" style="background-image:url('assets/image07.jpg')"></div>
-			</div>
-			
-			<!-- NAVIGATION GESTURES -->
-			<div class="Layer page07 Group remote gesture">
-				<!-- NAV -->
-				<a href="#page06" class="LinkToPage TouchLink left-container"
-					data-touch-type="left"
-					data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
-				</a>
-				<a href="#page08" class="LinkToPage TouchLink right-container"
-					data-touch-type="right"
-					data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
-				</a>
-			</div>
-			
-			<!-- NAVIGATION ARROWS-->
-			<div class="Layer page07 Group remote">
-				<div class="left-arrow ResizeIcon"/>	
-				<div class="right-arrow ResizeIcon"/>
-			</div>
-			
-		
-		<!-- PAGE 08 -->
-			<a class="Page" name="page08"></a>
+					<!-- IMAGE -->
+					<div class="Layer page07 Group display">
+						<!-- IMAGE -->
+						<div class="big-img" style="background-image:url('assets/image07.jpg')"></div>
+					</div>
+					
+					<!-- NAVIGATION GESTURES -->
+					<div class="Layer page07 Group remote gesture">
+						<!-- NAV -->
+						<a href="#page06" class="LinkToPage TouchLink left-container"
+							data-touch-type="left"
+							data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
+						</a>
+						<a href="#page08" class="LinkToPage TouchLink right-container"
+							data-touch-type="right"
+							data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
+						</a>
+					</div>
+					
+					<!-- NAVIGATION ARROWS-->
+					<div class="Layer page07 Group remote">
+						<div class="left-arrow ResizeIcon"/>	
+						<div class="right-arrow ResizeIcon"/>
+					</div>
+					
+				
+				<!-- PAGE 08 -->
+					<a class="Page" name="page08"></a>
 
-			<!-- IMAGE -->
-			<div class="Layer page08 Group display">
-				<!-- IMAGE -->
-				<div class="big-img" style="background-image:url('assets/image08.jpg')"></div>
-			</div>
-			
-			<!-- NAVIGATION GESTURES -->
-			<div class="Layer page08 Group remote gesture">
-				<!-- NAV -->
-				<a href="#page07" class="LinkToPage TouchLink left-container"
-					data-touch-type="left"
-					data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
-				</a>
-				<a href="#page09" class="LinkToPage TouchLink right-container"
-					data-touch-type="right"
-					data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
-				</a>
-			</div>
-			
-			<!-- NAVIGATION ARROWS-->
-			<div class="Layer page08 Group remote">
-				<div class="left-arrow ResizeIcon"/>	
-				<div class="right-arrow ResizeIcon"/>
-			</div>
-			
-		
-		<!-- PAGE 09 -->
-			<a class="Page" name="page09"></a>
+					<!-- IMAGE -->
+					<div class="Layer page08 Group display">
+						<!-- IMAGE -->
+						<div class="big-img" style="background-image:url('assets/image08.jpg')"></div>
+					</div>
+					
+					<!-- NAVIGATION GESTURES -->
+					<div class="Layer page08 Group remote gesture">
+						<!-- NAV -->
+						<a href="#page07" class="LinkToPage TouchLink left-container"
+							data-touch-type="left"
+							data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
+						</a>
+						<a href="#page09" class="LinkToPage TouchLink right-container"
+							data-touch-type="right"
+							data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
+						</a>
+					</div>
+					
+					<!-- NAVIGATION ARROWS-->
+					<div class="Layer page08 Group remote">
+						<div class="left-arrow ResizeIcon"/>	
+						<div class="right-arrow ResizeIcon"/>
+					</div>
+					
+				
+				<!-- PAGE 09 -->
+					<a class="Page" name="page09"></a>
 
-			<!-- IMAGE -->
-			<div class="Layer page09 Group display">
-				<!-- IMAGE -->
-				<div class="big-img" style="background-image:url('assets/image09.jpg')"></div>
-			</div>
-			
-			<!-- NAVIGATION GESTURES -->
-			<div class="Layer page09 Group remote gesture">
-				<!-- NAV -->
-				<a href="#page08" class="LinkToPage TouchLink left-container"
-					data-touch-type="left"
-					data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
-				</a>
-				<a href="#page10" class="LinkToPage TouchLink right-container"
-					data-touch-type="right"
-					data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
-				</a>
-			</div>
-			
-			<!-- NAVIGATION ARROWS-->
-			<div class="Layer page09 Group remote">
-				<div class="left-arrow ResizeIcon"/>	
-				<div class="right-arrow ResizeIcon"/>
-			</div>
-			
-		
-		<!-- PAGE 10 -->
-			<a class="Page" name="page10"></a>
+					<!-- IMAGE -->
+					<div class="Layer page09 Group display">
+						<!-- IMAGE -->
+						<div class="big-img" style="background-image:url('assets/image09.jpg')"></div>
+					</div>
+					
+					<!-- NAVIGATION GESTURES -->
+					<div class="Layer page09 Group remote gesture">
+						<!-- NAV -->
+						<a href="#page08" class="LinkToPage TouchLink left-container"
+							data-touch-type="left"
+							data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
+						</a>
+						<a href="#page10" class="LinkToPage TouchLink right-container"
+							data-touch-type="right"
+							data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
+						</a>
+					</div>
+					
+					<!-- NAVIGATION ARROWS-->
+					<div class="Layer page09 Group remote">
+						<div class="left-arrow ResizeIcon"/>	
+						<div class="right-arrow ResizeIcon"/>
+					</div>
+					
+				
+				<!-- PAGE 10 -->
+					<a class="Page" name="page10"></a>
 
-			<!-- IMAGE -->
-			<div class="Layer page10 Group display">
-				<!-- IMAGE -->
-				<div class="big-img" style="background-image:url('assets/image10.jpg')"></div>
-			</div>
-			
-			<!-- NAVIGATION GESTURES -->
-			<div class="Layer page10 Group remote gesture">
-				<!-- NAV -->
-				<a href="#page09" class="LinkToPage TouchLink left-container"
-					data-touch-type="left"
-					data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
-				</a>
-				<a href="#page11" class="LinkToPage TouchLink right-container"
-					data-touch-type="right"
-					data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
-				</a>
-			</div>
-			
-			<!-- NAVIGATION ARROWS-->
-			<div class="Layer page10 Group remote">
-				<div class="left-arrow ResizeIcon"/>	
-				<div class="right-arrow ResizeIcon"/>
-			</div>
-			
-		
-		<!-- PAGE 11 -->
-			<a class="Page" name="page11"></a>
+					<!-- IMAGE -->
+					<div class="Layer page10 Group display">
+						<!-- IMAGE -->
+						<div class="big-img" style="background-image:url('assets/image10.jpg')"></div>
+					</div>
+					
+					<!-- NAVIGATION GESTURES -->
+					<div class="Layer page10 Group remote gesture">
+						<!-- NAV -->
+						<a href="#page09" class="LinkToPage TouchLink left-container"
+							data-touch-type="left"
+							data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
+						</a>
+						<a href="#page11" class="LinkToPage TouchLink right-container"
+							data-touch-type="right"
+							data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
+						</a>
+					</div>
+					
+					<!-- NAVIGATION ARROWS-->
+					<div class="Layer page10 Group remote">
+						<div class="left-arrow ResizeIcon"/>	
+						<div class="right-arrow ResizeIcon"/>
+					</div>
+					
+				
+				<!-- PAGE 11 -->
+					<a class="Page" name="page11"></a>
 
-			<!-- IMAGE -->
-			<div class="Layer page11 Group display">
-				<!-- IMAGE -->
-				<div class="big-img" style="background-image:url('assets/image11.jpg')"></div>
-			</div>
-			
-			<!-- NAVIGATION GESTURES -->
-			<div class="Layer page11 Group remote gesture">
-				<!-- NAV -->
-				<a href="#page10" class="LinkToPage TouchLink left-container"
-					data-touch-type="left"
-					data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
-				</a>
-				<a href="#page12" class="LinkToPage TouchLink right-container"
-					data-touch-type="right"
-					data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
-				</a>
-			</div>
-			
-			<!-- NAVIGATION ARROWS-->
-			<div class="Layer page11 Group remote">
-				<div class="left-arrow ResizeIcon"/>	
-				<div class="right-arrow ResizeIcon"/>
-			</div>
-			
-		
-		<!-- PAGE 12 -->
-			<a class="Page" name="page12"></a>
+					<!-- IMAGE -->
+					<div class="Layer page11 Group display">
+						<!-- IMAGE -->
+						<div class="big-img" style="background-image:url('assets/image11.jpg')"></div>
+					</div>
+					
+					<!-- NAVIGATION GESTURES -->
+					<div class="Layer page11 Group remote gesture">
+						<!-- NAV -->
+						<a href="#page10" class="LinkToPage TouchLink left-container"
+							data-touch-type="left"
+							data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
+						</a>
+						<a href="#page12" class="LinkToPage TouchLink right-container"
+							data-touch-type="right"
+							data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
+						</a>
+					</div>
+					
+					<!-- NAVIGATION ARROWS-->
+					<div class="Layer page11 Group remote">
+						<div class="left-arrow ResizeIcon"/>	
+						<div class="right-arrow ResizeIcon"/>
+					</div>
+					
+				
+				<!-- PAGE 12 -->
+					<a class="Page" name="page12"></a>
 
-			<!-- IMAGE -->
-			<div class="Layer page12 Group display">
-				<!-- IMAGE -->
-				<div class="big-img" style="background-image:url('assets/image12.jpg')"></div>
-			</div>
-			
-			<!-- NAVIGATION GESTURES -->
-			<div class="Layer page12 Group remote gesture">
-				<!-- NAV -->
-				<a href="#page11" class="LinkToPage TouchLink left-container"
-					data-touch-type="left"
-					data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
-				</a>
-				<a href="#page13" class="LinkToPage TouchLink right-container"
-					data-touch-type="right"
-					data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
-				</a>
-			</div>
-			
-			<!-- NAVIGATION ARROWS-->
-			<div class="Layer page12 Group remote">
-				<div class="left-arrow ResizeIcon"/>	
-				<div class="right-arrow ResizeIcon"/>
-			</div>
-			
-		
-		<!-- PAGE 13 -->
-			<a class="Page" name="page13"></a>
+					<!-- IMAGE -->
+					<div class="Layer page12 Group display">
+						<!-- IMAGE -->
+						<div class="big-img" style="background-image:url('assets/image12.jpg')"></div>
+					</div>
+					
+					<!-- NAVIGATION GESTURES -->
+					<div class="Layer page12 Group remote gesture">
+						<!-- NAV -->
+						<a href="#page11" class="LinkToPage TouchLink left-container"
+							data-touch-type="left"
+							data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
+						</a>
+						<a href="#page13" class="LinkToPage TouchLink right-container"
+							data-touch-type="right"
+							data-show-start-style="page-right" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-left">
+						</a>
+					</div>
+					
+					<!-- NAVIGATION ARROWS-->
+					<div class="Layer page12 Group remote">
+						<div class="left-arrow ResizeIcon"/>	
+						<div class="right-arrow ResizeIcon"/>
+					</div>
+					
+				
+				<!-- PAGE 13 -->
+					<a class="Page" name="page13"></a>
 
-			<!-- IMAGE -->
-			<div class="Layer page13 Group display">
-				<!-- IMAGE -->
-				<div class="big-img" style="background-image:url('assets/image13.jpg')"></div>
-			</div>	
-			
-			<!-- NAVIGATION GESTURES -->
-			<div class="Layer page13 Group remote gesture">
-				<!-- NAV -->
-				<a href="#page12" class="LinkToPage TouchLink left-container"
-					data-touch-type="left"
-					data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
-					data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
-				</a>
+					<!-- IMAGE -->
+					<div class="Layer page13 Group display">
+						<!-- IMAGE -->
+						<div class="big-img" style="background-image:url('assets/image13.jpg')"></div>
+					</div>	
+					
+					<!-- NAVIGATION GESTURES -->
+					<div class="Layer page13 Group remote gesture">
+						<!-- NAV -->
+						<a href="#page12" class="LinkToPage TouchLink left-container"
+							data-touch-type="left"
+							data-show-start-style="page-left" data-show-end-style="page-center-horizontal"
+							data-hide-start-style="page-center-horizontal" data-hide-end-style="page-right">
+						</a>
+					</div>
+					
+					<!-- NAVIGATION ARROWS-->
+					<div class="Layer page13 Group remote">
+						<div class="left-arrow ResizeIcon"/>	
+					</div>
+				</div>
 			</div>
-			
-			<!-- NAVIGATION ARROWS-->
-			<div class="Layer page13 Group remote">
-				<div class="left-arrow ResizeIcon"/>	
-			</div>
-
 		</div>
 	</div>
 </body>

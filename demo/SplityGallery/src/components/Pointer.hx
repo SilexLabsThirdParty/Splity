@@ -10,58 +10,80 @@ import org.phpMessaging.model.MessageData;
 class Pointer extends DisplayObject
 {
     private static inline var IMG_SIZE:Int = 5;
-    private var imageElement:HtmlDom;
-    private var mouseX:Int = -1000;
-    private var mouseY:Int = -1000;
-    private var timer:haxe.Timer;
+    private var _container:HtmlDom;
+    private var _imageElement:HtmlDom;
+    private var _mouseX:Int = -1000;
+    private var _mouseY:Int = -1000;
+    private var _timer:haxe.Timer;
 	/**
      * Constructor
      */
     public function new(rootElement:HtmlDom, brixId:String) 
     {trace("new Pointer");
         super(rootElement, brixId);
+		
         // get the image node
-        imageElement = DomTools.getSingleElement(rootElement, "pointer-image");
-		imageElement.style.position  = "fixed";
-		imageElement.style.zIndex = 30;
-		imageElement.style.top  = "0px";
-		imageElement.style.left = "0px";
-        imageElement.style.display = 'none';
+        _imageElement = DomTools.getSingleElement(rootElement, "pointer-image");
+		_imageElement.style.position  = "fixed";
+		_imageElement.style.zIndex = 30;
+		_imageElement.style.top  = "0px";
+		_imageElement.style.left = "0px";
+        _imageElement.style.display = 'none';
+		
         // workaround cocktail issue https://github.com/silexlabs/Cocktail/issues/284
         #if js
-        imageElement.style.zIndex = 1000;
+        _imageElement.style.zIndex = 1000;
         #else
-        imageElement.style.zIndex = "1000";
+        _imageElement.style.zIndex = "1000";
         #end
-        // create interactivity
-        var container = DomTools.getSingleElement(rootElement, "pages-container");
-        container.style.cursor = 'url(assets/hand.png)';
-        container.addEventListener("mousemove", cast(onMouseMove), true);
-        //container.addEventListener("mousedown", cast(onMouseDown), true);
-        container.addEventListener("mouseup", cast(onMouseUp), true);
+		
+        // pointer interactivity
+        _container = DomTools.getSingleElement(rootElement, "pages-container");
+        _container.addEventListener("mousemove", cast(onMouseMove), true);
+        //_container.addEventListener("mousedown", cast(onMouseDown), true);
+        _container.addEventListener("mouseup", cast(onMouseUp), true);
         rootElement.addEventListener(MessageData.TYPE_CLIENT_DISPATCH, cast(onDraw), true);
+		
+		// activate pointer
+        var pointerDisplay = DomTools.getSingleElement(rootElement, "pointer-display");
+		pointerDisplay.addEventListener("mouseup", cast(displayPointer), true);
+		
+		// deactivate pointer
+        var pointerHide = DomTools.getSingleElement(rootElement, "pointer-hide");
+		pointerHide.addEventListener("mouseup", cast(hidePointer), true);
+		
     }
+	public function displayPointer(e:MouseEvent)
+	{
+        trace("displayPointer");
+		rootElement.style.cursor = "url('assets/pointer-red.png')";		
+	}
+	public function hidePointer(e:MouseEvent)
+	{
+        trace("hidePointer");
+		rootElement.style.cursor = "";		
+	}
     public function onMouseDown(e:MouseEvent) 
     {trace("onMouseDown");
         onMouseMove(e);
         sendDraw();
-        if(timer == null)
-            timer = new haxe.Timer(500);
-        timer.run = sendDraw;
+        if(_timer == null)
+            _timer = new haxe.Timer(500);
+        _timer.run = sendDraw;
     }
     public function onMouseUp(e:MouseEvent) 
     {trace("onMouseUp");
-        if (timer != null)
+        if (_timer != null)
         {
-            timer.stop();
-//            timer.run = null;
+            _timer.stop();
+//            _timer.run = null;
         }
-        timer = null;
-        imageElement.style.display="none";           
-        //mouseX = -1000;
-        //mouseY = -1000;
+        _timer = null;
+        _imageElement.style.display="none";           
+        //_mouseX = -1000;
+        //_mouseY = -1000;
         sendDraw();
-		draw(mouseX,mouseY);
+		draw(_mouseX,_mouseY);
     }
     
     /**
@@ -71,19 +93,19 @@ class Pointer extends DisplayObject
     public function onMouseMove(e:MouseEvent):Void
     {//trace("mouse move "+e.clientX);
         e.preventDefault();
-        mouseX = e.clientX;
-        mouseY = e.clientY;
+        _mouseX = e.clientX;
+        _mouseY = e.clientY;
     }
     public function draw(x:Int, y:Int) 
     {
-            imageElement.style.top = (y-IMG_SIZE)+"px";
-            imageElement.style.left = (x-IMG_SIZE)+"px";
-            imageElement.style.display="inherit";           
+            _imageElement.style.top = (y-IMG_SIZE)+"px";
+            _imageElement.style.left = (x-IMG_SIZE)+"px";
+            _imageElement.style.display="inherit";           
     }
     public function sendDraw() 
     {
-		var percentX = mouseX / Lib.window.innerWidth;
-		var percentY = mouseY / Lib.window.innerHeight;
+		var percentX = _mouseX / Lib.window.innerWidth;
+		var percentY = _mouseY / Lib.window.innerHeight;
 		
         var event : CustomEvent = cast Lib.document.createEvent("CustomEvent");
         event.initCustomEvent(GallerySplity.TYPE_REQUEST_SEND, false, false, {
