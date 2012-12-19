@@ -15,6 +15,10 @@ class Pointer extends DisplayObject
     private var _mouseX:Int = -1000;
     private var _mouseY:Int = -1000;
     private var _timer:haxe.Timer;
+	private var onMouseMoveCallback:MouseEvent->Void;
+	private var onMouseDownCallback:MouseEvent->Void;
+	private var onMouseUpCallback:MouseEvent->Void;
+	private var onDrawCallback:MouseEvent->Void;
 	/**
      * Constructor
      */
@@ -37,12 +41,12 @@ class Pointer extends DisplayObject
         _imageElement.style.zIndex = "1000";
         #end
 		
-        // pointer interactivity
-        _container = DomTools.getSingleElement(rootElement, "pages-container");
-        _container.addEventListener("mousemove", cast(onMouseMove), true);
-        //_container.addEventListener("mousedown", cast(onMouseDown), true);
-        _container.addEventListener("mouseup", cast(onMouseUp), true);
-        rootElement.addEventListener(MessageData.TYPE_CLIENT_DISPATCH, cast(onDraw), true);
+		
+		// done to avoid mememory leads in HaxeJS target
+		onMouseMoveCallback = cast(callback(onMouseMove));
+		onMouseDownCallback = cast(callback(onMouseDown));
+		onMouseUpCallback = cast(callback(onMouseUp));
+		onDrawCallback = cast(callback(onDraw));
 		
 		// activate pointer
         var pointerDisplay = DomTools.getSingleElement(rootElement, "pointer-display");
@@ -56,12 +60,26 @@ class Pointer extends DisplayObject
 	public function displayPointer(e:MouseEvent)
 	{
         trace("displayPointer");
-		rootElement.style.cursor = "url('assets/pointer-red.png')";		
+		// change cursor
+		rootElement.style.cursor = "url('assets/pointer-red.png')";
+
+        // add pointer interactivity
+        _container = DomTools.getSingleElement(rootElement, "pages-container");
+        _container.addEventListener("mousemove", onMouseMoveCallback, true);
+        //_container.addEventListener("mousedown", onMouseDownCallback, true);
+        _container.addEventListener("mouseup", onMouseUpCallback, true);
+        rootElement.addEventListener(MessageData.TYPE_CLIENT_DISPATCH, onDrawCallback, true);
 	}
 	public function hidePointer(e:MouseEvent)
 	{
         trace("hidePointer");
 		rootElement.style.cursor = "";		
+
+        // remove pointer interactivity
+        _container.removeEventListener("mousemove", onMouseMoveCallback, true);
+        //_container.removeEventListener("mousedown", onMouseDownCallback, true);
+        _container.removeEventListener("mouseup", onMouseUpCallback, true);
+        rootElement.removeEventListener(MessageData.TYPE_CLIENT_DISPATCH, onDrawCallback, true);
 	}
     public function onMouseDown(e:MouseEvent) 
     {trace("onMouseDown");
