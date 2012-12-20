@@ -155,11 +155,11 @@ a{
 }
 
 #pointer{
-	width:50px;
-	height:50px;
+	width:20px;
+	height:34px;
 	background:url("assets/pointer-red.png");
 }
-#pointer-display, #pointer-hide{
+.pointer-display, .pointer-hide{
 	position:fixed;
 	left:5px;
 	top:5px;
@@ -167,12 +167,13 @@ a{
 	height:50px;
 	cursor: pointer;
 }
-#pointer-display{
-	background:url("assets/pointer-grey.png");
+.pointer-display{
+	background:url("assets/pointer-grey-button.png");
 	z-index:20;
 }
-#pointer-hide{
-	background:url("assets/pointer-red.png");
+.pointer-hide{
+	background:url("assets/pointer-red-button.png");
+	cursor:url("assets/pointer-red.png"), pointer;
 	z-index:21;
 }
 

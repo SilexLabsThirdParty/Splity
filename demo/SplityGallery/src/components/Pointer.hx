@@ -9,7 +9,7 @@ import org.phpMessaging.model.MessageData;
 
 class Pointer extends DisplayObject
 {
-    private static inline var IMG_SIZE:Int = 5;
+    private static inline var IMG_SIZE:Int = 1;
     private var _container:HtmlDom;
     private var _imageElement:HtmlDom;
     private var _mouseX:Int = -1000;
@@ -61,7 +61,7 @@ class Pointer extends DisplayObject
 	{
         trace("displayPointer");
 		// change cursor
-		rootElement.style.cursor = "url('assets/pointer-red.png')";
+		rootElement.style.cursor = 'url("assets/pointer-red.png"), pointer';
 
         // add pointer interactivity
         _container = DomTools.getSingleElement(rootElement, "pages-container");
