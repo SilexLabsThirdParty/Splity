@@ -75,7 +75,7 @@ a{
 .page-right{
 	left:100%;
 }
-.page-center-vertical{
+.page-center-horizontal{
 	left:0;
 	z-index: 0;
 }
