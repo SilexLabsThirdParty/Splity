@@ -126,7 +126,7 @@ a{
 .left-arrow{
 	left:0;
 	top:50%;
-	margin-top:-25px;
+	/*margin-top:-25px;*/
 	margin-left:5px;
 	background-image:url("assets/arrow_left.png");
 	background-position:left center;
@@ -134,7 +134,7 @@ a{
 .right-arrow{
 	right:0;
 	top:50%;
-	margin-top:-25px;
+	/*margin-top:-25px;*/
 	margin-right:5px;
 	background-image:url("assets/arrow_right.png");
 	background-position:right center;
@@ -144,14 +144,16 @@ a{
 	position:fixed;
 	right:5px;
 	top:5px;
-	background:url("assets/master_icon-off.png");
+	background:url("assets/master_icon-off.png") no-repeat;
 	width:50px;
 	height:50px;
 	z-index:20;
 	cursor: pointer;
+	background-size:contain;
 }
 #master.down{
-	background:url("assets/master_icon-on.png");
+	background:url("assets/master_icon-on.png") no-repeat;
+	background-size:contain;
 }
 
 #pointer{
@@ -168,13 +170,15 @@ a{
 	cursor: pointer;
 }
 .pointer-display{
-	background:url("assets/pointer-grey-button.png");
+	background:url("assets/pointer-grey-button.png") no-repeat;
 	z-index:20;
+	background-size:contain;
 }
 .pointer-hide{
-	background:url("assets/pointer-red-button.png");
+	background:url("assets/pointer-red-button.png") no-repeat;
 	cursor:url("assets/pointer-red.png"), pointer;
 	z-index:21;
+	background-size:contain;
 }
 
 /**********/
