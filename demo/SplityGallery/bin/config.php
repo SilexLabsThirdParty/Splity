@@ -2,23 +2,14 @@
 
 $config = '<xml>
 	<db>
-	 	<!-- Data base host name 
 		<dbHost>../SLDialog.sqlite2</dbHost>
-		-->
-	 	<!-- Data base host name -->
+	 	<!--
 		<dbHost>localhost</dbHost>
-
-	 	<!-- Data base port -->
 		<dbPort></dbPort>
-
-	 	<!-- Data base user name -->
 		<dbUser>root</dbUser>
-
-	 	<!-- Data base password -->
 		<dbPassword>root</dbPassword>
-
-	 	<!-- Data base name -->
 		<dbName>splity</dbName>
+		-->
 	</db>
 	<polling>
 	 	<!-- total time allowed to hold the client in the long polling in MS (milli seconds) -->
