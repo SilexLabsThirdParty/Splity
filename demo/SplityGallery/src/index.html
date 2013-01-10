@@ -18,12 +18,14 @@
 	<script data-brix-use="brix.component.layout.Panel"></script>
 	<script data-brix-use="components.GallerySplity"></script>
 	<script data-brix-use="components.Pointer"></script>
+	<script data-brix-use="components.ResizeIcon"></script>
 </head>
 <body>
 	<!-- MASTER BUTTON -->
 	<div id="master" title="Become the master"></div>
 	<div class="main-container ContextManager GallerySplity Pointer"
-		data-context-list="display, thumblist, remote, hand-pointer">
+		data-context-list="display, thumblist, remote, hand-pointer"
+		data-initial-context="display">
 
 		<!-- POINTER -->
 		<a title="Display the cursor" class="LinkAddContext" data-context="hand-pointer">

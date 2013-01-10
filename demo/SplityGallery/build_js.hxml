@@ -10,3 +10,4 @@
 -js bin/app.js
 -main brix.core.Application
 --macro brix.core.Builder.create('./src/index.html')
+--no-traces
