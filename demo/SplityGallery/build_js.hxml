@@ -1,5 +1,5 @@
 #sources
--cp ../../../Cocktail/src/
+-cp ../../../Cocktail/
 -cp ../../../Brix/src/
 -cp ../../../SLDialog/src/
 -cp src
@@ -10,4 +10,20 @@
 -js bin/app.js
 -main brix.core.Application
 --macro brix.core.Builder.create('./src/index.html')
+--no-traces
+
+--next
+
+#sources
+-cp ../../../Cocktail/
+-cp ../../../Brix/src/
+-cp ../../../SLDialog/src/
+-cp src
+-cp ../../src
+-lib hscript
+
+#binary
+-js bin/app_slave.js
+-main brix.core.Application
+--macro brix.core.Builder.create('./src/index_slave.html')
 --no-traces
