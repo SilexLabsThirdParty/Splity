@@ -33,7 +33,8 @@ class Splity extends Server
 	override private function _init(name:String=null, instanceName:String=null, metaData:Dynamic=null)
 	{
 		// force instance name to the ip
-		instanceName = Web.getClientIP();
+		//instanceName = Web.getClientIP();
+		instanceName = "";
 		// fixeme : for tests
 		// instanceName = "splity.test1";
 		name = "splity";
