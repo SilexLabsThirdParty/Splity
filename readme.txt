@@ -21,6 +21,7 @@ https://github.com/SilexLabsThirdParty/Splity
 
 SLDialog
 http://sourceforge.net/projects/php-polling/
+use the svn https://php-polling.svn.sourceforge.net/svnroot/php-polling 
 
 Silex Labs
 http://silexlabs.org/
