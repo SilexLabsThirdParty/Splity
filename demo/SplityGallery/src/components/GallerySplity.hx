@@ -26,6 +26,7 @@ class GallerySplity extends DisplayObject
 	private static var DISPLAY_FUNCTIONNALITY:String = "display";
 	
 	private static var SPLITY_URL:String = "splity.php/index.php";
+	//private static var SPLITY_URL:String = "http://demos.silexlabs.org/splity/splity.php/index.php";
 	
 	private static var ID_IDENT:String = "id";
 	
